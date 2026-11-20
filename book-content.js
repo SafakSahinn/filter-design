@@ -86,7 +86,7 @@ const BookContent = (() => {
                   <li><strong>Geçiş Oranı:</strong> $r = f_{\\text{stop}} / f_{\\text{pass}} > 1$.</li>
                 </ul>
                 <button type="button" class="btn btn-sm btn-outline" data-open-filter-modal="lowpass" style="width: 100%; margin-top: auto; font-weight: 600; color: #3d5afe; border-color: rgba(61,90,254,0.3); background: #fbfbfa; cursor: pointer;">
-                  📖 Alçak Geçiren Filtreyi Geniş Pop-up'ta İncele →
+                  📖 Alçak Geçiren Filtreyi İncele →
                 </button>
               </div>
 
@@ -144,7 +144,7 @@ const BookContent = (() => {
                   <li><strong>Geçiş Oranı:</strong> $r = f_{\\text{pass}} / f_{\\text{stop}} > 1$.</li>
                 </ul>
                 <button type="button" class="btn btn-sm btn-outline" data-open-filter-modal="highpass" style="width: 100%; margin-top: auto; font-weight: 600; color: #ef4444; border-color: rgba(239,68,68,0.3); background: #fbfbfa; cursor: pointer;">
-                  📖 Yüksek Geçiren Filtreyi Geniş Pop-up'ta İncele →
+                  📖 Yüksek Geçiren Filtreyi İncele →
                 </button>
               </div>
 
@@ -197,7 +197,7 @@ const BookContent = (() => {
                   <li><strong>Kalite Faktörü ($Q$):</strong> $Q = f_0 / B$.</li>
                 </ul>
                 <button type="button" class="btn btn-sm btn-outline" data-open-filter-modal="bandpass" style="width: 100%; margin-top: auto; font-weight: 600; color: #10b981; border-color: rgba(16,185,129,0.3); background: #fbfbfa; cursor: pointer;">
-                  📖 Bant Geçiren Filtreyi Geniş Pop-up'ta İncele →
+                  📖 Bant Geçiren Filtreyi İncele →
                 </button>
               </div>
 
@@ -247,7 +247,7 @@ const BookContent = (() => {
                   <li><strong>Çentik Frekansı:</strong> $f_0 = \\sqrt{f_{\\text{s1}} f_{\\text{s2}}}$.</li>
                 </ul>
                 <button type="button" class="btn btn-sm btn-outline" data-open-filter-modal="bandstop" style="width: 100%; margin-top: auto; font-weight: 600; color: #8b5cf6; border-color: rgba(139,92,246,0.3); background: #fbfbfa; cursor: pointer;">
-                  📖 Bant Söndüren / Çentik Filtreyi Geniş Pop-up'ta İncele →
+                  📖 Bant Söndüren Filtreyi İncele →
                 </button>
               </div>
             </div>
@@ -378,7 +378,7 @@ const BookContent = (() => {
                   <li><strong>Durdurma Bandı:</strong> Monotonik düşüş, $-20n\\text{ dB/dekad}$.</li>
                 </ul>
                 <button type="button" class="btn btn-sm btn-outline" data-open-approx-modal="butterworth" style="width: 100%; margin-top: auto; font-weight: 600; color: #3d5afe; border-color: rgba(61,90,254,0.3); background: #fbfbfa; cursor: pointer;">
-                  📖 Butterworth Yaklaşımını Geniş Pop-up'ta İncele →
+                  📖 Butterworth Yaklaşımını İncele →
                 </button>
               </div>
 
@@ -395,7 +395,7 @@ const BookContent = (() => {
                   <li><strong>Durdurma Bandı:</strong> Monotonik düşüş, hızlı zayıflama.</li>
                 </ul>
                 <button type="button" class="btn btn-sm btn-outline" data-open-approx-modal="chebyshev" style="width: 100%; margin-top: auto; font-weight: 600; color: #ef4444; border-color: rgba(239,68,68,0.3); background: #fbfbfa; cursor: pointer;">
-                  📖 Chebyshev Tip I Yaklaşımını Geniş Pop-up'ta İncele →
+                  📖 Chebyshev Tip I Yaklaşımını İncele →
                 </button>
               </div>
 
@@ -412,7 +412,7 @@ const BookContent = (() => {
                   <li><strong>Durdurma Bandı:</strong> $a_{\\text{stop}}$ eşiğinde eşit dalgalı, sonsuz çentikler.</li>
                 </ul>
                 <button type="button" class="btn btn-sm btn-outline" data-open-approx-modal="inv_chebyshev" style="width: 100%; margin-top: auto; font-weight: 600; color: #10b981; border-color: rgba(16,185,129,0.3); background: #fbfbfa; cursor: pointer;">
-                  📖 Ters Chebyshev Yaklaşımını Geniş Pop-up'ta İncele →
+                  📖 Ters Chebyshev Yaklaşımını İncele →
                 </button>
               </div>
 
@@ -429,7 +429,7 @@ const BookContent = (() => {
                   <li><strong>Durdurma Bandı:</strong> Eşit dalgalı ($a_{\\text{stop}}$ dB) ve $j\\omega$ iletim sıfırları.</li>
                 </ul>
                 <button type="button" class="btn btn-sm btn-outline" data-open-approx-modal="elliptic" style="width: 100%; margin-top: auto; font-weight: 600; color: #8b5cf6; border-color: rgba(139,92,246,0.3); background: #fbfbfa; cursor: pointer;">
-                  📖 Eliptik (Cauer) Yaklaşımını Geniş Pop-up'ta İncele →
+                  📖 Eliptik (Cauer) Yaklaşımını İncele →
                 </button>
               </div>
             </div>
