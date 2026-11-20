@@ -495,10 +495,15 @@ document.addEventListener('DOMContentLoaded', () => {
       circuit: 'Bölüm 4: Aktif Devre Şematiği',
       matlab: 'MATLAB & SPICE Kodu',
       compare: 'Filtre Karşılaştırma Laboratuvarı',
-      theory: 'Kitap & Teori (Bölüm 1 - 4)'
+      theory: 'Kitap & Teori'
     };
     if (els.breadcrumbCurrent) {
-      els.breadcrumbCurrent.textContent = tabTitles[tabId] || 'Tasarımcı';
+      if (tabId === 'theory' && typeof BookContent !== 'undefined') {
+        const ch = BookContent.chapters.find(c => c.id === (chapterId || state.currentChapter));
+        els.breadcrumbCurrent.textContent = ch ? ch.title : 'Kitap & Teori';
+      } else {
+        els.breadcrumbCurrent.textContent = tabTitles[tabId] || 'Tasarımcı';
+      }
     }
 
     if (els.sidebar) els.sidebar.classList.remove('open');
