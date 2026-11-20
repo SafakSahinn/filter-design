@@ -394,6 +394,11 @@ document.addEventListener('DOMContentLoaded', () => {
       FilterApproxModal.init();
     }
 
+    // Initialize Frequency Transformations Modal (Chapter 3)
+    if (window.FilterTransformModal) {
+      FilterTransformModal.init();
+    }
+
     // Expose Global FilterStudio API for modals
     window.FilterStudio = {
       setFilterType: (type) => {

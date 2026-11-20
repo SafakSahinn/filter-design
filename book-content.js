@@ -704,97 +704,233 @@ const BookContent = (() => {
       title: 'Bölüm 3: Normalize Olmayan Filtreler ve Frekans Dönüşümleri',
       sub: 'Unnormalized LP, HP, BP, and BS Filters',
       badge: 'Bölüm 3: Dönüşümler',
-      summary: 'Normalize prototip fonksiyonunun gerçek frekanslara ölçeklenmesi, 2πf açısal frekans dönüşümü ve transfer fonksiyonu katsayı türetimleri.',
+      summary: 'Normalize prototip fonksiyonunun gerçek frekanslara ölçeklenmesi, 3 adımlı evrensel tasarım prosedürü, LP to LP, HP, BP, BS frekans dönüşümleri, biquad katsayı türetimleri ve grup gecikmesi analizi.',
       sections: [
         {
           id: 'ch3-1',
-          title: '3.1 Alçak Geçiren Ölçekleme (LP to LP) & 2πf Dönüşüm Matematiği',
+          title: '3.1 Normalize Olmayan Filtre Tasarım Prosedürü ve Dört Frekans Dönüşümü (Şekil 3.1 & Genel Bakış)',
           content: `
-            <p>Frekans spektroskopisinde frekans Hertz ($f$, salınım/saniye) veya açısal frekans radyan/saniye ($\\omega$, rad/s) olarak ölçülür. Bir tam dalga $2\\pi$ radyana karşılık geldiği için temel dönüşüm bağıntısı:</p>
-            <div class="math-block">
-              $$\\omega = 2\\pi f \\quad \\Longleftrightarrow \\quad f = \\frac{\\omega}{2\\pi}$$
-            </div>
-            <p>Normalize frekans değişkeni $S$ ($\\Omega_{\\text{pass}} = 1\\text{ rad/s}$), gerçek kesim frekansı $\\omega_0 = 2\\pi f_0$ ile frekans ekseninde ölçeklenir:</p>
-            <div class="math-block">
-              $$S = \\frac{s}{\\omega_0} = \\frac{s}{2\\pi f_0}$$
+            <p>Bölüm 2'de normalize prototip filtrelerin ($1\\text{ rad/s}$ kesim frekanslı) transfer fonksiyonları analitik olarak türetilmişti. Bu bölümün temel hedefi, bu prototip fonksiyonlarını istenen gerçek frekanslara ($f_{\\text{pass}}, f_{\\text{stop}}$) ölçeklemek ve <strong>Alçak Geçiren (LP)</strong>, <strong>Yüksek Geçiren (HP)</strong>, <strong>Bant Geçiren (BP)</strong> veya <strong>Bant Söndüren / Çentik (BS)</strong> filtre türlerine dönüştürmektir.</p>
+
+            <div style="background: #fafaf9; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin: 16px 0;">
+              <h4 style="margin: 0 0 10px; color: var(--text-h); font-size: 14px; font-weight: 700;">🔄 Les Thede 3 Adımlı Evrensel Tasarım Prosedürü (Şekil 3.1):</h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+                <div style="background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px;">
+                  <strong style="color: #3d5afe; font-size: 13px;">Adım 1: Derece ($n$) Hesabı</strong>
+                  <p style="font-size: 12.5px; color: var(--muted); margin: 4px 0 0;">Normalize olmayan spesifikasyonlardan bağıl frekans oranı $\\Omega_r$ hesaplanır ve gereken minimum filtre derecesi $n$ bulunur (Denklem 3.1 - 3.6).</p>
+                </div>
+                <div style="background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px;">
+                  <strong style="color: #10b981; font-size: 13px;">Adım 2: Normalize Prototip $H(S)$</strong>
+                  <p style="font-size: 12.5px; color: var(--muted); margin: 4px 0 0;">Seçilen yaklaşım türüne (Butterworth, Chebyshev, Ters Chebyshev, Eliptik) göre $1\\text{ rad/s}$ kesimli normalize transfer fonksiyonu $H(S)$ türetilir.</p>
+                </div>
+                <div style="background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px;">
+                  <strong style="color: #8b5cf6; font-size: 13px;">Adım 3: Frekans Dönüşümü $S(s)$</strong>
+                  <p style="font-size: 12.5px; color: var(--muted); margin: 4px 0 0;">İstenen filtre türünün frekans dönüşüm operatörü ($S = s/\\omega_0$, $S = \\omega_0/s$, $S = \\frac{s^2+\\omega_0^2}{BW s}$ vb.) uygulanarak son $H(s)$ katsayıları hesaplanır.</p>
+                </div>
+              </div>
             </div>
 
-            <p><strong>3.1.1 Birinci Derece Faktörün Dönüşümü (Denklem 3.7 - 3.9):</strong></p>
-            <div class="math-block">
-              $$H(S) = \\frac{1}{S + b_0} \\xrightarrow{S = s/\\omega_0} \\frac{1}{\\frac{s}{\\omega_0} + b_0} = \\frac{\\omega_0}{s + b_0 \\omega_0}$$
-              $$H(s) = \\frac{b_2}{s + b_2}, \\quad b_2 = b_0 \\cdot \\omega_0$$
-            </div>
+            <p>Dört temel analog filtre türü için frekans dönüşüm operatörleri ve özellikleri aşağıda özetlenmiştir:</p>
 
-            <p><strong>3.1.2 İkinci Derece Faktörün Dönüşümü (Denklem 3.10 - 3.13):</strong></p>
-            <div class="math-block">
-              $$H(S) = \\frac{A_2 S^2 + A_0}{S^2 + B_1 S + B_2} \\xrightarrow{S = s/\\omega_0} \\frac{A_2 (s/\\omega_0)^2 + A_0}{(s/\\omega_0)^2 + B_1 (s/\\omega_0) + B_2}$$
-              $$H(s) = \\frac{a_2 s^2 + a_0}{s^2 + b_1 s + b_2}$$
-              $$b_1 = B_1 \\cdot \\omega_0, \\quad b_2 = B_2 \\cdot \\omega_0^2, \\quad a_0 = A_0 \\cdot \\omega_0^2, \\quad a_2 = A_2$$
+            <div class="theory-grid-2" style="margin-top: 14px;">
+              <!-- 1. LP to LP Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #3d5afe;">Alçak Geçiren Ölçekleme (LP to LP)</h4>
+                  <span class="stage-badge" style="background: rgba(61,90,254,0.1); color: #3d5afe;">Frekans Ölçekleme</span>
+                </div>
+                <p>Normalize frekans değişkeni $S$, gerçek açısal frekans $\\omega_0 = 2\\pi f_0$ ile ölçeklenir. Filtre derecesi ve kutup sayısı değişmez ($n \\to n$).</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Dönüşüm Operatörü:</strong> $S = \\frac{s}{\\omega_0} = \\frac{s}{2\\pi f_0}$.</li>
+                  <li><strong>Katsayı Değişimi:</strong> $b_1 = B_1 \\omega_0, \\quad b_2 = B_2 \\omega_0^2$.</li>
+                  <li><strong>DC Kazancı:</strong> Değişmez ($s=0$ noktasında kazanç $1.0$).</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-transform-modal="lp_to_lp" style="width: 100%; margin-top: auto; font-weight: 600; color: #3d5afe; border-color: rgba(61,90,254,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 LP to LP Dönüşümünü İncele →
+                </button>
+              </div>
+
+              <!-- 2. LP to HP Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #ef4444;">Yüksek Geçiren Dönüşümü (LP to HP)</h4>
+                  <span class="stage-badge" style="background: rgba(239,68,68,0.1); color: #ef4444;">Frekans Evirme</span>
+                </div>
+                <p>Frekans spektrumu evrilerek alçak frekanslar söndürülür, yüksek frekanslar iletilir. Orijinde ($s=0$) $n$ adet iletim sıfırı oluşur.</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Dönüşüm Operatörü:</strong> $S = \\frac{\\omega_0}{s} = \\frac{2\\pi f_0}{s}$.</li>
+                  <li><strong>Katsayı Değişimi:</strong> $b_1 = \\frac{B_1 \\omega_0}{B_2}, \\quad b_2 = \\frac{\\omega_0^2}{B_2}$.</li>
+                  <li><strong>Orijin Sıfırları:</strong> Payda $s^2$ terimleri DC akımını bloke eder.</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-transform-modal="lp_to_hp" style="width: 100%; margin-top: auto; font-weight: 600; color: #ef4444; border-color: rgba(239,68,68,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 LP to HP Dönüşümünü İncele →
+                </button>
+              </div>
+
+              <!-- 3. LP to BP Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #10b981;">Bant Geçiren Dönüşümü (LP to BP)</h4>
+                  <span class="stage-badge" style="background: rgba(16,185,129,0.1); color: #10b981;">Derece İki Katına (2n)</span>
+                </div>
+                <p>Her bir kutup merkez frekans $\\pm j\\omega_0$ civarında simetrik rezonans çiftine çatallanır. Derece iki katına ($2n$) çıkar.</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Dönüşüm Operatörü:</strong> $S = \\frac{s^2 + \\omega_0^2}{BW \\cdot s}$.</li>
+                  <li><strong>Merkez Frekans:</strong> $\\omega_0 = \\sqrt{\\omega_{\\text{p1}} \\omega_{\\text{p2}}}$, $BW = \\omega_{\\text{p2}} - \\omega_{\\text{p1}}$.</li>
+                  <li><strong>Simetri Koşulu:</strong> $\\omega_{\\text{s1}} \\omega_{\\text{s2}} = \\omega_0^2$ geometrik simetrisi.</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-transform-modal="lp_to_bp" style="width: 100%; margin-top: auto; font-weight: 600; color: #10b981; border-color: rgba(16,185,129,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 LP to BP Dönüşümünü İncele →
+                </button>
+              </div>
+
+              <!-- 4. LP to BS Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #8b5cf6;">Bant Söndüren / Çentik (LP to BS)</h4>
+                  <span class="stage-badge" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">Çentik Sıfırları (±jω₀)</span>
+                </div>
+                <p>Bant geçiren dönüşümünün cebirsel tersidir. $s = \\pm j\\omega_0$ frekansında pay sıfır olarak sonsuz zayıflamalı çentik oluşturur.</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Dönüşüm Operatörü:</strong> $S = \\frac{BW \\cdot s}{s^2 + \\omega_0^2}$.</li>
+                  <li><strong>Çentik Frekansı:</strong> $\\omega_0 = \\sqrt{\\omega_{\\text{s1}} \\omega_{\\text{s2}}}$ frekansında tam sıfır iletim.</li>
+                  <li><strong>Derece:</strong> $2n$ dereceli aktif biquad katları.</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-transform-modal="lp_to_bs" style="width: 100%; margin-top: auto; font-weight: 600; color: #8b5cf6; border-color: rgba(139,92,246,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 LP to BS Dönüşümünü İncele →
+                </button>
+              </div>
             </div>
-            <p>Tüm-kutuplu (Butterworth ve Chebyshev I) filtrelerde pay daima sabittir ($A_2 = 0, A_0 = B_2$), bu nedenle $a_0 = b_2$ olur.</p>
           `
         },
         {
           id: 'ch3-2',
-          title: '3.2 Yüksek Geçiren Dönüşümü (LP to HP)',
+          title: '3.2 Alçak Geçiren Filtre Ölçeklemesi (Unnormalized Lowpass - LP to LP)',
           content: `
-            <p>Alçak geçiren transfer fonksiyonunu yüksek geçiren transfer fonksiyonuna dönüştürmek için frekans düzlemi ters çevrilir (inversion):</p>
+            <p>Normalize prototip transfer fonksiyonları $1\\text{ rad/s}$ referans frekansı için türetilmiştir. Gerçek bir devrede istenen kesim frekansı $\\omega_0 = 2\\pi f_0$ (veya $f_{\\text{pass}}$) olduğundan, Laplace frekans ekseni $\\omega_0$ faktörü ile genişletilir:</p>
             <div class="math-block">
-              $$S = \\frac{\\omega_0}{s} = \\frac{2\\pi f_0}{s}$$
+              $$S = \\frac{s}{\\omega_0} = \\frac{s}{2\\pi f_0} \\quad \\Longleftrightarrow \\quad s = S \\cdot \\omega_0$$
             </div>
 
-            <p><strong>3.2.1 Birinci Derece Yüksek Geçiren Faktörü:</strong></p>
+            <p><strong>3.2.1 Birinci Derece Faktörün Dönüşümü (Denklem 3.7 - 3.9):</strong></p>
+            <p>Tek dereceli filtrelerde bulunan $S + b_0$ payda terimi yerine $S = s/\\omega_0$ yazılarak pay ve payda $\\omega_0$ ile genişletilir:</p>
             <div class="math-block">
-              $$H(S) = \\frac{1}{S + b_0} \\xrightarrow{S = \\omega_0 / s} \\frac{1}{\\frac{\\omega_0}{s} + b_0} = \\frac{s}{b_0 s + \\omega_0} = \\frac{\\frac{1}{b_0} s}{s + \\frac{\\omega_0}{b_0}}$$
-              $$H(s) = \\frac{s}{s + b_2}, \\quad b_2 = \\frac{\\omega_0}{b_0}$$
+              $$H(S) = \\frac{1}{S + b_0} \\xrightarrow{S = s/\\omega_0} \\frac{1}{\\frac{s}{\\omega_0} + b_0} = \\frac{\\omega_0}{s + b_0 \\omega_0}$$
+              $$H(s) = \\frac{b_2}{s + b_2}, \\quad \\text{burada } b_2 = b_0 \\cdot \\omega_0$$
             </div>
 
-            <p><strong>3.2.2 İkinci Derece Yüksek Geçiren Faktörü (Denklem 3.16 - 3.18):</strong></p>
+            <p><strong>3.2.2 İkinci Derece Kuadratik Faktörün Dönüşümü (Denklem 3.10 - 3.13):</strong></p>
+            <p>Genel biquad transfer fonksiyonundaki her $S$ terimi yerine $s/\\omega_0$ konulup pay ve payda $\\omega_0^2$ ile çarpılır:</p>
             <div class="math-block">
-              $$H(S) = \\frac{B_2}{S^2 + B_1 S + B_2} \\xrightarrow{S = \\omega_0 / s} \\frac{B_2}{\\left(\\frac{\\omega_0}{s}\\right)^2 + B_1 \\left(\\frac{\\omega_0}{s}\\right) + B_2} = \\frac{B_2 s^2}{B_2 s^2 + B_1 \\omega_0 s + \\omega_0^2}$$
-              $$H(s) = \\frac{s^2}{s^2 + b_1 s + b_2}, \\quad b_1 = \\frac{B_1 \\omega_0}{B_2}, \\quad b_2 = \\frac{\\omega_0^2}{B_2}$$
+              $$H(S) = \\frac{A_2 S^2 + A_1 S + A_0}{S^2 + B_1 S + B_2} \\xrightarrow{S = s/\\omega_0} \\frac{A_2 \\left(\\frac{s}{\\omega_0}\\right)^2 + A_1 \\left(\\frac{s}{\\omega_0}\\right) + A_0}{\\left(\\frac{s}{\\omega_0}\\right)^2 + B_1 \\left(\\frac{s}{\\omega_0}\\right) + B_2}$$
+              $$H(s) = \\frac{a_2 s^2 + a_1 s + a_0}{s^2 + b_1 s + b_2}$$
+              $$b_1 = B_1 \\cdot \\omega_0, \\quad b_2 = B_2 \\cdot \\omega_0^2$$
+              $$a_2 = A_2, \\quad a_1 = A_1 \\cdot \\omega_0, \\quad a_0 = A_0 \\cdot \\omega_0^2$$
             </div>
-            <p>Pay kısmındaki $s^2$ terimi orijinde ($s=0$) iki adet sıfır oluşturur; bu sayede DC ve alçak frekanslar sıfırlanırken yüksek frekanslar geçirilir.</p>
+            <p>Tüm-kutuplu (Butterworth ve standart Chebyshev) filtrelerde pay daima sabit bir skalerdir ($A_2 = 0, A_1 = 0, A_0 = B_2$). Bu nedenle unnormalized fonksiyonda pay katsayısı doğrudan $a_0 = b_2$ olur.</p>
+
+            <button type="button" class="btn btn-outline" data-open-transform-modal="lp_to_lp" style="margin-top: 14px; font-weight: 600; color: #3d5afe; border-color: rgba(61,90,254,0.3); background: #fafaf9; cursor: pointer;">
+              📖 LP to LP Dönüşümünü Kapsamlı Pop-up'ta İncele (Formüller, Algoritma & Katsayılar) →
+            </button>
           `
         },
         {
           id: 'ch3-3',
-          title: '3.3 Bant Geçiren Dönüşümü (LP to BP)',
+          title: '3.3 Yüksek Geçiren Filtre Dönüşümü (Unnormalized Highpass - LP to HP)',
           content: `
-            <p>Bant geçiren dönüşümünde, alçak geçiren prototipteki her bir kutup, merkez frekansı $\\omega_0$ civarında simetrik bir kutup çiftine genişler:</p>
+            <p>Yüksek geçiren transfer fonksiyonunu elde etmek için frekans düzlemi ters çevrilir (frequency inversion). Bu işlem alçak frekansları durdurma bölgesine iterken, yüksek frekansları geçirme bölgesine taşır:</p>
             <div class="math-block">
-              $$S = \\frac{s^2 + \\omega_0^2}{B s}$$
-              $$\\omega_0 = 2\\pi \\sqrt{f_{\\text{pass1}} \\cdot f_{\\text{pass2}}}, \\quad B = 2\\pi (f_{\\text{pass2}} - f_{\\text{pass1}})$$
+              $$S = \\frac{\\omega_0}{s} = \\frac{2\\pi f_0}{s}$$
             </div>
-            <p>Burada $\\omega_0$ geometrik merkez açısal frekansı, $B$ ise geçirme bandı genişliğidir (rad/s).</p>
+            <p>Burada $\\omega_0 = 2\\pi f_{\\text{pass}}$ (Ters Chebyshev için $\\omega_0 = 2\\pi f_{\\text{stop}}$) olarak alınır.</p>
 
-            <p><strong>3.3.1 Birinci Derece LP Faktörünün BP'ye Dönüşümü:</strong></p>
+            <p><strong>3.3.1 Birinci Derece Faktörün Dönüşümü (Denklem 3.14 - 3.15):</strong></p>
             <div class="math-block">
-              $$\\frac{1}{S + b_0} \\longrightarrow \\frac{1}{\\frac{s^2 + \\omega_0^2}{B s} + b_0} = \\frac{B s}{s^2 + (b_0 B)s + \\omega_0^2}$$
-              $$H(s) = \\frac{a_1 s}{s^2 + b_1 s + b_2}, \\quad b_1 = b_0 B, \\quad b_2 = \\omega_0^2, \\quad a_1 = b_0 B$$
+              $$H(S) = \\frac{1}{S + b_0} \\xrightarrow{S = \\omega_0 / s} \\frac{1}{\\frac{\\omega_0}{s} + b_0} = \\frac{s}{b_0 s + \\omega_0} = \\frac{\\frac{1}{b_0} s}{s + \\frac{\\omega_0}{b_0}}$$
+              $$H(s) = \\frac{s}{s + b_2}, \\quad \\text{burada } b_2 = \\frac{\\omega_0}{b_0}, \\quad \\text{Kazanç} = \\frac{1}{b_0}$$
             </div>
-            <p>Birinci dereceden bir LP faktörü, 2. dereceden bir Sallen-Key rezonans katına dönüşür!</p>
 
-            <p><strong>3.3.2 İkinci Derece LP Faktörünün BP'ye Dönüşümü:</strong></p>
-            <p>Her bir 2. derece kuadratik LP faktörü, $S = (s^2+\\omega_0^2)/(Bs)$ dönüşümü sonucunda 4. dereceden bir paydaya dönüşür. Bu 4. derece denklem analitik olarak çözülerek iki adet 2. derece aktif biquad katına ayrıştırılır. Dolayısıyla $n$ dereceli bir alçak geçiren filtre, $2n$ dereceli bir bant geçiren filtreye dönüşür!</p>
+            <p><strong>3.3.2 İkinci Derece Faktörün Dönüşümü (Denklem 3.16 - 3.18):</strong></p>
+            <p>Tüm-kutuplu ikinci derece alçak geçiren faktörüne dönüşüm uygulandığında:</p>
+            <div class="math-block">
+              $$H(S) = \\frac{B_2}{S^2 + B_1 S + B_2} \\xrightarrow{S = \\omega_0 / s} \\frac{B_2}{\\left(\\frac{\\omega_0}{s}\\right)^2 + B_1 \\left(\\frac{\\omega_0}{s}\\right) + B_2} = \\frac{B_2 s^2}{B_2 s^2 + B_1 \\omega_0 s + \\omega_0^2}$$
+              $$H(s) = \\frac{s^2}{s^2 + b_1 s + b_2}, \\quad b_1 = \\frac{B_1 \\omega_0}{B_2}, \\quad b_2 = \\frac{\\omega_0^2}{B_2}$$
+            </div>
+            <p><strong>Orijindeki Sıfırlar ($s^2$):</strong> Pay kısmında $s^2$ terimi ortaya çıkar. Bu terim $s=0$ (DC) frekansında transfer fonksiyonunu tam olarak sıfır ($-\\infty\\text{ dB}$) yapar; böylece devrenin DC bileşenleri tamamen engellenir.</p>
+
+            <button type="button" class="btn btn-outline" data-open-transform-modal="lp_to_hp" style="margin-top: 14px; font-weight: 600; color: #ef4444; border-color: rgba(239,68,68,0.3); background: #fafaf9; cursor: pointer;">
+              📖 LP to HP Dönüşümünü Kapsamlı Pop-up'ta İncele (Formüller, Algoritma & Katsayılar) →
+            </button>
           `
         },
         {
           id: 'ch3-4',
-          title: '3.4 Bant Söndüren / Çentik Dönüşümü (LP to BS)',
+          title: '3.4 Bant Geçiren Filtre Dönüşümü (Unnormalized Bandpass - LP to BP)',
           content: `
-            <p>Bant söndüren filtre, bant geçiren dönüşümünün tersidir:</p>
+            <p>Bant geçiren dönüşümünde, alçak geçiren prototipteki her bir kutup merkez frekansı $\\omega_0$ civarında simetrik bir kutup çiftine genişler. Bu nedenle $n$ dereceli bir LP prototipi, <strong>$2n$ dereceli</strong> bir bant geçiren filtreye dönüşür:</p>
             <div class="math-block">
-              $$S = \\frac{B s}{s^2 + \\omega_0^2}$$
+              $$S = \\frac{s^2 + \\omega_0^2}{BW \\cdot s}$$
+              $$\\omega_0 = 2\\pi \\sqrt{f_{\\text{p1}} \\cdot f_{\\text{p2}}}, \\quad BW = 2\\pi (f_{\\text{p2}} - f_{\\text{p1}})$$
             </div>
-            <p>Bu dönüşüm uygulandığında payda $s^2 + \\omega_0^2$ terimi ortaya çıkar; bu da $s = \\pm j\\omega_0$ sanal ekseninde saf çentik sıfırları oluşturur. Merkez frekansta filtre iletimi tam sıfır ($-\\infty\\text{ dB}$) olur.</p>
+
+            <p><strong>3.4.1 Geometrik Simetri Koşulu ve Düzeltme Algoritması (Denklem 3.24):</strong></p>
+            <p>Matematiksel dönüşümün geçerli olabilmesi için durdurma bandı frekansları $\\omega_0$ merkezine göre geometrik olarak simetrik olmalıdır:</p>
+            <div class="math-block">
+              $$\\omega_{\\text{s1}} \\cdot \\omega_{\\text{s2}} = \\omega_0^2$$
+            </div>
+            <p>Eğer verilen kullanıcı spesifikasyonunda $\\omega_{\\text{s1}} \\cdot \\omega_{\\text{s2}} \\ne \\omega_0^2$ ise, tasarım toleransını bozmamak için daha geniş olan durdurma bandı sınırı sıkılaştırılarak simetri sağlanır ($\omega_{\\text{s2}} = \\omega_0^2 / \\omega_{\\text{s1}}$).</p>
+
+            <p><strong>3.4.2 Birinci Derece LP Faktörünün BP'ye Dönüşümü (Denklem 3.25 - 3.26):</strong></p>
+            <div class="math-block">
+              $$\\frac{1}{S + b_0} \\xrightarrow{S = \\frac{s^2+\\omega_0^2}{BW s}} \\frac{1}{\\frac{s^2+\\omega_0^2}{BW s} + b_0} = \\frac{(b_0 BW) s}{s^2 + (b_0 BW) s + \\omega_0^2}$$
+              $$H(s) = \\frac{a_1 s}{s^2 + b_1 s + b_2}, \\quad b_1 = b_0 BW, \\quad b_2 = \\omega_0^2, \\quad a_1 = b_0 BW$$
+            </div>
+            <p>Görüldüğü üzere 1. dereceden bir faktör, doğrudan 2. dereceden bir aktif rezonans biquad katına dönüşür!</p>
+
+            <p><strong>3.4.3 İkinci Derece LP Faktörünün İki Biquad Katına Faktörizasyonu (Denklem 3.31 - 3.49):</strong></p>
+            <p>İkinci dereceden bir kuadratik LP faktörü, $S = (s^2+\\omega_0^2)/(BW s)$ konulduğunda 4. dereceden bir paydaya sahip olur. Bu dördüncü derece polinom analitik kök bulma yöntemi ile iki adet gerçel katsayılı 2. derece biquad katına ayrıştırılır:</p>
+            <div class="math-block">
+              $$H_k(s) = \\frac{a_{11} s}{s^2 + b_{11} s + b_{21}} \\cdot \\frac{a_{12} s}{s^2 + b_{12} s + b_{22}}$$
+            </div>
+
+            <button type="button" class="btn btn-outline" data-open-transform-modal="lp_to_bp" style="margin-top: 14px; font-weight: 600; color: #10b981; border-color: rgba(16,185,129,0.3); background: #fafaf9; cursor: pointer;">
+              📖 LP to BP Dönüşümünü Kapsamlı Pop-up'ta İncele (Formüller, Algoritma & Katsayılar) →
+            </button>
           `
         },
         {
           id: 'ch3-5',
-          title: '3.5 Analog Frekans Yanıtı ve Grup Gecikmesi Matematiği',
+          title: '3.5 Bant Söndüren / Çentik Filtre Dönüşümü (Unnormalized Bandstop - LP to BS)',
           content: `
-            <p>Elde edilen genel unnormalized transfer fonksiyonunun her bir $k$. aşamasının frekans yanıtı $s = j\\omega$ konularak hesaplanır:</p>
+            <p>Bant söndüren filtre, bant geçiren dönüşümünün cebirsel tersidir. Belirli bir frekans bandını ($[f_{\\text{s1}}, f_{\\text{s2}}]$) ve merkez çentik frekansını ($f_0$) maksimum zayıflamayla söndürür:</p>
+            <div class="math-block">
+              $$S = \\frac{BW \\cdot s}{s^2 + \\omega_0^2}$$
+              $$\\omega_0 = 2\\pi \\sqrt{f_{\\text{s1}} \\cdot f_{\\text{s2}}}, \\quad BW = 2\\pi (f_{\\text{p2}} - f_{\\text{p1}})$$
+            </div>
+
+            <p><strong>3.5.1 Sanal Eksen Çentik Sıfırları (Transmission Zeros):</strong></p>
+            <p>Dönüşüm paydada $s^2 + \\omega_0^2$ terimi oluşturduğu için, ters çevrildiğinde payda $s^2 + \\omega_0^2$ yer alır. $s = \\pm j\\omega_0$ konulduğunda:</p>
+            <div class="math-block">
+              $$s^2 + \\omega_0^2 = (j\\omega_0)^2 + \\omega_0^2 = -\\omega_0^2 + \\omega_0^2 = 0$$
+            </div>
+            <p>Bu sayede $f_0$ rezonans frekansında transfer fonksiyonu kesinlikle sıfır ($-\\infty\\text{ dB}$) olur. Bu durum 50/60 Hz şebeke gürültülerini (hum) tamamen yok eden aktif çentik filtrelerinin temelidir.</p>
+
+            <p><strong>3.5.2 Biquad Çentik Katları (Denklem 3.42 - 3.52):</strong></p>
+            <p>Her bir 2. derece LP faktörü, iki adet çentik biquad katına ayrışır:</p>
+            <div class="math-block">
+              $$H_k(s) = \\frac{s^2 + \\omega_0^2}{s^2 + b_{11} s + b_{21}} \\cdot \\frac{s^2 + \\omega_0^2}{s^2 + b_{12} s + b_{22}}$$
+            </div>
+
+            <button type="button" class="btn btn-outline" data-open-transform-modal="lp_to_bs" style="margin-top: 14px; font-weight: 600; color: #8b5cf6; border-color: rgba(139,92,246,0.3); background: #fafaf9; cursor: pointer;">
+              📖 LP to BS Dönüşümünü Kapsamlı Pop-up'ta İncele (Formüller, Algoritma & Katsayılar) →
+            </button>
+          `
+        },
+        {
+          id: 'ch3-6',
+          title: '3.6 Analog Frekans Yanıtı ve Grup Gecikmesi Analizi (Section 3.5)',
+          content: `
+            <p>Elde edilen genel normalize olmayan transfer fonksiyonunun her bir $k$. aşamasının frekans yanıtı $s = j\\omega$ konularak hesaplanır:</p>
             <div class="math-block">
               $$H_k(j\\omega) = \\frac{a_2 (j\\omega)^2 + a_1 (j\\omega) + a_0}{(j\\omega)^2 + b_1 (j\\omega) + b_2} = \\frac{(a_0 - a_2 \\omega^2) + j(a_1 \\omega)}{(b_2 - \\omega^2) + j(b_1 \\omega)}$$
             </div>
@@ -804,18 +940,71 @@ const BookContent = (() => {
               $$M_{\\text{den}} = \\sqrt{(b_2 - \\omega^2)^2 + (b_1 \\omega)^2}, \\quad \\theta_{\\text{den}} = \\operatorname{atan2}(b_1 \\omega, b_2 - \\omega^2)$$
               $$|H_k(j\\omega)| = \\frac{M_{\\text{num}}}{M_{\\text{den}}}, \\quad \\angle H_k(j\\omega) = \\theta_{\\text{num}} - \\theta_{\\text{den}}$$
             </div>
+
             <p><strong>Grup Gecikmesi (Group Delay - $\\tau_g$):</strong> Farklı frekans bileşenlerinin filtre boyunca ne kadar geciktiğini gösterir. Fazın frekansa göre negatif türevidir:</p>
             <div class="math-block">
               $$\\tau_g(\\omega) = -\\frac{d\\angle H(j\\omega)}{d\\omega}$$
             </div>
-            <p>Eğer grup gecikmesi geçirme bandı boyunca sabit kalırsa (lineer faz), sinyal dalga formu bozulmadan iletilir.</p>
+            <p>Eğer grup gecikmesi geçirme bandı boyunca sabit kalırsa (lineer faz), sinyalin darbe şekli bozulmadan iletilir. Butterworth filtreleri geçirme bandında mükemmel düz bir grup gecikmesi sunarken, Chebyshev ve Eliptik filtrelerde bant kenarında belirgin gecikme tepeleri oluşur.</p>
+
+            <p><strong>Biquad Kaskad Sıralaması (Dynamic Range):</strong> Çok katlı aktif filtrelerde op-amp'ların erken doymasını (saturation) ve gürültü birikimini önlemek için düşük $Q$'lu katlar girişe, yüksek $Q$'lu katlar ise çıkışa yerleştirilir.</p>
+          `
+        },
+        {
+          id: 'ch3-7',
+          title: '3.7 Dört Frekans Dönüşümünün Karşılaştırmalı Özet Tablosu & Seçim Rehberi',
+          content: `
+            <p>Tüm analog frekans dönüşümlerinin matematiksel operatörleri, derece katsayıları ve kutup-sıfır davranışları aşağıdaki tabloda özetlenmiştir:</p>
+            <div class="compare-table-wrap">
+              <table class="compare-table">
+                <thead>
+                  <tr>
+                    <th>Dönüşüm Türü</th>
+                    <th>Dönüşüm Operatörü $S(s)$</th>
+                    <th>Derece Bağıntısı</th>
+                    <th>Sıfır Konumları</th>
+                    <th>Karakteristik Özellik</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Alçak Geçiren (LP to LP)</strong></td>
+                    <td>$$S = \\frac{s}{\\omega_0}$$</td>
+                    <td>$n_{\\text{LP}} = n$ (Aynı)</td>
+                    <td>Sonsuzda ($\\infty$)</td>
+                    <td>Doğrudan frekans ekseni genişletmesi. DC kazancı $1.0$.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Yüksek Geçiren (LP to HP)</strong></td>
+                    <td>$$S = \\frac{\\omega_0}{s}$$</td>
+                    <td>$n_{\\text{HP}} = n$ (Aynı)</td>
+                    <td>Orijinde ($s=0$) $n$ adet</td>
+                    <td>Frekans ekseni terslenir. DC'yi tamamen bloke eder.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Bant Geçiren (LP to BP)</strong></td>
+                    <td>$$S = \\frac{s^2 + \\omega_0^2}{BW \\cdot s}$$</td>
+                    <td>$N_{\\text{BP}} = 2n$ (2 Katı)</td>
+                    <td>Orijinde ($s=0$) $n$ adet</td>
+                    <td>Her kutup $\\pm j\\omega_0$ civarında 2 rezonans kutbuna çatallanır.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Bant Söndüren (LP to BS)</strong></td>
+                    <td>$$S = \\frac{BW \\cdot s}{s^2 + \\omega_0^2}$$</td>
+                    <td>$N_{\\text{BS}} = 2n$ (2 Katı)</td>
+                    <td>Sanal eksende $\\pm j\\omega_0$</td>
+                    <td>Merkez frekansta sıfır iletim ($-\\infty\\text{ dB}$ tam çentik).</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           `
         },
         {
           id: 'ch3-examples',
-          title: 'Bölüm 3: Kitaptaki Tüm Örnekler (Örnek 3.1 - 3.9)',
+          title: '3.8 Bölüm 3: Kitaptaki Tüm Örnekler (Örnek 3.1 - 3.9)',
           content: `
-            <p>Kitabın 3. bölümünde yer alan tüm normalize olmayan ölçekleme örnekleri (hem rad/s hem 2πf dönüşümlü Hz):</p>
+            <p>Kitabın 3. bölümünde yer alan tüm normalize olmayan ölçekleme ve frekans dönüşüm örnekleri aşağıda listelenmiştir. Herhangi bir örneğe tıklayarak parametrelerini canlı filtre tasarımcısına aktarabilirsiniz:</p>
             <div class="theory-examples-grid" id="ch3ExamplesContainer"></div>
           `
         }
