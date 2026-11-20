@@ -383,6 +383,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial calculation
     recalculateAll();
 
+    // Initialize Filter Types Deep Dive Modal
+    if (window.FilterTypesModal) {
+      FilterTypesModal.init();
+    }
+
+    // Expose Global FilterStudio API for modals
+    window.FilterStudio = {
+      setFilterType: (type) => {
+        state.type = type;
+        if (els.filterTypeSelect) {
+          els.filterTypeSelect.value = type;
+        }
+        const isBand = type === 'bandpass' || type === 'bandstop';
+        if (els.fpass2Group) els.fpass2Group.style.display = isBand ? 'flex' : 'none';
+        if (els.fstop2Group) els.fstop2Group.style.display = isBand ? 'flex' : 'none';
+        window.location.hash = '#/designer';
+        recalculateAll();
+      }
+    };
+
     // Resize listener for sharp canvas redraws
     window.addEventListener('resize', debounce(() => {
       drawAllPlots();

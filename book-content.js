@@ -85,6 +85,9 @@ const BookContent = (() => {
                   <li><strong>Durdurma Zayıflaması ($a_{\\text{stop}}$):</strong> $\\ge a_{\\text{stop}}\\text{ dB}$ (tipik $20 \\dots 80\\text{ dB}$).</li>
                   <li><strong>Geçiş Oranı:</strong> $r = f_{\\text{stop}} / f_{\\text{pass}} > 1$.</li>
                 </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-filter-modal="lowpass" style="width: 100%; margin-top: 12px; font-weight: 600; color: #3d5afe; border-color: rgba(61,90,254,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Alçak Geçiren Filtreyi Geniş Pop-up'ta İncele →
+                </button>
               </div>
 
               <!-- 2. Highpass Card -->
@@ -140,6 +143,9 @@ const BookContent = (() => {
                   <li><strong>Geçirme Bölgesi:</strong> $f \\ge f_{\\text{pass}}$ ($f_{\\text{stop}} < f_{\\text{pass}}$)</li>
                   <li><strong>Geçiş Oranı:</strong> $r = f_{\\text{pass}} / f_{\\text{stop}} > 1$.</li>
                 </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-filter-modal="highpass" style="width: 100%; margin-top: 12px; font-weight: 600; color: #ef4444; border-color: rgba(239,68,68,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Yüksek Geçiren Filtreyi Geniş Pop-up'ta İncele →
+                </button>
               </div>
 
               <!-- 3. Bandpass Card -->
@@ -190,6 +196,9 @@ const BookContent = (() => {
                   <li><strong>Merkez Frekansı ($f_0$):</strong> $f_0 = \\sqrt{f_{\\text{p1}} \\cdot f_{\\text{p2}}}$</li>
                   <li><strong>Kalite Faktörü ($Q$):</strong> $Q = f_0 / B$.</li>
                 </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-filter-modal="bandpass" style="width: 100%; margin-top: 12px; font-weight: 600; color: #10b981; border-color: rgba(16,185,129,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Bant Geçiren Filtreyi Geniş Pop-up'ta İncele →
+                </button>
               </div>
 
               <!-- 4. Bandstop / Notch Card -->
@@ -237,6 +246,9 @@ const BookContent = (() => {
                   <li><strong>Geçirme Bölgeleri:</strong> $0 \\le f \\le f_{\\text{p1}}$ ve $f \\ge f_{\\text{p2}}$</li>
                   <li><strong>Çentik Frekansı:</strong> $f_0 = \\sqrt{f_{\\text{s1}} f_{\\text{s2}}}$.</li>
                 </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-filter-modal="bandstop" style="width: 100%; margin-top: 12px; font-weight: 600; color: #8b5cf6; border-color: rgba(139,92,246,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Bant Söndüren / Çentik Filtreyi Geniş Pop-up'ta İncele →
+                </button>
               </div>
             </div>
           `
