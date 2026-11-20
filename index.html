@@ -293,6 +293,22 @@
             </div>
           </div>
 
+          <!-- Live Analytical Calculation Steps Card (Les Thede Chapter 2 Mathematical Breakdown) -->
+          <div class="card" id="analyticalStepsCard" style="margin-bottom: 24px; border-left: 4px solid var(--accent);">
+            <div class="card-header" style="cursor: pointer; user-select: none;" id="toggleAnalyticalStepsBtn">
+              <div class="card-title">
+                <span>📐</span>
+                <span>Adım Adım Analitik Hesaplama & Parametre Dökümü (Les Thede Bölüm 2)</span>
+              </div>
+              <div style="font-size: 12px; color: var(--accent); font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                <span id="analyticalStepsToggleText">▾ Detayları Gizle/Göster</span>
+              </div>
+            </div>
+            <div id="analyticalStepsBody" style="padding: 16px 20px; display: block; border-top: 1px solid var(--border);">
+              <!-- Rendered dynamically by JS: epsilon, R, theta_m, sigma_m, omega_m, B1, B2 -->
+            </div>
+          </div>
+
           <!-- Dynamic Plots 2x2 Grid -->
           <div class="charts-grid">
             <!-- 1. Bode Magnitude Plot -->

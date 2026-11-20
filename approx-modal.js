@@ -63,27 +63,39 @@ const FilterApproxModal = (() => {
       steps: [
         {
           stepNum: 'Adım 1',
-          title: 'Minimum Filtre Derecesinin (n) Hesabı (Denklem 2.7)',
-          desc: 'Tolerans gereksinimlerinden ($a_{\\text{pass}}, a_{\\text{stop}}, \\omega_{\\text{pass}}, \\omega_{\\text{stop}}$) gerekli minimum tamsayı derece hesaplanır:',
-          math: '$$n \\ge \\frac{\\log_{10}\\left[ \\frac{10^{-a_{\\text{stop}}/10} - 1}{10^{-a_{\\text{pass}}/10} - 1} \\right]}{2 \\log_{10}(\\omega_{\\text{stop}} / \\omega_{\\text{pass}})}$$'
+          title: 'Dalgalanma Faktörü (ε) ve Filtre Derecesi (n_B) Hesabı (Denklem 2.7 & 2.8)',
+          desc: 'Geçirme bandı zayıflamasından dalgalanma faktörü $\\epsilon$ ve tolerans gereksinimlerinden gerekli minimum tamsayı derece $n$ hesaplanır (bir üst tamsayıya yuvarlanır):',
+          math: '$$\\epsilon = \\sqrt{10^{-0.1 a_{\\text{pass}}} - 1}$$\n$$n_B \\ge \\frac{\\log_{10}\\left[ \\frac{10^{-0.1 a_{\\text{stop}}} - 1}{10^{-0.1 a_{\\text{pass}}} - 1} \\right]}{2 \\log_{10}(\\omega_{\\text{stop}} / \\omega_{\\text{pass}})}$$'
         },
         {
           stepNum: 'Adım 2',
-          title: 'Kutup Açılarının ve Koordinatlarının Hesabı (Denklem 2.10)',
-          desc: 'Butterworth kutupları birim çember üzerinde eşit aralıklarla simetrik dizilir. Kararlı sol yarı düzlem ($s$-LHS) kutupları:',
-          math: '$$\\theta_k = \\frac{2k - 1}{2n}\\pi, \\quad k = 1, 2, \\dots, n$$\n$$p_k = -\\sin(\\theta_k) + j \\cos(\\theta_k)$$'
+          title: 'Normalize Çember Yarıçapı (R) Hesabı (Denklem 2.9)',
+          desc: 'Les Thede yaklaşımında kutuplar yarıçapı $R$ olan bir çember üzerindedir. $\\epsilon = 1$ (yani $-3.01\\text{ dB}$) durumunda $R = 1$ birim çemberdir; keyfi $a_{\\text{pass}}$ toleransında çember yarıçapı:',
+          math: '$$R = \\epsilon^{-1/n}$$'
         },
         {
           stepNum: 'Adım 3',
-          title: 'İkinci Derece Biquad ve Birinci Derece Faktörlere Ayrıştırma',
-          desc: 'Karmaşık eşlenik kutup çiftleri çarpılarak doğrudan aktif devrede sentezlenebilecek 2. derece kuadratik bloklar ($s^2 + b_1 s + b_2$) elde edilir:',
-          math: '$$(s - p_k)(s - p_k^*) = s^2 + (2\\sin\\theta_k)s + 1.0$$\n$$b_1 = 2\\sin(\\theta_k), \\quad b_2 = 1.0, \\quad Q = \\frac{1}{2\\sin(\\theta_k)}$$'
+          title: 'İkinci Bölge Kutup Açıları (θ_m) ve m İndis Hesabı (Denklem 2.10a / 2.10b)',
+          desc: 'Sol yarı düzlemdeki ikinci bölge kutup açıları $m = 0, 1, \\dots$ indisleri üzerinden analitik olarak hesaplanır:',
+          math: '$$\\text{Çift } n \\implies m = 0, 1, \\dots, \\frac{n}{2} - 1: \\quad \\theta_m = \\frac{2m + 1 + n}{2n}\\pi$$\n$$\\text{Tek } n \\implies m = 0, 1, \\dots, \\frac{n-1}{2} - 1: \\quad \\theta_m = \\frac{2m + 1 + n}{2n}\\pi$$'
         },
         {
           stepNum: 'Adım 4',
-          title: 'Toplam Transfer Fonksiyonunun Oluşturulması',
-          desc: '$n$ tek sayı ise bir adet reel birinci derece kat $(s+1.0)$ eklenir. Normalize transfer fonksiyonu:',
-          math: '$$H(s) = \\prod_{m=1}^{\\lfloor n/2 \\rfloor} \\frac{1}{s^2 + b_{1m} s + 1.0} \\times \\left(\\frac{1}{s + 1.0}\\right)^{\\text{tek ise}}$$'
+          title: 'Kutup Koordinatları (σ_m, ω_m) ve Tek Derece Reel Kutbu (σ_R) (Denklem 2.11 - 2.13)',
+          desc: 'Her bir $m$ indisi için karmaşık eşlenik kutup çiftleri ve $n$ tek ise reel eksen kutbu hesaplanır:',
+          math: '$$\\sigma_m = R \\cos(\\theta_m), \\quad \\omega_m = R \\sin(\\theta_m)$$\n$$p_m = \\sigma_m + j \\omega_m, \\quad p_m^* = \\sigma_m - j \\omega_m$$\n$$\\text{Tek } n \\text{ için reel kutup: } \\sigma_R = -R, \\quad \\omega_R = 0$$'
+        },
+        {
+          stepNum: 'Adım 5',
+          title: 'Kuadratik Biquad Katsayıları (B₁, B₂) ve 1. Derece Kat (H₀(S)) (Denklem 2.14 - 2.17)',
+          desc: 'Karmaşık kutup çiftleri doğrudan aktif devrede sentezlenecek ikinci derece biquad katsayılarına dönüştürülür:',
+          math: '$$H_m(S) = \\frac{B_{2,m}}{S^2 + B_{1,m} S + B_{2,m}}$$\n$$B_{1,m} = -2\\sigma_m, \\quad B_{2,m} = \\sigma_m^2 + \\omega_m^2 = R^2$$\n$$\\text{Tek } n \\text{ için 1. derece kat: } H_0(S) = \\frac{R}{S + R}$$'
+        },
+        {
+          stepNum: 'Adım 6',
+          title: 'Tam Normalize Transfer Fonksiyonu H_B(S) (Denklem 2.18a & 2.18b)',
+          desc: 'Tüm kuadratik katlar ve varsa birinci derece kat bir araya getirilerek DC kazancı $1.0$ ($0\\text{ dB}$) olan normalize transfer fonksiyonu tamamlanır:',
+          math: '$$n \\text{ çift ise: } H_{B,n}(S) = \\prod_{m=0}^{(n/2)-1} \\frac{B_{2,m}}{S^2 + B_{1,m} S + B_{2,m}}$$\n$$n \\text{ tek ise: } H_{B,n}(S) = \\frac{R}{S + R} \\prod_{m=0}^{[(n-1)/2]-1} \\frac{B_{2,m}}{S^2 + B_{1,m} S + B_{2,m}}$$'
         }
       ],
       pros: [

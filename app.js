@@ -374,6 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFormEvents();
     setupUnitControls();
     setupExamplesModal();
+    setupAnalyticalStepsToggle();
     renderSidebarQuickExamples();
     renderTheoryNav();
     renderChapterContent('ch1');
@@ -676,6 +677,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateFrequencyHints();
     updateSummaryBanner(effectiveN, filterModel, circuitModel);
 
+    // 5b. Render Live Analytical Calculation Steps (Les Thede Chapter 2 Equations)
+    renderAnalyticalSteps(proto, filterModel, effectiveN);
+
     // 6. Draw Plots
     drawAllPlots();
 
@@ -724,6 +728,298 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (err) {
         els.transferFuncMath.textContent = latex;
       }
+    }
+  }
+
+  // Render Live Analytical Steps Card (Les Thede Chapter 2 Equations & Tables)
+  function renderAnalyticalSteps(proto, filterModel, effectiveN) {
+    const container = document.getElementById('analyticalStepsBody');
+    if (!container || !proto || !proto.details) return;
+
+    const d = proto.details;
+    const isBand = state.type === 'bandpass' || state.type === 'bandstop';
+    const isRadS = state.unit === 'rad/s';
+    const toOmega = (v) => (isRadS ? v : 2 * Math.PI * v);
+    const wp_val = isBand ? toOmega(state.fpass) : toOmega(state.fpass);
+    const ws_val = isBand ? toOmega(state.fstop) : toOmega(state.fstop);
+
+    let html = '';
+
+    if (d.approx === 'butterworth') {
+      const eps = d.eps;
+      const R = d.R;
+      const mRows = d.m_factors.map(f => `
+        <tr>
+          <td style="font-weight: 700; font-family: var(--font-mono); color: var(--accent); white-space: nowrap;">m = ${f.m}</td>
+          <td style="font-family: var(--font-mono); white-space: nowrap;">${f.theta_rad.toFixed(4)} rad (${f.theta_deg.toFixed(1)}°)</td>
+          <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${f.sigma.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); color: #10b981; white-space: nowrap;">±${f.omega.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B1.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B2.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); font-size: 12px; white-space: nowrap;">$H_${f.m}(S) = \\frac{${f.B2.toFixed(4)}}{S^2 + ${f.B1.toFixed(4)}S + ${f.B2.toFixed(4)}}$</td>
+        </tr>
+      `).join('');
+
+      const realPoleRow = d.realPole ? `
+        <tr style="background: rgba(61,90,254,0.03);">
+          <td style="font-weight: 700; font-family: var(--font-mono); color: #3d5afe; white-space: nowrap;">1. Derece (Reel)</td>
+          <td style="font-family: var(--font-mono); white-space: nowrap;">π rad (180.0°)</td>
+          <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${d.realPole.sigma_R.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); color: #787774; white-space: nowrap;">0.00000</td>
+          <td style="font-family: var(--font-mono); white-space: nowrap;">-</td>
+          <td style="font-family: var(--font-mono); white-space: nowrap;">${d.realPole.B2.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); font-size: 12px; white-space: nowrap;">$H_0(S) = \\frac{${d.realPole.B2.toFixed(4)}}{S + ${d.realPole.B2.toFixed(4)}}$</td>
+        </tr>
+      ` : '';
+
+      html = `
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <!-- Top Parameter Badges -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px;">
+            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
+              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">DALGALANMA FAKTÖRÜ (Denklem 2.7)</div>
+              <div style="font-size: 15px; font-weight: 700; color: var(--text-h); font-family: var(--font-mono); margin-top: 2px;">
+                $\\epsilon = \\sqrt{10^{${(d.A_pass/10).toFixed(2)}} - 1} = ${eps.toFixed(6)}$
+              </div>
+            </div>
+
+            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
+              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">FİLTRE DERECESİ (Denklem 2.8)</div>
+              <div style="font-size: 15px; font-weight: 700; color: var(--text-h); font-family: var(--font-mono); margin-top: 2px;">
+                $n_B = ${effectiveN}$ (Yuvarlanan Tamsayı)
+              </div>
+            </div>
+
+            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; border-left: 3px solid var(--accent);">
+              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">ÇEMBER YARIÇAPI (Denklem 2.9)</div>
+              <div style="font-size: 15px; font-weight: 700; color: var(--accent); font-family: var(--font-mono); margin-top: 2px;">
+                $R = \\epsilon^{-1/n} = ${R.toFixed(6)}$
+              </div>
+            </div>
+          </div>
+
+          <!-- Step by Step Equations Summary -->
+          <div style="background: #fafaf9; border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px;">
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--text-h); margin-bottom: 6px;">
+              Les Thede Bölüm 2.2 Analitik Kutup ve Katsayı Formülleri:
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 8px; font-size: 12px; color: var(--text);">
+              <div>• <strong>Açı Hesabı (2.10):</strong> $\\theta_m = \\frac{2m + 1 + n}{2n}\\pi$</div>
+              <div>• <strong>Kutup Koordinatları (2.11 & 2.12):</strong> $\\sigma_m = R\\cos\\theta_m, \\; \\omega_m = R\\sin\\theta_m$</div>
+              <div>• <strong>Biquad Katsayıları (2.16 & 2.17):</strong> $B_{1,m} = -2\\sigma_m, \\; B_{2,m} = \\sigma_m^2 + \\omega_m^2 = R^2$</div>
+              <div>• <strong>Tek Derece Reel Kutup (2.13 & 2.14):</strong> $\\sigma_R = -R \\implies H_0(S) = \\frac{R}{S + R}$</div>
+            </div>
+          </div>
+
+          <!-- Poles and Biquad Table -->
+          <div style="overflow-x: auto;">
+            <table class="compare-table" style="font-size: 12px; width: 100%;">
+              <thead>
+                <tr>
+                  <th style="white-space: nowrap;">Kat (m)</th>
+                  <th style="white-space: nowrap;">Açı ($\\theta_m$)</th>
+                  <th style="white-space: nowrap;">Reel ($\\sigma_m$)</th>
+                  <th style="white-space: nowrap;">İmajiner ($\\pm\\omega_m$)</th>
+                  <th style="white-space: nowrap;">$B_{1,m}$ ($-2\\sigma_m$)</th>
+                  <th style="white-space: nowrap;">$B_{2,m}$ ($R^2$)</th>
+                  <th style="white-space: nowrap;">Normalize Biquad Katı $H_m(S)$ (Denklem 2.15)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${mRows}
+                ${realPoleRow}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    } else if (d.approx === 'chebyshev') {
+      const eps = d.eps;
+      const D = d.D;
+      const mRows = d.m_factors.map(f => `
+        <tr>
+          <td style="font-weight: 700; font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">m = ${f.m}</td>
+          <td style="font-family: var(--font-mono); white-space: nowrap;">${f.phi_rad.toFixed(4)} rad (${f.phi_deg.toFixed(1)}°)</td>
+          <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${f.sigma.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); color: #10b981; white-space: nowrap;">±${f.omega.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B1.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B2.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); font-size: 12px; white-space: nowrap;">$H_${f.m}(S) = \\frac{${f.B2.toFixed(4)}}{S^2 + ${f.B1.toFixed(4)}S + ${f.B2.toFixed(4)}}$</td>
+        </tr>
+      `).join('');
+
+      const realPoleRow = d.realPole ? `
+        <tr style="background: rgba(239,68,68,0.03);">
+          <td style="font-weight: 700; font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">1. Derece (Reel)</td>
+          <td style="font-family: var(--font-mono); white-space: nowrap;">-</td>
+          <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${d.realPole.sigma_R.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); color: #787774; white-space: nowrap;">0.00000</td>
+          <td style="font-family: var(--font-mono); white-space: nowrap;">-</td>
+          <td style="font-family: var(--font-mono); white-space: nowrap;">${d.realPole.B2.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); font-size: 12px; white-space: nowrap;">$H_0(S) = \\frac{${d.realPole.B2.toFixed(4)}}{S + ${d.realPole.B2.toFixed(4)}}$</td>
+        </tr>
+      ` : '';
+
+      html = `
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
+              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">DALGALANMA FAKTÖRÜ (Denklem 2.20)</div>
+              <div style="font-size: 15px; font-weight: 700; color: var(--text-h); font-family: var(--font-mono); margin-top: 2px;">
+                $\\epsilon = ${eps.toFixed(6)}$
+              </div>
+            </div>
+            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
+              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">ELİPS PARAMETRESİ D (Denklem 2.23)</div>
+              <div style="font-size: 15px; font-weight: 700; color: #ef4444; font-family: var(--font-mono); margin-top: 2px;">
+                $D = ${D.toFixed(6)}$ ($\\sinh=${d.sinhD.toFixed(4)}, \\cosh=${d.coshD.toFixed(4)}$)
+              </div>
+            </div>
+            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
+              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">KAZANÇ AYARI (Denklem 2.32)</div>
+              <div style="font-size: 15px; font-weight: 700; color: var(--text-h); font-family: var(--font-mono); margin-top: 2px;">
+                ${effectiveN % 2 === 0 ? `$G = 10^{0.05 a_p} = ${d.G_even.toFixed(4)}$` : `$G = 1.0$ (Tek $n$)`}
+              </div>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="compare-table" style="font-size: 12px; width: 100%;">
+              <thead>
+                <tr>
+                  <th style="white-space: nowrap;">Kat (m)</th>
+                  <th style="white-space: nowrap;">Açı ($\\phi_m$)</th>
+                  <th style="white-space: nowrap;">Reel ($\\sigma_m$)</th>
+                  <th style="white-space: nowrap;">İmajiner ($\\pm\\omega_m$)</th>
+                  <th style="white-space: nowrap;">$B_{1,m}$</th>
+                  <th style="white-space: nowrap;">$B_{2,m}$</th>
+                  <th style="white-space: nowrap;">Normalize Biquad Katı $H_m(S)$ (Denklem 2.29)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${mRows}
+                ${realPoleRow}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    } else if (d.approx === 'inv_chebyshev') {
+      const mRows = d.m_factors.map(f => `
+        <tr>
+          <td style="font-weight: 700; font-family: var(--font-mono); color: #10b981; white-space: nowrap;">m = ${f.m}</td>
+          <td style="font-family: var(--font-mono); white-space: nowrap;">${f.phi_rad.toFixed(4)} rad</td>
+          <td style="font-family: var(--font-mono); color: #10b981; white-space: nowrap;">±${f.wz.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${f.sigma.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); color: #10b981; white-space: nowrap;">±${f.omega.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B1.toFixed(5)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B2.toFixed(5)}</td>
+        </tr>
+      `).join('');
+
+      html = `
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
+              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">DURDURMA FAKTÖRÜ ε_s (Denklem 2.27)</div>
+              <div style="font-size: 15px; font-weight: 700; color: #10b981; font-family: var(--font-mono); margin-top: 2px;">
+                $\\epsilon_s = ${d.eps_s.toFixed(6)}$
+              </div>
+            </div>
+            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
+              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">İLETİM SIFIRLARI (Denklem 2.29)</div>
+              <div style="font-size: 15px; font-weight: 700; color: var(--text-h); font-family: var(--font-mono); margin-top: 2px;">
+                $\\omega_{z,m} = 1 / \\cos(\\phi_m)$
+              </div>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="compare-table" style="font-size: 12px; width: 100%;">
+              <thead>
+                <tr>
+                  <th style="white-space: nowrap;">Kat (m)</th>
+                  <th style="white-space: nowrap;">Açı ($\\phi_m$)</th>
+                  <th style="white-space: nowrap;">Sıfır ($\\pm j\\omega_{z,m}$)</th>
+                  <th style="white-space: nowrap;">Reel ($\\sigma_m$)</th>
+                  <th style="white-space: nowrap;">İmajiner ($\\pm\\omega_m$)</th>
+                  <th style="white-space: nowrap;">$B_{1,m}$</th>
+                  <th style="white-space: nowrap;">$B_{2,m}$</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${mRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    } else if (d.approx === 'elliptic') {
+      const mRows = d.m_factors.map(f => `
+        <tr>
+          <td style="font-weight: 700; font-family: var(--font-mono); color: #8b5cf6; white-space: nowrap;">m = ${f.m}</td>
+          <td style="font-family: var(--font-mono); color: #8b5cf6; white-space: nowrap;">±${f.wz.toFixed(4)}</td>
+          <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${f.sigma.toFixed(4)}</td>
+          <td style="font-family: var(--font-mono); color: #10b981; white-space: nowrap;">±${f.omega.toFixed(4)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B1.toFixed(4)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B2.toFixed(4)}</td>
+        </tr>
+      `).join('');
+
+      html = `
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
+            <div style="font-size: 11px; color: var(--muted); font-weight: 600;">ELİPTİK (CAUER) MODÜL PARAMETRELERİ (Bölüm 2.5)</div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text-h); font-family: var(--font-mono); margin-top: 4px;">
+              $k = \\omega_p / \\omega_s = ${(wp_val / ws_val).toFixed(4)}$ | $N_{\\text{min}} = ${effectiveN}$ (Jacobi Eliptik Rasyonel Katları)
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="compare-table" style="font-size: 12px; width: 100%;">
+              <thead>
+                <tr>
+                  <th style="white-space: nowrap;">Kat (m)</th>
+                  <th style="white-space: nowrap;">İletim Sıfırı ($\\pm j\\omega_z$)</th>
+                  <th style="white-space: nowrap;">Kutup Reel ($\\sigma$)</th>
+                  <th style="white-space: nowrap;">Kutup İmajiner ($\\pm\\omega$)</th>
+                  <th style="white-space: nowrap;">$B_{1,m}$</th>
+                  <th style="white-space: nowrap;">$B_{2,m}$</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${mRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = html;
+
+    // Trigger KaTeX rendering on math in the container
+    if (window.renderMathInElement) {
+      window.renderMathInElement(container, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  function setupAnalyticalStepsToggle() {
+    const toggleBtn = document.getElementById('toggleAnalyticalStepsBtn');
+    const bodyEl = document.getElementById('analyticalStepsBody');
+    if (toggleBtn && bodyEl) {
+      toggleBtn.addEventListener('click', () => {
+        const isHidden = bodyEl.style.display === 'none';
+        bodyEl.style.display = isHidden ? 'block' : 'none';
+        const textEl = document.getElementById('analyticalStepsToggleText');
+        if (textEl) textEl.textContent = isHidden ? '▾ Detayları Gizle' : '▸ Detayları Göster';
+      });
     }
   }
 

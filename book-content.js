@@ -441,36 +441,66 @@ const BookContent = (() => {
           content: `
             <p>Butterworth yaklaşımının temel amacı, geçirme bandında mümkün olan en yüksek düzlüğü elde etmektir. Büyüklük karesi fonksiyonu Denklem 2.6 ile tanımlanır:</p>
             <div class="math-block">
-              $$|H(j\\omega)|^2 = \\frac{1}{1 + \\left(\\frac{\\omega}{\\omega_0}\\right)^{2n}}$$
+              $$|H(j\\omega)|^2 = \\frac{1}{1 + \\epsilon^2 \\left(\\frac{\\omega}{\\omega_0}\\right)^{2n}}$$
             </div>
-            <p>$\\omega = 0$ civarında Taylor serisine açıldığında, ilk $2n-1$ türevin sıfır olduğu görülür (maksimum düzlük buradan gelir). $\\omega = \\omega_0$ frekansında genlik $|H(j\\omega_0)|^2 = 1/2 \\implies -3.01\\text{ dB}$ düşer.</p>
+            <p>$\\omega = 0$ civarında Taylor serisine açıldığında, ilk $2n-1$ türevin sıfır olduğu görülür (maksimum düzlük buradan gelir). $\\epsilon = 1$ ve $\\omega = \\omega_0$ frekansında genlik $|H(j\\omega_0)|^2 = 1/2 \\implies -3.01\\text{ dB}$ düşer.</p>
 
-            <p><strong>Adım 1: Gerekli Filtre Derecesinin ($n$) Hesabı (Denklem 2.7):</strong></p>
+            <p><strong>Adım 1: Dalgalanma Faktörü (ε) ve Filtre Derecesinin (n_B) Hesabı (Denklem 2.7 & 2.8):</strong></p>
             <div class="math-block">
-              $$n \\ge \\frac{\\log_{10}\\left[ \\frac{10^{-a_{\\text{stop}}/10} - 1}{10^{-a_{\\text{pass}}/10} - 1} \\right]}{2 \\log_{10}(\\omega_{\\text{stop}} / \\omega_{\\text{pass}})}$$
+              $$\\epsilon = \\sqrt{10^{-0.1 a_{\\text{pass}}} - 1}$$
+              $$n_B \\ge \\frac{\\log_{10}\\left[ \\frac{10^{-0.1 a_{\\text{stop}}} - 1}{10^{-0.1 a_{\\text{pass}}} - 1} \\right]}{2 \\log_{10}(\\omega_{\\text{stop}} / \\omega_{\\text{pass}})}$$
             </div>
-            <p>Hesaplanan $n$ değeri bir üst tam sayıya yuvarlanır: $n = \\lceil n \\rceil$.</p>
+            <p>Hesaplanan $n_B$ değeri bir üst tam sayıya yuvarlanır: $n = \\lceil n_B \\rceil$.</p>
 
-            <p><strong>Adım 2: Kutupların Birim Çember Üzerindeki Açısal Konumları:</strong></p>
-            <p>Butterworth kutupları $s$-düzleminde birim çember üzerinde simetrik olarak yer alır. Kararlı olan sol yarı düzlem kutup açıları $\\theta_k$ (Denklem 2.10):</p>
+            <p><strong>Adım 2: Normalize Çember Yarıçapının (R) Hesabı (Denklem 2.9):</strong></p>
+            <p>Kutuplar $s$-düzleminde yarıçapı $R$ olan bir çember üzerinde simetrik dizilir. Normalize durumda çemberin yarıçapı:</p>
             <div class="math-block">
-              $$\\theta_k = \\frac{2k - 1}{2n}\\pi, \\quad k = 1, 2, \\dots, n$$
-              $$p_k = -\\sin(\\theta_k) + j \\cos(\\theta_k)$$
+              $$R = \\epsilon^{-1/n}$$
             </div>
 
-            <p><strong>Adım 3: İkinci Derece Faktörlere Ayrıştırma (Quadratic Factoring):</strong></p>
-            <p>Karmaşık eşlenik kutup çiftleri bir araya getirilerek aktif filtrelerde doğrudan uygulanabilecek ikinci derece biquad çarpanlar oluşturulur:</p>
+            <p><strong>Adım 3: İkinci Bölge Kutup Açıları (θ_m) ve m İndis Hesabı (Denklem 2.10a & 2.10b):</strong></p>
+            <p>Sol yarı düzlemdeki (LHP) ikinci bölge kutup açıları $m$ indisi ile hesaplanır:</p>
             <div class="math-block">
-              $$(s - p_k)(s - p_k^*) = s^2 - 2\\text{Re}(p_k)s + |p_k|^2 = s^2 + b_1 s + 1.0$$
-              $$b_1 = 2\\sin(\\theta_k), \\quad Q = \\frac{1}{b_1} = \\frac{1}{2\\sin(\\theta_k)}$$
+              $$\\text{Çift } n \\text{ için } \\left(m = 0, 1, \\dots, \\frac{n}{2} - 1\\right): \\quad \\theta_m = \\frac{2m + 1 + n}{2n}\\pi$$
+              $$\\text{Tek } n \\text{ için } \\left(m = 0, 1, \\dots, \\frac{n-1}{2} - 1\\right): \\quad \\theta_m = \\frac{2m + 1 + n}{2n}\\pi$$
             </div>
-            <p>Eğer derece $n$ tek sayı ise, reel eksen üzerinde bir adet birinci derece kutup bulunur: $(s + 1.0)$.</p>
 
-            <p><strong>Adım 4: Normalize Kesim Frekansı Ölçeklemesi (Denklem 2.14):</strong></p>
+            <p><strong>Adım 4: Kutup Koordinatları (σ_m, ω_m) ve Tek Derece Reel Kutbu (Denklem 2.11 - 2.13):</strong></p>
             <div class="math-block">
-              $$\\omega_0 = \\frac{\\omega_{\\text{pass}}}{(10^{-a_{\\text{pass}}/10} - 1)^{1/(2n)}}$$
+              $$\\sigma_m = R \\cos(\\theta_m), \\quad \\omega_m = R \\sin(\\theta_m)$$
+              $$p_m = \\sigma_m + j \\omega_m, \\quad p_m^* = \\sigma_m - j \\omega_m$$
+              $$\\text{Tek } n \\text{ için reel kutup: } \\sigma_R = -R, \\quad \\omega_R = 0$$
             </div>
-            <p>Bu ölçekleme ile filtre, $\\omega_{\\text{pass}}$ frekansında tam olarak $-a_{\\text{pass}}$ zayıflamasını sağlar.</p>
+
+            <p><strong>Adım 5: Kuadratik Biquad Katsayıları (B_{1,m}, B_{2,m}) ve 1. Derece Kat (H_0(S)) (Denklem 2.14 - 2.17):</strong></p>
+            <div class="math-block">
+              $$H_m(S) = \\frac{B_{2,m}}{S^2 + B_{1,m} S + B_{2,m}}$$
+              $$B_{1,m} = -2\\sigma_m, \\quad B_{2,m} = \\sigma_m^2 + \\omega_m^2 = R^2$$
+              $$\\text{Tek } n \\text{ için 1. derece kat: } H_0(S) = \\frac{R}{S + R}$$
+            </div>
+
+            <p><strong>Adım 6: Tam Normalize Transfer Fonksiyonu H_{B,n}(S) (Denklem 2.18a & 2.18b):</strong></p>
+            <div class="math-block">
+              $$n \\text{ çift ise: } H_{B,n}(S) = \\prod_{m=0}^{(n/2)-1} \\frac{B_{2,m}}{S^2 + B_{1,m} S + B_{2,m}}$$
+              $$n \\text{ tek ise: } H_{B,n}(S) = \\frac{R}{S + R} \\prod_{m=0}^{[(n-1)/2]-1} \\frac{B_{2,m}}{S^2 + B_{1,m} S + B_{2,m}}$$
+            </div>
+
+            <div class="theory-card" style="margin-top: 14px; background: #fafaf9; border-left: 3px solid #3d5afe;">
+              <h4 style="color: #3d5afe; margin-bottom: 6px;">📖 Kitap Örneği 2.2 (Les Thede s. 23 - Üçüncü Derece Butterworth):</h4>
+              <p style="font-size: 12.5px; margin-bottom: 6px;">Spesifikasyon: $a_{\\text{pass}} = -1\\text{ dB}$, $a_{\\text{stop}} = -12\\text{ dB}$, $\\omega_{\\text{pass}} = 1\\text{ rad/s}$, $\\omega_{\\text{stop}} = 2\\text{ rad/s}$.</p>
+              <ul style="font-size: 12px; line-height: 1.5; font-family: var(--font-mono); margin-bottom: 8px;">
+                <li>$\\epsilon = \\sqrt{10^{0.1} - 1} = 0.508847$</li>
+                <li>$n = 2.92 \\implies n = 3$</li>
+                <li>$R = \\epsilon^{-1/3} = 1.252576$</li>
+                <li>Tek $n \\implies \\sigma_R = -R = -1.252576$, $\\omega_R = 0$</li>
+                <li>$m = 0 \\implies \\theta_0 = \\frac{2(0) + 1 + 3}{2(3)}\\pi = \\frac{2\\pi}{3} = 120^\\circ$</li>
+                <li>$\\sigma_0 = 1.252576 \\cos(120^\\circ) = -0.626288$, $\\omega_0 = 1.252576 \\sin(120^\\circ) = 1.084763$</li>
+                <li>$B_{1,0} = -2\\sigma_0 = 1.252576$, $B_{2,0} = R^2 = 1.568948$</li>
+              </ul>
+              <div class="math-block" style="background: #fff; padding: 8px;">
+                $$H_{B,3}(S) = \\frac{1.252576}{S + 1.252576} \\cdot \\frac{1.568948}{S^2 + 1.252576 S + 1.568948}$$
+              </div>
+            </div>
 
             <button type="button" class="btn btn-outline" data-open-approx-modal="butterworth" style="margin-top: 14px; font-weight: 600; color: #3d5afe; border-color: rgba(61,90,254,0.3); background: #fafaf9; cursor: pointer;">
               📖 Butterworth Yaklaşımını Kapsamlı Pop-up'ta İncele (Formüller, Algoritma & s-Düzlemi) →

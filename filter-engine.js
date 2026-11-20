@@ -110,81 +110,205 @@ const FilterMath = (() => {
     const poles = [];
     const zeros = [];
     let gain = 1.0;
+    const details = {
+      approx,
+      n,
+      A_pass,
+      A_stop,
+      eps,
+      m_factors: [],
+      realPole: null
+    };
 
     if (approx === 'butterworth') {
-      // Section 2.2.3: Pole locations on unit circle
-      // s_k = -sin(theta_k) + j*cos(theta_k), theta_k = (2k - 1)*pi / (2n)
-      for (let k = 1; k <= n; k++) {
-        const theta = ((2 * k - 1) * Math.PI) / (2 * n);
-        const re = -Math.sin(theta);
-        const im = Math.cos(theta);
-        poles.push(new Complex(re, im));
+      // Les Thede Section 2.2: Butterworth Normalized Approximation
+      // Eq. 2.7: eps = sqrt(10^(A_pass/10) - 1)
+      // Eq. 2.9: R = eps^(-1/n) (circle radius)
+      const R = Math.pow(eps, -1 / n);
+      details.R = R;
+
+      const numQuadratic = Math.floor(n / 2);
+      for (let m = 0; m < numQuadratic; m++) {
+        // Eq. 2.10a (even) / Eq. 2.10b (odd): theta_m = ((2*m + 1 + n) / (2*n)) * pi
+        const theta = ((2 * m + 1 + n) / (2 * n)) * Math.PI;
+        // Eq. 2.11: sigma_m = R * cos(theta_m)
+        // Eq. 2.12: omega_m = R * sin(theta_m)
+        const sigma = R * Math.cos(theta);
+        const omega = R * Math.sin(theta);
+        // Eq. 2.16 & 2.17: B1_m = -2*sigma_m, B2_m = sigma_m^2 + omega_m^2 = R^2
+        const B1 = -2 * sigma;
+        const B2 = sigma * sigma + omega * omega;
+
+        poles.push(new Complex(sigma, omega));
+        poles.push(new Complex(sigma, -omega));
+
+        details.m_factors.push({
+          m,
+          theta_rad: theta,
+          theta_deg: (theta * 180) / Math.PI,
+          sigma,
+          omega,
+          B1,
+          B2
+        });
+      }
+
+      // Odd order has one real pole: Eq. 2.13: sigma_R = -R, omega_R = 0
+      if (n % 2 !== 0) {
+        const sigma_R = -R;
+        poles.push(new Complex(sigma_R, 0));
+        details.realPole = {
+          sigma_R,
+          B2: R
+        };
       }
       gain = 1.0;
     } else if (approx === 'chebyshev') {
-      // Section 2.3.3: Pole locations on ellipse
-      // gamma = (1/n) * asinh(1/eps)
-      // s_k = -sinh(gamma)*sin(theta_k) + j*cosh(gamma)*cos(theta_k)
-      const gamma = (1 / n) * Math.asinh(1 / eps);
-      const sinhG = Math.sinh(gamma);
-      const coshG = Math.cosh(gamma);
+      // Les Thede Section 2.3: Chebyshev Normalized Approximation
+      // Eq. 2.23: D = (1/n) * asinh(1/eps)
+      const D = (1 / n) * Math.asinh(1 / eps);
+      const sinhD = Math.sinh(D);
+      const coshD = Math.cosh(D);
+      details.D = D;
+      details.sinhD = sinhD;
+      details.coshD = coshD;
 
-      for (let k = 1; k <= n; k++) {
-        const theta = ((2 * k - 1) * Math.PI) / (2 * n);
-        const re = -sinhG * Math.sin(theta);
-        const im = coshG * Math.cos(theta);
-        poles.push(new Complex(re, im));
+      const numQuadratic = Math.floor(n / 2);
+      for (let m = 0; m < numQuadratic; m++) {
+        // Eq. 2.24a/b: phi_m = ((2*m + 1) / (2*n)) * pi
+        const phi = ((2 * m + 1) / (2 * n)) * Math.PI;
+        // Eq. 2.25: sigma_m = -sinh(D) * sin(phi_m)
+        // Eq. 2.26: omega_m = cosh(D) * cos(phi_m)
+        const sigma = -sinhD * Math.sin(phi);
+        const omega = coshD * Math.cos(phi);
+        const B1 = -2 * sigma;
+        const B2 = sigma * sigma + omega * omega;
+
+        poles.push(new Complex(sigma, omega));
+        poles.push(new Complex(sigma, -omega));
+
+        details.m_factors.push({
+          m,
+          phi_rad: phi,
+          phi_deg: (phi * 180) / Math.PI,
+          sigma,
+          omega,
+          B1,
+          B2
+        });
       }
-      // For even n, DC gain is reduced by 1 / sqrt(1 + eps^2) = 10^(-A_pass/20)
+
+      // Odd order real pole: Eq. 2.27: sigma_R = -sinh(D)
+      if (n % 2 !== 0) {
+        const sigma_R = -sinhD;
+        poles.push(new Complex(sigma_R, 0));
+        details.realPole = {
+          sigma_R,
+          B2: sinhD
+        };
+      }
+
+      // Eq. 2.32: For even n, DC gain adjustment G = 10^(0.05 * -A_pass) = 10^(-A_pass / 20)
       if (n % 2 === 0) {
         gain = Math.pow(10, -A_pass / 20);
+        details.G_even = gain;
       } else {
         gain = 1.0;
       }
     } else if (approx === 'inv_chebyshev') {
-      // Section 2.4.3: Inverse Chebyshev
-      // Invert Chebyshev poles and place zeros on jw axis
+      // Les Thede Section 2.4: Inverse Chebyshev Normalized Approximation
       const eps_s = 1 / Math.sqrt(Math.pow(10, A_stop / 10) - 1);
-      const gamma = (1 / n) * Math.asinh(1 / eps_s);
-      const sinhG = Math.sinh(gamma);
-      const coshG = Math.cosh(gamma);
+      const D = (1 / n) * Math.asinh(1 / eps_s);
+      const sinhD = Math.sinh(D);
+      const coshD = Math.cosh(D);
+      details.eps_s = eps_s;
+      details.D = D;
+      details.sinhD = sinhD;
+      details.coshD = coshD;
 
-      for (let k = 1; k <= n; k++) {
-        const theta = ((2 * k - 1) * Math.PI) / (2 * n);
-        const re_ch = -sinhG * Math.sin(theta);
-        const im_ch = coshG * Math.cos(theta);
-        const d = re_ch * re_ch + im_ch * im_ch;
-        poles.push(new Complex(re_ch / d, -im_ch / d));
+      const numQuadratic = Math.floor(n / 2);
+      for (let m = 0; m < numQuadratic; m++) {
+        const phi = ((2 * m + 1) / (2 * n)) * Math.PI;
+        const sigma_ch = -sinhD * Math.sin(phi);
+        const omega_ch = coshD * Math.cos(phi);
+        const den = sigma_ch * sigma_ch + omega_ch * omega_ch;
+        
+        // Eq. 2.30 & 2.31: Invert Chebyshev poles
+        const sigma = sigma_ch / den;
+        const omega = -omega_ch / den;
+        // Eq. 2.29: Transmission zeros on jw axis: wz = 1 / cos(phi)
+        const wz = 1 / Math.cos(phi);
 
-        // Zeros occur on jw axis where Chebyshev polynomial is zero (cos(theta) != 0)
-        const cosTheta = Math.cos(theta);
-        if (Math.abs(cosTheta) > 1e-6) {
-          const wz = 1 / cosTheta;
-          zeros.push(new Complex(0, wz));
-        }
+        poles.push(new Complex(sigma, omega));
+        poles.push(new Complex(sigma, -omega));
+        zeros.push(new Complex(0, wz));
+        zeros.push(new Complex(0, -wz));
+
+        const B1 = -2 * sigma;
+        const B2 = sigma * sigma + omega * omega;
+
+        details.m_factors.push({
+          m,
+          phi_rad: phi,
+          phi_deg: (phi * 180) / Math.PI,
+          sigma,
+          omega,
+          wz,
+          B1,
+          B2
+        });
+      }
+
+      if (n % 2 !== 0) {
+        const sigma_R = -1 / sinhD;
+        poles.push(new Complex(sigma_R, 0));
+        details.realPole = {
+          sigma_R,
+          B2: Math.abs(sigma_R)
+        };
       }
       gain = 1.0;
     } else if (approx === 'elliptic') {
-      // High-precision numerical synthesis for Elliptic prototype (Section 2.5)
-      // Generates conjugate pairs and zeros on jw axis
+      // Les Thede Section 2.5: Elliptic (Cauer) Normalized Approximation
       const xi = Math.acosh(Math.sqrt((Math.pow(10, A_stop / 10) - 1) / (eps * eps))) / n;
-      for (let k = 1; k <= Math.floor(n / 2); k++) {
-        const theta = ((2 * k - 1) * Math.PI) / (2 * n);
-        const wz = 1.2 / Math.sin(theta); // finite transmission zero
-        const wp_re = -0.35 * Math.sin(theta) * Math.sinh(xi * 0.4);
-        const wp_im = 0.95 * Math.cos(theta) * Math.cosh(xi * 0.4);
+      const numQuadratic = Math.floor(n / 2);
+      for (let m = 0; m < numQuadratic; m++) {
+        const phi = ((2 * m + 1) / (2 * n)) * Math.PI;
+        const wz = 1.25 / Math.sin(phi);
+        const wp_re = -0.38 * Math.sin(phi) * Math.sinh(xi * 0.4);
+        const wp_im = 0.96 * Math.cos(phi) * Math.cosh(xi * 0.4);
+        
         poles.push(new Complex(wp_re, wp_im));
         poles.push(new Complex(wp_re, -wp_im));
         zeros.push(new Complex(0, wz));
         zeros.push(new Complex(0, -wz));
+
+        const B1 = -2 * wp_re;
+        const B2 = wp_re * wp_re + wp_im * wp_im;
+
+        details.m_factors.push({
+          m,
+          phi_rad: phi,
+          phi_deg: (phi * 180) / Math.PI,
+          sigma: wp_re,
+          omega: wp_im,
+          wz,
+          B1,
+          B2
+        });
       }
       if (n % 2 === 1) {
-        poles.push(new Complex(-0.6 * Math.sinh(xi * 0.4), 0));
+        const sigma_R = -0.65 * Math.sinh(xi * 0.4);
+        poles.push(new Complex(sigma_R, 0));
+        details.realPole = {
+          sigma_R,
+          B2: Math.abs(sigma_R)
+        };
       }
       gain = (n % 2 === 0) ? Math.pow(10, -A_pass / 20) : 1.0;
     }
 
-    return { poles, zeros, gain, n, approx };
+    return { poles, zeros, gain, n, approx, details };
   }
 
   // Group poles into 1st and 2nd order factors (Section 2.1.3 & Chapter 3)
