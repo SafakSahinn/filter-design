@@ -388,6 +388,11 @@ document.addEventListener('DOMContentLoaded', () => {
       FilterTypesModal.init();
     }
 
+    // Initialize Classical Normalized Filter Approximations Modal
+    if (window.FilterApproxModal) {
+      FilterApproxModal.init();
+    }
+
     // Expose Global FilterStudio API for modals
     window.FilterStudio = {
       setFilterType: (type) => {
@@ -398,6 +403,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const isBand = type === 'bandpass' || type === 'bandstop';
         if (els.fpass2Group) els.fpass2Group.style.display = isBand ? 'flex' : 'none';
         if (els.fstop2Group) els.fstop2Group.style.display = isBand ? 'flex' : 'none';
+        window.location.hash = '#/designer';
+        recalculateAll();
+      },
+      setApprox: (approxId) => {
+        state.approx = approxId;
+        els.approxButtons.forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-approx') === approxId);
+        });
         window.location.hash = '#/designer';
         recalculateAll();
       }

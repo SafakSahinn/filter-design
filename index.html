@@ -58,6 +58,11 @@
           <span>Filtre Türleri Rehberi</span>
           <span class="nav-badge" style="background: rgba(61,90,254,0.1); color: var(--accent);">Pop-up</span>
         </div>
+        <div class="nav-item" id="navApproxGuide" style="cursor: pointer;">
+          <span class="nav-icon">📊</span>
+          <span>Normalize Yaklaşımlar Rehberi</span>
+          <span class="nav-badge" style="background: rgba(61,90,254,0.1); color: var(--accent);">Pop-up</span>
+        </div>
         <div class="nav-item" data-tab="ch1">
           <span class="nav-icon">📘</span>
           <span>Bölüm 1: Giriş & Seçicilik</span>
@@ -233,6 +238,9 @@
                   <button class="segment-btn" data-approx="inv_chebyshev">Ters Chebyshev</button>
                   <button class="segment-btn" data-approx="elliptic">Eliptik (Cauer)</button>
                 </div>
+                <button type="button" class="btn btn-sm" id="btnApproxInfoModal" title="Normalize filtre yaklaşımları hakkında ayrıntılı konu anlatımı, algoritmalar, formüller ve s-düzlemi şemaları için tıklayın" style="padding: 2px 8px; font-size: 11.5px; font-weight: 600; color: var(--accent); border-color: rgba(61,90,254,0.3); background: rgba(61,90,254,0.06); cursor: pointer;">
+                  📖 Yaklaşımları İncele (Pop-up)
+                </button>
               </div>
 
               <div style="display: flex; align-items: center; gap: 14px;">
@@ -550,6 +558,47 @@
     </div>
   </div>
 
+  <!-- Modal: Normalized Filter Approximations Deep Dive (Normalize Filtre Yaklaşımları Kapsamlı Anlatım Pop-up) -->
+  <div class="modal-overlay" id="approxModalOverlay" style="display: none;">
+    <div class="modal-card modal-card-wide">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 24px;">📊</span>
+          <div>
+            <h2 style="font-size: 18px; font-weight: 700; color: var(--text-h); margin: 0 0 2px;">Klasik Normalize Filtre Yaklaşımları & Matematiksel Tasarım Algoritmaları</h2>
+            <div style="font-size: 12px; color: var(--muted);">Les Thede - Practical Analog and Digital Filter Design (Bölüm 2: Classical Filter Approximations)</div>
+          </div>
+        </div>
+        <button class="btn btn-sm" id="closeApproxModalBtn">✕ Kapat</button>
+      </div>
+
+      <!-- Approximation Tabs in Modal -->
+      <div class="modal-filter-tabs" style="gap: 10px; background: #fafaf9;">
+        <button class="type-detail-tab-btn active" data-approx-tab="butterworth">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #3d5afe;"></span>
+          Butterworth (Maksimum Düz)
+        </button>
+        <button class="type-detail-tab-btn" data-approx-tab="chebyshev">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></span>
+          Chebyshev (Tip I - Eşdalgalı)
+        </button>
+        <button class="type-detail-tab-btn" data-approx-tab="inv_chebyshev">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+          Ters Chebyshev (Tip II)
+        </button>
+        <button class="type-detail-tab-btn" data-approx-tab="elliptic">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #8b5cf6;"></span>
+          Eliptik (Cauer - Çift Eşdalgalı)
+        </button>
+      </div>
+
+      <!-- Scrollable content area filled dynamically by JS -->
+      <div class="modal-scroll-area" id="approxModalBody" style="padding: 20px 24px;">
+        <!-- Filled by FilterApproxModal.renderApproxContent() -->
+      </div>
+    </div>
+  </div>
+
   <!-- Application Logic Scripts -->
   <script src="filter-engine.js"></script>
   <script src="circuit-engine.js"></script>
@@ -557,6 +606,7 @@
   <script src="book-examples.js"></script>
   <script src="book-content.js"></script>
   <script src="filter-types-modal.js"></script>
+  <script src="approx-modal.js"></script>
   <script src="plotter.js"></script>
   <script src="app.js"></script>
 </body>

@@ -346,11 +346,11 @@ const BookContent = (() => {
       title: 'Bölüm 2: Normalize Analog Filtre Yaklaşım Fonksiyonları',
       sub: 'Analog Filter Approximation Functions',
       badge: 'Bölüm 2: Yaklaşımlar',
-      summary: 'Transfer fonksiyonu matematiği, s-düzlemi kararlılık analizi, Butterworth, Chebyshev, Ters Chebyshev ve Eliptik yaklaşımlarının analitik türetimi.',
+      summary: 'Transfer fonksiyonu matematiği, s-düzlemi kararlılık analizi, Butterworth, Chebyshev, Ters Chebyshev ve Eliptik yaklaşımlarının analitik türetimi, adım adım algoritmalar ve tüm formüller.',
       sections: [
         {
           id: 'ch2-1',
-          title: '2.1 Transfer Fonksiyonları, s-Düzlemi ve Kararlılık Analizi',
+          title: '2.1 Transfer Fonksiyonları, s-Düzlemi ve Dört Klasik Normalize Yaklaşım',
           content: `
             <p>Lineer zamanla değişmeyen (LTI) analog bir filtrenin davranışı Laplace domeninde $H(s)$ transfer fonksiyonu ile modellenir:</p>
             <div class="math-block">
@@ -360,15 +360,79 @@ const BookContent = (() => {
             <div class="math-block">
               $$H(s) = G \\cdot \\frac{\\prod_{i=1}^{m} (s - z_i)}{\\prod_{k=1}^{n} (s - p_k)}$$
             </div>
-            <p><strong>Kararlılık Kriteri (BIBO Stability):</strong> Filtrenin sınırlı girişe sınırlı çıkış vermesi için transfer fonksiyonunun tüm kutuplarının $s$-düzleminin kesinlikle sol yarı düzleminde yer alması zorunludur:</p>
-            <div class="math-block">
-              $$\\text{Re}(p_k) < 0, \\quad \\forall k = 1, 2, \\dots, n$$
+            <p><strong>Kararlılık Kriteri (BIBO Stability):</strong> Filtrenin sınırlı girişe sınırlı çıkış vermesi için transfer fonksiyonunun tüm kutuplarının $s$-düzleminin kesinlikle sol yarı düzleminde yer alması zorunludur: $\\text{Re}(p_k) < 0$.</p>
+
+            <p><strong>Dört Temel Normalize Filtre Prototipi Karşılaştırması:</strong> Aşağıdaki kartlardan dilediğiniz filtre yaklaşımını seçerek ayrıntılı analitik adımlarını, s-düzlemi kutup-sıfır diyagramlarını ve tasarım formüllerini inceleyebilirsiniz:</p>
+
+            <div class="theory-grid-2" style="margin-top: 14px;">
+              <!-- 1. Butterworth Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #3d5afe;">Butterworth (Maksimum Düz)</h4>
+                  <span class="stage-badge" style="background: rgba(61,90,254,0.1); color: #3d5afe;">Birim Çember</span>
+                </div>
+                <p>Geçirme bandında $\\omega = 0$'da Taylor serisinin ilk $2n-1$ türevi sıfırdır. Tamamen dalgalanmasız, yumuşak geçişli ve mükemmel faz doğrusallığına sahip klasik filtredir.</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Kutup Konumları:</strong> Sol yarı $s$-düzleminde birim çember üzerinde $\\theta_k = \\frac{2k-1}{2n}\\pi$.</li>
+                  <li><strong>Geçirme Bandı:</strong> Kesinlikle monotonik ve düz ($0\\text{ dB}$'den $-a_{\\text{pass}}$'e).</li>
+                  <li><strong>Durdurma Bandı:</strong> Monotonik düşüş, $-20n\\text{ dB/dekad}$.</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-approx-modal="butterworth" style="width: 100%; margin-top: auto; font-weight: 600; color: #3d5afe; border-color: rgba(61,90,254,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Butterworth Yaklaşımını Geniş Pop-up'ta İncele →
+                </button>
+              </div>
+
+              <!-- 2. Chebyshev Tip I Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #ef4444;">Chebyshev Tip I (Eşit Dalgalı)</h4>
+                  <span class="stage-badge" style="background: rgba(239,68,68,0.1); color: #ef4444;">Elips Kutupları</span>
+                </div>
+                <p>Geçirme bandında izin verilen $a_{\\text{pass}}$ dalgalanması karşılığında geçiş bandında çok daha dik bir kesim sağlar. Aynı derece $n$ için Butterworth'ten belirgin şekilde daha seçicidir.</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Kutup Konumları:</strong> Odakları $\\pm j$ üzerinde olan elips üzerinde.</li>
+                  <li><strong>Geçirme Bandı:</strong> Eşit dalgalı (equiripple, $0 \\dots a_{\\text{pass}}$ dB).</li>
+                  <li><strong>Durdurma Bandı:</strong> Monotonik düşüş, hızlı zayıflama.</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-approx-modal="chebyshev" style="width: 100%; margin-top: auto; font-weight: 600; color: #ef4444; border-color: rgba(239,68,68,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Chebyshev Tip I Yaklaşımını Geniş Pop-up'ta İncele →
+                </button>
+              </div>
+
+              <!-- 3. Ters Chebyshev Tip II Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #10b981;">Ters Chebyshev (Tip II)</h4>
+                  <span class="stage-badge" style="background: rgba(16,185,129,0.1); color: #10b981;">jω Sıfırları</span>
+                </div>
+                <p>Geçirme bandı Butterworth gibi tamamen düz ve dalgalanmasızdır. Durdurma bandında ise sonlu iletim sıfırları barındırarak eşit dalgalı zayıflama eşiği sunar.</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Sıfır Konumları:</strong> $j\\omega$ sanal ekseninde saf imajiner sıfırlar $\\pm j \\omega_{z,k}$.</li>
+                  <li><strong>Geçirme Bandı:</strong> Maksimum düz (dalgalanma yok, mükemmel geçiş).</li>
+                  <li><strong>Durdurma Bandı:</strong> $a_{\\text{stop}}$ eşiğinde eşit dalgalı, sonsuz çentikler.</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-approx-modal="inv_chebyshev" style="width: 100%; margin-top: auto; font-weight: 600; color: #10b981; border-color: rgba(16,185,129,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Ters Chebyshev Yaklaşımını Geniş Pop-up'ta İncele →
+                </button>
+              </div>
+
+              <!-- 4. Eliptik (Cauer) Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #8b5cf6;">Eliptik (Cauer - Çift Eşdalgalı)</h4>
+                  <span class="stage-badge" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">En Düşük Derece N</span>
+                </div>
+                <p>Hem geçirme hem de durdurma bandında eşit dalgalanmaya izin verir. Verilen toleranslar için teorik olarak <strong>en küçük filtre derecesini ($N$)</strong> ve en dik geçişi sağlar.</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Matematiksel Taban:</strong> Jacobi eliptik fonksiyonları $cd(u, k)$ ve eliptik integraller.</li>
+                  <li><strong>Geçirme Bandı:</strong> Eşit dalgalı ($a_{\\text{pass}}$ dB).</li>
+                  <li><strong>Durdurma Bandı:</strong> Eşit dalgalı ($a_{\\text{stop}}$ dB) ve $j\\omega$ iletim sıfırları.</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-approx-modal="elliptic" style="width: 100%; margin-top: auto; font-weight: 600; color: #8b5cf6; border-color: rgba(139,92,246,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Eliptik (Cauer) Yaklaşımını Geniş Pop-up'ta İncele →
+                </button>
+              </div>
             </div>
-            <p><strong>Frekans Yanıtı Hesabı:</strong> $s = j\\omega$ konularak genlik ve faz bileşenleri analitik olarak ayrıştırılır:</p>
-            <div class="math-block">
-              $$|H(j\\omega)| = |G| \\cdot \\frac{\\prod_{i=1}^{m} |j\\omega - z_i|}{\\prod_{k=1}^{n} |j\\omega - p_k|}, \\quad \\angle H(j\\omega) = \\sum_{i=1}^{m} \\angle(j\\omega - z_i) - \\sum_{k=1}^{n} \\angle(j\\omega - p_k)$$
-            </div>
-            <p><strong>Normalize Transfer Fonksiyonları:</strong> Karmaşık hesaplamaları genelleştirmek için önce $\\omega_{\\text{pass}} = 1.0\\text{ rad/s}$ veya $\\omega_0 = 1.0\\text{ rad/s}$ olan normalize prototip filtre tasarlanır, ardından Bölüm 3'teki frekans ve empedans dönüşümleriyle hedef frekansa ölçeklenir.</p>
           `
         },
         {
@@ -385,6 +449,7 @@ const BookContent = (() => {
             <div class="math-block">
               $$n \\ge \\frac{\\log_{10}\\left[ \\frac{10^{-a_{\\text{stop}}/10} - 1}{10^{-a_{\\text{pass}}/10} - 1} \\right]}{2 \\log_{10}(\\omega_{\\text{stop}} / \\omega_{\\text{pass}})}$$
             </div>
+            <p>Hesaplanan $n$ değeri bir üst tam sayıya yuvarlanır: $n = \\lceil n \\rceil$.</p>
 
             <p><strong>Adım 2: Kutupların Birim Çember Üzerindeki Açısal Konumları:</strong></p>
             <p>Butterworth kutupları $s$-düzleminde birim çember üzerinde simetrik olarak yer alır. Kararlı olan sol yarı düzlem kutup açıları $\\theta_k$ (Denklem 2.10):</p>
@@ -394,12 +459,22 @@ const BookContent = (() => {
             </div>
 
             <p><strong>Adım 3: İkinci Derece Faktörlere Ayrıştırma (Quadratic Factoring):</strong></p>
-            <p>Karmaşık eşlenik kutup çiftleri bir araya getirilerek aktif filtrelerde doğrudan uygulanabilecek ikinci derece çarpanlar oluşturulur:</p>
+            <p>Karmaşık eşlenik kutup çiftleri bir araya getirilerek aktif filtrelerde doğrudan uygulanabilecek ikinci derece biquad çarpanlar oluşturulur:</p>
             <div class="math-block">
               $$(s - p_k)(s - p_k^*) = s^2 - 2\\text{Re}(p_k)s + |p_k|^2 = s^2 + b_1 s + 1.0$$
               $$b_1 = 2\\sin(\\theta_k), \\quad Q = \\frac{1}{b_1} = \\frac{1}{2\\sin(\\theta_k)}$$
             </div>
             <p>Eğer derece $n$ tek sayı ise, reel eksen üzerinde bir adet birinci derece kutup bulunur: $(s + 1.0)$.</p>
+
+            <p><strong>Adım 4: Normalize Kesim Frekansı Ölçeklemesi (Denklem 2.14):</strong></p>
+            <div class="math-block">
+              $$\\omega_0 = \\frac{\\omega_{\\text{pass}}}{(10^{-a_{\\text{pass}}/10} - 1)^{1/(2n)}}$$
+            </div>
+            <p>Bu ölçekleme ile filtre, $\\omega_{\\text{pass}}$ frekansında tam olarak $-a_{\\text{pass}}$ zayıflamasını sağlar.</p>
+
+            <button type="button" class="btn btn-outline" data-open-approx-modal="butterworth" style="margin-top: 14px; font-weight: 600; color: #3d5afe; border-color: rgba(61,90,254,0.3); background: #fafaf9; cursor: pointer;">
+              📖 Butterworth Yaklaşımını Kapsamlı Pop-up'ta İncele (Formüller, Algoritma & s-Düzlemi) →
+            </button>
           `
         },
         {
@@ -419,45 +494,109 @@ const BookContent = (() => {
               $$C_0(\\omega) = 1, \\quad C_1(\\omega) = \\omega$$
               $$C_{n+1}(\\omega) = 2\\omega C_n(\\omega) - C_{n-1}(\\omega)$$
             </div>
-            <p>Kapalı form trigonometrik tanımı:</p>
+            <p>Kapalı form trigonometrik ve hiperbolik tanımı:</p>
             <div class="math-block">
-              $$C_n(\\omega) = \\begin{cases} \\cos(n \\arccos \\omega), & |\\omega| \\le 1 \\text{ (Geçirme Bandı - Dalgalı)} \\\\ \\cosh(n \\operatorname{arcosh} \\omega), & |\\omega| > 1 \\text{ (Durdurma Bandı - Monotonik)} \\end{cases}$$
+              $$C_n(\\omega) = \\begin{cases} \\cos(n \\arccos \\omega), & |\\omega| \\le 1 \\text{ (Geçirme Bandı - Eşit Dalgalı)} \\\\ \\cosh(n \\operatorname{arcosh} \\omega), & |\\omega| > 1 \\text{ (Durdurma Bandı - Monotonik)} \\end{cases}$$
             </div>
 
-            <p><strong>Gereken Derecenin ($n$) Hesabı (Denklem 2.18):</strong></p>
+            <p><strong>Adım 1: Gereken Derecenin ($n$) Hesabı (Denklem 2.18):</strong></p>
             <div class="math-block">
               $$n \\ge \\frac{\\operatorname{arcosh}\\left( \\sqrt{\\frac{10^{-a_{\\text{stop}}/10} - 1}{\\epsilon^2}} \\right)}{\\operatorname{arcosh}(\\omega_{\\text{stop}} / \\omega_{\\text{pass}})}$$
             </div>
 
-            <p><strong>Kutupların Elips Üzerindeki Dağılımı:</strong></p>
+            <p><strong>Adım 2: Kutupların Elips Üzerindeki Dağılımı (Denklem 2.22 - 2.25):</strong></p>
             <p>Chebyshev kutupları birim çember yerine odakları $\\pm j$ üzerinde olan bir elips üzerinde yer alır:</p>
             <div class="math-block">
               $$\\gamma = \\frac{1}{n} \\operatorname{arsinh}\\left(\\frac{1}{\\epsilon}\\right)$$
               $$\\sigma_k = -\\sinh(\\gamma) \\sin(\\theta_k), \\quad \\omega_k = \\cosh(\\gamma) \\cos(\\theta_k)$$
-              $$p_k = \\sigma_k + j \\omega_k$$
+              $$p_k = \\sigma_k + j \\omega_k, \\quad \\theta_k = \\frac{2k-1}{2n}\\pi$$
             </div>
-            <p><strong>Çift Derece DC Kazanç Düzeltmesi:</strong> $n$ çift olduğunda $\\omega=0$'da $C_n(0) = 1$ olduğu için transfer fonksiyonunun DC kazancı $1/\\sqrt{1+\\epsilon^2} = 10^{a_{\\text{pass}}/20}$ değerindedir. Bu durum aktif devre tasarımında Bölüm 4'teki kazanç bölücüsü ile dengelenir.</p>
+
+            <p><strong>Adım 3: İkinci Derece Biquad Katsayıları ve DC Kazanç Düzeltmesi:</strong></p>
+            <div class="math-block">
+              $$b_1 = 2\\sinh(\\gamma)\\sin(\\theta_k), \\quad b_0 = \\sinh^2(\\gamma)\\sin^2(\\theta_k) + \\cosh^2(\\gamma)\\cos^2(\\theta_k)$$
+              $$H_k(s) = \\frac{b_0}{s^2 + b_1 s + b_0}$$
+            </div>
+            <p><strong>Çift Derece DC Kazanç Düzeltmesi:</strong> $n$ çift olduğunda $\\omega=0$'da $C_n(0) = 1$ olduğu için filtrenin DC kazancı $1/\\sqrt{1+\\epsilon^2} = 10^{a_{\\text{pass}}/20}$ değerindedir. Aktif devre tasarımında Bölüm 4'teki kazanç bölücüsü ile dengelenir.</p>
+
+            <button type="button" class="btn btn-outline" data-open-approx-modal="chebyshev" style="margin-top: 14px; font-weight: 600; color: #ef4444; border-color: rgba(239,68,68,0.3); background: #fafaf9; cursor: pointer;">
+              📖 Chebyshev Tip I Yaklaşımını Kapsamlı Pop-up'ta İncele (Formüller, Algoritma & s-Düzlemi) →
+            </button>
           `
         },
         {
           id: 'ch2-4',
-          title: '2.4 Ters Chebyshev (Tip II) ve 2.5 Eliptik (Cauer) Yaklaşımları',
+          title: '2.4 Ters Chebyshev Yaklaşımı (Tip II - Inverse Chebyshev)',
           content: `
-            <p><strong>2.4 Ters Chebyshev (Inverse Chebyshev - Chebyshev II):</strong></p>
-            <p>Geçirme bandı Butterworth gibi tamamen düz ve monotoniktir, dalgalanma durdurma bandında yer alır. En belirgin özelliği, $j\\omega$ sanal ekseninde yer alan iletim sıfırlarıdır (Transmission Zeros):</p>
+            <p>Ters Chebyshev (Tip II) filtresi, standart Chebyshev'in frekans ekseninde ters çevrilmesi ($1/\\omega$) ile elde edilir. En büyük avantajı, <strong>geçirme bandının Butterworth gibi tamamen düz ve dalgalanmasız</strong> olmasıdır. Dalgalanma sadece durdurma bandında yer alır:</p>
             <div class="math-block">
-              $$|H(j\\omega)|^2 = \\frac{\\epsilon^2 C_n^2(1/\\omega)}{1 + \\epsilon^2 C_n^2(1/\\omega)}$$
-              $$\\omega_{z,k} = \\frac{1}{\\cos(\\theta_k)}, \\quad \\theta_k = \\frac{2k-1}{2n}\\pi$$
+              $$|H(j\\omega)|^2 = \\frac{1}{1 + \\frac{1}{\\epsilon_s^2 C_n^2(1/\\omega)}} = \\frac{\\epsilon_s^2 C_n^2(1/\\omega)}{1 + \\epsilon_s^2 C_n^2(1/\\omega)}$$
             </div>
-            <p>Bu sıfır frekanslarında filtrenin genliği tam olarak sıfır olur ($-\\infty\\text{ dB}$). Faz yanıtı standart Chebyshev'e göre çok daha doğrusaldır.</p>
+            <p>Burada $\\epsilon_s$ durdurma bandı dalgalanma faktörüdür:</p>
+            <div class="math-block">
+              $$\\epsilon_s = \\frac{1}{\\sqrt{10^{a_{\\text{stop}}/10} - 1}}$$
+            </div>
 
-            <p><strong>2.5 Eliptik Yaklaşımı (Cauer):</strong></p>
-            <p>Eliptik filtreler, hem geçirme bandında hem de durdurma bandında eşit dalgalanmaya (equiripple) izin verir. Matematiksel temeli Jacobi eliptik fonksiyonlarına dayanır. Verilen tolerans limitlerini ($a_{\\text{pass}}, a_{\\text{stop}}, \\omega_{\\text{pass}}, \\omega_{\\text{stop}}$) sağlayan <strong>kuramsal olarak en düşük filtre derecesini ($n$)</strong> verir. Ancak faz eğrisi en doğrusal olmayan filtredir.</p>
+            <p><strong>Adım 1: Derece ($n$) Hesabı:</strong> Standart Chebyshev ile tamamen aynı formülle hesaplanır:</p>
+            <div class="math-block">
+              $$n \\ge \\frac{\\operatorname{arcosh}\\left( \\frac{\\sqrt{10^{a_{\\text{stop}}/10} - 1}}{\\sqrt{10^{a_{\\text{pass}}/10} - 1}} \\right)}{\\operatorname{arcosh}(\\omega_{\\text{stop}} / \\omega_{\\text{pass}})}$$
+            </div>
+
+            <p><strong>Adım 2: $j\\omega$ Sanal Eksenindeki İletim Sıfırları (Transmission Zeros):</strong></p>
+            <p>Chebyshev polinomunun $C_n(1/\\omega_{z,k}) = 0$ olduğu frekanslarda transfer fonksiyonu tam olarak sıfır olur ($-\\infty\\text{ dB}$ derin çentikler):</p>
+            <div class="math-block">
+              $$\\omega_{z,k} = \\frac{1}{\\cos\\left(\\frac{2k-1}{2n}\\pi\\right)}, \\quad z_k = \\pm j \\omega_{z,k}$$
+            </div>
+
+            <p><strong>Adım 3: Kutupların Türetilmesi ve Biquad Yapısı:</strong></p>
+            <p>Ters Chebyshev kutupları, standart Chebyshev kutuplarının ($p_{\\text{cheb},k} = \\sigma_k + j \\omega_k$) çarpmaya göre tersi alınarak elde edilir:</p>
+            <div class="math-block">
+              $$p_k = \\frac{1}{\\sigma_k + j \\omega_k} = \\frac{\\sigma_k - j \\omega_k}{\\sigma_k^2 + \\omega_k^2}$$
+            </div>
+            <p>İkinci derece katların transfer fonksiyonunda hem pay (sıfırlar) hem payda (kutuplar) ikinci derecedir:</p>
+            <div class="math-block">
+              $$H_k(s) = \\frac{s^2 + \\omega_{z,k}^2}{s^2 + b_1 s + b_0} \\cdot \\frac{b_0}{\\omega_{z,k}^2}$$
+            </div>
+            <p>Böylece DC'de ($s=0$) kazanç kesinlikle $1.0$ ($0\\text{ dB}$) olur. Bu katlar Bölüm 4'teki <strong>GIC (Generalized Impedance Converter)</strong> veya biquad çentik devreleri ile uygulanır.</p>
+
+            <button type="button" class="btn btn-outline" data-open-approx-modal="inv_chebyshev" style="margin-top: 14px; font-weight: 600; color: #10b981; border-color: rgba(16,185,129,0.3); background: #fafaf9; cursor: pointer;">
+              📖 Ters Chebyshev Yaklaşımını Kapsamlı Pop-up'ta İncele (Formüller, Algoritma & s-Düzlemi) →
+            </button>
           `
         },
         {
           id: 'ch2-5',
-          title: '2.6 Yaklaşım Yöntemlerinin Kapsamlı Karşılaştırması',
+          title: '2.5 Eliptik Yaklaşımı (Cauer - Çift Eşit Dalgalı)',
+          content: `
+            <p>Eliptik (Cauer) filtreler, hem geçirme bandında ($a_{\\text{pass}}$) hem de durdurma bandında ($a_{\\text{stop}}$) eşit dalgalanmaya (equiripple) izin verir. Matematiksel temeli Jacobi eliptik fonksiyonlarına dayanır:</p>
+            <div class="math-block">
+              $$|H(j\\omega)|^2 = \\frac{1}{1 + \\epsilon^2 R_n^2(\\omega, L)}$$
+            </div>
+            <p>Burada $R_n(\\omega, L)$ rasyonel Chebyshev fonksiyonudur ve Jacobi eliptik fonksiyonları ile tanımlanır:</p>
+            <div class="math-block">
+              $$R_n(\\omega, L) = \\operatorname{cd}\\left( n \\frac{K_1}{K} \\operatorname{cd}^{-1}(\\omega, k), k_1 \\right)$$
+            </div>
+            <p>Burada $k = \\omega_{\\text{pass}} / \\omega_{\\text{stop}} < 1$ seçicilik faktörü, $K(k)$ ise birinci türden tam eliptik integraldir.</p>
+
+            <p><strong>En Düşük Derece Teoremi (Minimal Order Theorem):</strong> Verilen herhangi bir tolerans dörtlüsü için ($a_{\\text{pass}}, a_{\\text{stop}}, \\omega_{\\text{pass}}, \\omega_{\\text{stop}}$), Eliptik filtre <strong>kuramsal olarak mümkün olan en küçük dereceyi ($n$)</strong> gerektirir:</p>
+            <div class="math-block">
+              $$n \\ge \\frac{K(k) K'(k_1)}{K'(k) K(k_1)}$$
+            </div>
+            <p>Örneğin Butterworth ile $n=8$, Chebyshev ile $n=5$ gerektiren bir spesifikasyon, Eliptik filtre ile $n=3$ veya $n=4$ ile karşılanabilir. Bu durum devrede op-amp ve bileşen sayısını doğrudan yarıya indirir!</p>
+
+            <p><strong>Biquad Kat Transfer Fonksiyonları:</strong></p>
+            <div class="math-block">
+              $$H_k(s) = \\frac{s^2 + \\omega_{z,k}^2}{s^2 + b_1 s + b_0} \\cdot \\frac{b_0}{\\omega_{z,k}^2}$$
+            </div>
+
+            <button type="button" class="btn btn-outline" data-open-approx-modal="elliptic" style="margin-top: 14px; font-weight: 600; color: #8b5cf6; border-color: rgba(139,92,246,0.3); background: #fafaf9; cursor: pointer;">
+              📖 Eliptik (Cauer) Yaklaşımını Kapsamlı Pop-up'ta İncele (Formüller, Algoritma & s-Düzlemi) →
+            </button>
+          `
+        },
+        {
+          id: 'ch2-6',
+          title: '2.6 Yaklaşım Yöntemlerinin Kapsamlı Karşılaştırması & Seçim Rehberi',
           content: `
             <p>Analog filtre seçiminde mühendislik kriterleri aşağıdaki tabloda özetlenmiştir:</p>
             <div class="compare-table-wrap">
