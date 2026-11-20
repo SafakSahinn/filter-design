@@ -893,10 +893,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.chapterPills.querySelectorAll('[data-ch]').forEach(btn => {
       btn.addEventListener('click', () => {
         const chId = btn.getAttribute('data-ch');
-        state.currentChapter = chId;
-        els.chapterPills.querySelectorAll('.chapter-pill').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderChapterContent(chId);
+        window.location.hash = '#/' + chId;
       });
     });
   }

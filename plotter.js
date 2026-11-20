@@ -123,19 +123,23 @@ const FilterPlotter = (() => {
     ctx.lineWidth = 1;
     ctx.strokeRect(pad.left, pad.top, pw, ph);
 
-    // Title & Legend (Right-aligned legends so they never clip or overlap)
+    // Title & Legend (Adaptive based on pw to prevent any collision)
     ctx.fillStyle = THEME.text;
     ctx.font = '600 12px Inter, sans-serif';
     ctx.textAlign = 'left';
-    const magTitle = (pw < 260) ? 'Genlik (dB)' : 'Büyüklük Yanıtı (dB)';
+    const magTitle = (pw < 240) ? 'Genlik' : ((pw < 320) ? 'Genlik (dB)' : 'Büyüklük Yanıtı (dB)');
     ctx.fillText(magTitle, pad.left, pad.top - 16);
 
-    ctx.font = '11px Inter, sans-serif';
+    ctx.font = '10.5px Inter, sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillStyle = THEME.stopLine;
-    ctx.fillText(`-a_stop: -${stopDb} dB`, pad.left + pw, pad.top - 16);
-    ctx.fillStyle = THEME.passLine;
-    ctx.fillText(`-a_pass: -${passDb} dB`, pad.left + pw - 95, pad.top - 16);
+    if (pw >= 220) {
+      ctx.fillStyle = THEME.stopLine;
+      ctx.fillText(`-a_stop: -${stopDb} dB`, pad.left + pw, pad.top - 16);
+      if (pw >= 310) {
+        ctx.fillStyle = THEME.passLine;
+        ctx.fillText(`-a_pass: -${passDb} dB`, pad.left + pw - 90, pad.top - 16);
+      }
+    }
     ctx.textAlign = 'left';
   }
 
@@ -316,19 +320,21 @@ const FilterPlotter = (() => {
       });
     }
 
-    // Title & Legend (Right-aligned, clean layout without overlap)
+    // Title & Legend (Adaptive layout)
     ctx.fillStyle = THEME.text;
     ctx.font = '600 12px Inter, sans-serif';
     ctx.textAlign = 'left';
-    const pzTitle = (w < 260) ? 's-Düzlemi' : 's-Düzlemi (Pole-Zero)';
+    const pzTitle = (w < 320) ? 's-Düzlemi' : 's-Düzlemi (Pole-Zero)';
     ctx.fillText(pzTitle, pad, pad - 16);
 
-    ctx.font = '11px Inter, sans-serif';
+    ctx.font = '10.5px Inter, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillStyle = THEME.zeroColor;
-    ctx.fillText('○ Sıfırlar', w - pad, pad - 16);
-    ctx.fillStyle = THEME.poleColor;
-    ctx.fillText('× Kutuplar', w - pad - 65, pad - 16);
+    ctx.fillText('○ Sıfır', w - pad, pad - 16);
+    if (w >= 280) {
+      ctx.fillStyle = THEME.poleColor;
+      ctx.fillText('× Kutup', w - pad - 48, pad - 16);
+    }
     ctx.textAlign = 'left';
   }
 

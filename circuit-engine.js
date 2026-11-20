@@ -482,7 +482,7 @@ const CircuitEngine = (() => {
         <!-- RA to GND -->
         <line x1="310" y1="235" x2="260" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
         <rect x="205" y="223" width="55" height="24" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5" />
-        <text x="232" y="215" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_A = ${stage.labels.RA}</text>
+        <text x="232" y="260" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_A = ${stage.labels.RA}</text>
         <line x1="205" y1="235" x2="185" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
         <line x1="185" y1="225" x2="185" y2="245" stroke="#2f2e2b" stroke-width="2" />
         <line x1="180" y1="229" x2="180" y2="241" stroke="#2f2e2b" stroke-width="2" />
@@ -557,29 +557,162 @@ const CircuitEngine = (() => {
 
         <line x1="310" y1="235" x2="260" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
         <rect x="205" y="223" width="55" height="24" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5" />
-        <text x="232" y="215" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_A = ${stage.labels.RA}</text>
+        <text x="232" y="260" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_A = ${stage.labels.RA}</text>
         <line x1="205" y1="235" x2="185" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
         <line x1="185" y1="225" x2="185" y2="245" stroke="#2f2e2b" stroke-width="2" />
       `;
-    } else {
-      // General Twin-T / Bandpass stage representation
+    } else if (stage.type === 'bandpass_2nd') {
+      // Sallen-Key Bandpass Stage (Figure 4.8)
       svgInner = `
-        <line x1="30" y1="120" x2="100" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
+        <!-- Input Terminal -->
+        <line x1="30" y1="120" x2="65" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
         <circle cx="30" cy="120" r="4.5" fill="#3d5afe" />
         <text x="25" y="105" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#2f2e2b">In</text>
 
-        <rect x="100" y="85" width="160" height="70" rx="6" fill="#ffffff" stroke="#3d5afe" stroke-width="2" stroke-dasharray="4" />
-        <text x="180" y="115" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#2f2e2b">${stage.topology}</text>
-        <text x="180" y="135" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#787774">f₀ = ${(stage.w0 / (2 * Math.PI)).toFixed(1)} Hz, Q = ${stage.Q.toFixed(2)}</text>
+        <!-- Resistor R1 -->
+        <rect x="65" y="108" width="55" height="24" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5" />
+        <text x="92" y="100" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_1 = ${stage.labels.R1}</text>
+        <line x1="120" y1="120" x2="160" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
+        <circle cx="160" cy="120" r="4" fill="#2f2e2b" />
 
-        <line x1="260" y1="120" x2="310" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
-        <polygon points="310,70 310,190 410,130" fill="#fbfbfa" stroke="#2f2e2b" stroke-width="2.5" />
-        <text x="320" y="115" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="#2f2e2b">+</text>
-        <text x="320" y="155" font-family="Inter, sans-serif" font-size="18" font-weight="bold" fill="#2f2e2b">−</text>
+        <!-- Series Capacitor C1 -->
+        <line x1="160" y1="120" x2="195" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="195" y1="108" x2="195" y2="132" stroke="#2f2e2b" stroke-width="3" />
+        <line x1="203" y1="108" x2="203" y2="132" stroke="#2f2e2b" stroke-width="3" />
+        <text x="199" y="100" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">C_1 = ${stage.labels.C1}</text>
+        <line x1="203" y1="120" x2="250" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
+        <circle cx="250" cy="120" r="4" fill="#2f2e2b" />
 
-        <line x1="410" y1="130" x2="480" y2="130" stroke="#2f2e2b" stroke-width="2.5" />
-        <circle cx="480" cy="130" r="4.5" fill="#3d5afe" />
-        <text x="490" y="135" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#2f2e2b">Out</text>
+        <!-- Shunt Resistor R2 to GND -->
+        <line x1="250" y1="120" x2="250" y2="155" stroke="#2f2e2b" stroke-width="2.5" />
+        <rect x="238" y="155" width="24" height="45" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5" />
+        <text x="228" y="182" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_2 = ${stage.labels.R2}</text>
+        <line x1="250" y1="200" x2="250" y2="220" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="240" y1="220" x2="260" y2="220" stroke="#2f2e2b" stroke-width="2" />
+        <line x1="244" y1="224" x2="256" y2="224" stroke="#2f2e2b" stroke-width="2" />
+
+        <!-- Line from C1/R2 to Op-Amp + -->
+        <line x1="250" y1="120" x2="290" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
+
+        <!-- Op-Amp Triangle -->
+        <polygon points="290,80 290,180 380,130" fill="#fbfbfa" stroke="#2f2e2b" stroke-width="2.5" />
+        <text x="300" y="125" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="#2f2e2b">+</text>
+        <text x="300" y="155" font-family="Inter, sans-serif" font-size="18" font-weight="bold" fill="#2f2e2b">−</text>
+
+        <!-- Feedback Capacitor C2 from Out back to Node 160,120 -->
+        <line x1="160" y1="120" x2="160" y2="50" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="160" y1="50" x2="260" y2="50" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="260" y1="38" x2="260" y2="62" stroke="#2f2e2b" stroke-width="3" />
+        <line x1="268" y1="38" x2="268" y2="62" stroke="#2f2e2b" stroke-width="3" />
+        <text x="264" y="30" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">C_2 = ${stage.labels.C2}</text>
+        <line x1="268" y1="50" x2="410" y2="50" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="410" y1="50" x2="410" y2="130" stroke="#2f2e2b" stroke-width="2.5" />
+
+        <!-- Op-Amp Output -->
+        <line x1="380" y1="130" x2="470" y2="130" stroke="#2f2e2b" stroke-width="2.5" />
+        <circle cx="410" cy="130" r="4" fill="#2f2e2b" />
+        <circle cx="470" cy="130" r="4.5" fill="#3d5afe" />
+        <text x="480" y="135" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#2f2e2b">Out</text>
+
+        <!-- Feedback Loop R_A, R_B to inverting terminal -->
+        <line x1="410" y1="130" x2="410" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
+        <rect x="340" y="223" width="55" height="24" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="410" y1="235" x2="395" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
+        <text x="367" y="215" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_B = ${stage.labels.RB}</text>
+
+        <line x1="340" y1="235" x2="310" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
+        <circle cx="310" cy="235" r="4" fill="#2f2e2b" />
+        <line x1="310" y1="235" x2="310" y2="150" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="310" y1="150" x2="290" y2="150" stroke="#2f2e2b" stroke-width="2.5" />
+
+        <line x1="310" y1="235" x2="260" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
+        <rect x="205" y="223" width="55" height="24" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5" />
+        <text x="232" y="260" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_A = ${stage.labels.RA}</text>
+        <line x1="205" y1="235" x2="185" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="185" y1="225" x2="185" y2="245" stroke="#2f2e2b" stroke-width="2" />
+        <line x1="181" y1="228" x2="181" y2="242" stroke="#2f2e2b" stroke-width="2" />
+      `;
+    } else {
+      // Twin-Tee Active Notch Stage (Figure 4.10 / 4.12)
+      svgInner = `
+        <!-- Input Terminal -->
+        <line x1="30" y1="120" x2="60" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
+        <circle cx="30" cy="120" r="4.5" fill="#3d5afe" />
+        <circle cx="60" cy="120" r="4" fill="#2f2e2b" />
+        <text x="25" y="105" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#2f2e2b">In</text>
+
+        <!-- Upper T: Two R in series, shunt 2C -->
+        <line x1="60" y1="120" x2="60" y2="70" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="60" y1="70" x2="70" y2="70" stroke="#2f2e2b" stroke-width="2.5" />
+        <rect x="70" y="58" width="42" height="24" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5" />
+        <text x="91" y="49" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#3d5afe">R = ${stage.labels.R}</text>
+        <line x1="112" y1="70" x2="145" y2="70" stroke="#2f2e2b" stroke-width="2.5" />
+        <circle cx="145" cy="70" r="3.5" fill="#2f2e2b" />
+        <line x1="145" y1="70" x2="152" y2="70" stroke="#2f2e2b" stroke-width="2.5" />
+        <rect x="152" y="58" width="42" height="24" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5" />
+        <text x="173" y="49" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#3d5afe">R = ${stage.labels.R}</text>
+        <line x1="194" y1="70" x2="220" y2="70" stroke="#2f2e2b" stroke-width="2.5" />
+
+        <!-- Shunt 2C from upper midpoint (145, 70) down to midpoint ref -->
+        <line x1="145" y1="70" x2="145" y2="95" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="135" y1="95" x2="155" y2="95" stroke="#2f2e2b" stroke-width="3" />
+        <line x1="135" y1="102" x2="155" y2="102" stroke="#2f2e2b" stroke-width="3" />
+        <text x="125" y="102" text-anchor="end" font-family="Inter, sans-serif" font-size="9.5" font-weight="600" fill="#3d5afe">2C = ${stage.labels.C_double}</text>
+        <line x1="145" y1="102" x2="145" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
+
+        <!-- Lower T: Two C in series, shunt R/2 -->
+        <line x1="60" y1="120" x2="60" y2="170" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="60" y1="170" x2="90" y2="170" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="90" y1="158" x2="90" y2="182" stroke="#2f2e2b" stroke-width="3" />
+        <line x1="98" y1="158" x2="98" y2="182" stroke="#2f2e2b" stroke-width="3" />
+        <text x="94" y="196" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#3d5afe">C = ${stage.labels.C}</text>
+        <line x1="98" y1="170" x2="145" y2="170" stroke="#2f2e2b" stroke-width="2.5" />
+        <circle cx="145" cy="170" r="3.5" fill="#2f2e2b" />
+        <line x1="145" y1="170" x2="165" y2="170" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="165" y1="158" x2="165" y2="182" stroke="#2f2e2b" stroke-width="3" />
+        <line x1="173" y1="158" x2="173" y2="182" stroke="#2f2e2b" stroke-width="3" />
+        <text x="169" y="196" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#3d5afe">C = ${stage.labels.C}</text>
+        <line x1="173" y1="170" x2="220" y2="170" stroke="#2f2e2b" stroke-width="2.5" />
+
+        <!-- Shunt R/2 from lower midpoint (145, 170) up to midpoint ref -->
+        <line x1="145" y1="170" x2="145" y2="148" stroke="#2f2e2b" stroke-width="2.5" />
+        <rect x="133" y="125" width="24" height="23" rx="2" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5" />
+        <text x="125" y="139" text-anchor="end" font-family="Inter, sans-serif" font-size="9.5" font-weight="600" fill="#3d5afe">R/2 = ${stage.labels.R_half}</text>
+        <line x1="145" y1="125" x2="145" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
+        <circle cx="145" cy="120" r="3.5" fill="#2f2e2b" />
+
+        <!-- Both branches recombine at 220,120 into op-amp + -->
+        <line x1="220" y1="70" x2="220" y2="170" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="220" y1="120" x2="270" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
+        <circle cx="220" cy="120" r="4" fill="#2f2e2b" />
+
+        <!-- Op-Amp Triangle -->
+        <polygon points="270,70 270,170 360,120" fill="#fbfbfa" stroke="#2f2e2b" stroke-width="2.5" />
+        <text x="280" y="115" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="#2f2e2b">+</text>
+        <text x="280" y="145" font-family="Inter, sans-serif" font-size="18" font-weight="bold" fill="#2f2e2b">−</text>
+
+        <!-- Op-Amp Out -->
+        <line x1="360" y1="120" x2="470" y2="120" stroke="#2f2e2b" stroke-width="2.5" />
+        <circle cx="400" cy="120" r="4" fill="#2f2e2b" />
+        <circle cx="470" cy="120" r="4.5" fill="#3d5afe" />
+        <text x="480" y="125" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#2f2e2b">Out</text>
+
+        <!-- Feedback to Twin-T midpoint (145, 120) & inverting input -->
+        <line x1="400" y1="120" x2="400" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
+        <rect x="330" y="223" width="55" height="24" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="400" y1="235" x2="385" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
+        <text x="357" y="215" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_B = ${stage.labels.RB}</text>
+
+        <line x1="330" y1="235" x2="290" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
+        <circle cx="290" cy="235" r="4" fill="#2f2e2b" />
+        <line x1="290" y1="235" x2="290" y2="140" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="290" y1="140" x2="270" y2="140" stroke="#2f2e2b" stroke-width="2.5" />
+
+        <line x1="290" y1="235" x2="240" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
+        <rect x="185" y="223" width="55" height="24" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5" />
+        <text x="212" y="215" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_A = ${stage.labels.RA}</text>
+        <line x1="185" y1="235" x2="165" y2="235" stroke="#2f2e2b" stroke-width="2.5" />
+        <line x1="165" y1="225" x2="165" y2="245" stroke="#2f2e2b" stroke-width="2" />
       `;
     }
 

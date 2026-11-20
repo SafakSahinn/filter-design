@@ -184,7 +184,7 @@ const FilterMath = (() => {
       gain = (n % 2 === 0) ? Math.pow(10, -A_pass / 20) : 1.0;
     }
 
-    return { poles, zeros, gain, n };
+    return { poles, zeros, gain, n, approx };
   }
 
   // Group poles into 1st and 2nd order factors (Section 2.1.3 & Chapter 3)
@@ -244,9 +244,12 @@ const FilterMath = (() => {
                   usedZeros[z2] = true;
                   pairedZeros = [zeros[z], zeros[z2]];
                   const wz2 = zeros[z].im * zeros[z].im;
-                  a2 = 1;
+                  // For notch / transmission zero biquad stage, normalize DC gain:
+                  // H(s) = ( (b2/wz^2)*s^2 + b2 ) / (s^2 + b1*s + b2)
+                  // At s=0, H(0) = b2/b2 = 1.0 (0 dB); at s=jwz, num = 0 (-inf dB).
+                  a0 = b2;
                   a1 = 0;
-                  a0 = wz2;
+                  a2 = b2 / wz2;
                   break;
                 }
               }
@@ -285,7 +288,10 @@ const FilterMath = (() => {
     const toOmega = (val) => (isRadS ? val : 2 * Math.PI * val);
 
     if (filterType === 'lowpass') {
-      const wp = Array.isArray(fpass) ? toOmega(fpass[0]) : toOmega(fpass);
+      const isInvCheby = prototype.approx === 'inv_chebyshev';
+      const wp = isInvCheby 
+        ? (Array.isArray(fstop) ? toOmega(fstop[0]) : toOmega(fstop))
+        : (Array.isArray(fpass) ? toOmega(fpass[0]) : toOmega(fpass));
       const rawFactors = factorPolesAndZeros(poles, zeros);
 
       rawFactors.forEach(factor => {
@@ -318,9 +324,12 @@ const FilterMath = (() => {
 
           if (factor.zeros.length > 0) {
             // Complex zeros: s^2 + wz^2 => s^2 + (wz*wp)^2
+            // For proper lowpass transmission zero biquad, normalize DC gain to 1.0 (0 dB):
+            // H(s) = ( (b2/wz^2)*s^2 + b2 ) / (s^2 + b1*s + b2)
             const wz_un = factor.zeros[0].im * wp;
-            a0_un = wz_un * wz_un;
-            a2_un = 1;
+            const wz2_un = wz_un * wz_un;
+            a0_un = b2_un;
+            a2_un = b2_un / wz2_un;
           }
 
           stages.push({
