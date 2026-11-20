@@ -771,7 +771,36 @@ body {
   margin: 14px 0;
   text-align: center;
   overflow-x: auto;
-  font-size: 15px;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+/* KaTeX Typography & Exponent Legibility */
+.katex {
+  font-size: 1.12em !important;
+  text-rendering: geometricPrecision;
+}
+
+.math-block .katex {
+  font-size: 1.16em !important;
+}
+
+.katex .katex-display {
+  margin: 0.6em 0 !important;
+}
+
+/* Enlarge superscripts (exponents) and subscripts */
+.katex .msupsub {
+  font-size: 0.84em !important;
+}
+
+.katex .sizing.size1,
+.katex .sizing.reset-size1.size1 {
+  font-size: 0.84em !important;
+}
+
+.katex .frac-line {
+  border-bottom-width: 1.6px !important;
 }
 
 /* Code & MATLAB viewer */

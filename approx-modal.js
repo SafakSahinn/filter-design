@@ -702,13 +702,13 @@ const FilterApproxModal = (() => {
     let stepsHtml = '';
     data.steps.forEach(s => {
       stepsHtml += `
-        <div style="background: #fff; border: 1px solid var(--border); border-left: 4px solid ${data.color}; border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm);">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-            <span class="stage-badge" style="background: ${data.color}; color: #fff; font-weight: 700;">${s.stepNum}</span>
-            <strong style="font-size: 13.5px; color: var(--text-h);">${s.title}</strong>
+        <div style="background: #fff; border: 1px solid var(--border); border-left: 4px solid ${data.color}; border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 14px; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span class="stage-badge" style="background: ${data.color}; color: #fff; font-weight: 700; font-size: 12px;">${s.stepNum}</span>
+            <strong style="font-size: 14.5px; color: var(--text-h);">${s.title}</strong>
           </div>
-          <p style="font-size: 13px; color: var(--muted); margin: 0 0 8px;">${s.desc}</p>
-          <div class="math-block" style="background: #fafaf9; padding: 10px 12px; border-radius: 4px; overflow-x: auto; margin: 0;">
+          <p style="font-size: 13.5px; line-height: 1.55; color: var(--muted); margin: 0 0 10px;">${s.desc}</p>
+          <div class="math-block" style="background: #fafaf9; padding: 12px 16px; border-radius: 6px; overflow-x: auto; margin: 0; font-size: 16px !important;">
             ${s.math}
           </div>
         </div>
@@ -721,10 +721,12 @@ const FilterApproxModal = (() => {
         let stepsInnerHtml = '';
         ex.solutionSteps.forEach(st => {
           stepsInnerHtml += `
-            <div style="background: #fafaf9; border-left: 3px solid ${data.color}; border-radius: 4px; padding: 10px 12px; margin-bottom: 8px;">
-              <strong style="color: ${data.color}; font-size: 12.5px;">${st.stepTitle}</strong>
-              <p style="font-size: 12px; color: var(--muted); margin: 3px 0 6px;">${st.desc}</p>
-              <div class="math-block" style="background: #fff; padding: 8px 10px; border-radius: 4px; margin: 0; overflow-x: auto; font-size: 12px;">
+            <div style="background: #fafaf9; border-left: 4px solid ${data.color}; border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; border: 1px solid var(--border); border-left-color: ${data.color};">
+              <div style="margin-bottom: 6px;">
+                <strong style="color: ${data.color}; font-size: 14px; font-weight: 700;">${st.stepTitle}</strong>
+              </div>
+              <p style="font-size: 13.5px; line-height: 1.55; color: var(--text); margin: 0 0 8px;">${st.desc}</p>
+              <div class="math-block" style="background: #fff; padding: 12px 16px; border-radius: 6px; margin: 0; overflow-x: auto; font-size: 16px !important; border: 1px solid rgba(0,0,0,0.06);">
                 ${st.math}
               </div>
             </div>
@@ -732,14 +734,14 @@ const FilterApproxModal = (() => {
         });
 
         examplesHtml += `
-          <div style="background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow-sm);">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+          <div style="background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 18px 20px; margin-bottom: 18px; box-shadow: var(--shadow-sm);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed var(--border);">
               <div>
-                <span class="stage-badge" style="background: rgba(61,90,254,0.08); color: ${data.color}; font-weight: 700;">${ex.badge}</span>
-                <h4 style="margin: 4px 0 2px; font-size: 15px; font-weight: 700; color: var(--text-h);">${ex.title}</h4>
-                <div style="font-size: 12px; color: var(--muted);">${ex.specs}</div>
+                <span class="stage-badge" style="background: rgba(61,90,254,0.08); color: ${data.color}; font-weight: 700; font-size: 12px;">${ex.badge}</span>
+                <h4 style="margin: 6px 0 3px; font-size: 16px; font-weight: 700; color: var(--text-h);">${ex.title}</h4>
+                <div style="font-size: 13px; color: var(--muted); font-weight: 500;">${ex.specs}</div>
               </div>
-              <button type="button" class="btn btn-sm btn-outline" data-load-modal-ex="${ex.id}" style="color: ${data.color}; border-color: ${data.color}; font-size: 11.5px; font-weight: 600; cursor: pointer;">
+              <button type="button" class="btn btn-sm btn-outline" data-load-modal-ex="${ex.id}" style="color: ${data.color}; border-color: ${data.color}; font-size: 12px; font-weight: 600; padding: 6px 12px; cursor: pointer;">
                 🚀 Bu Örneği Tasarımcıya Yükle
               </button>
             </div>
