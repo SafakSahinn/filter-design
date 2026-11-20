@@ -25,46 +25,217 @@ const BookContent = (() => {
             <div class="math-block">
               $$A_{\\text{dB}} = -20 \\log_{10} |H(j\\omega)| \\quad \\Longleftrightarrow \\quad G_{\\text{dB}} = 20 \\log_{10} |H(j\\omega)|$$
             </div>
-            <p>Kitapta filtrelerin frekans seçiciliği dört ana temel kategoriye ayrılır:</p>
+            <p>Kitapta filtrelerin frekans seçiciliği dört ana temel kategoriye ayrılır (Kitap Şekil 1.1 - 1.4):</p>
 
             <div class="theory-grid-2">
+              <!-- 1. Lowpass Card -->
               <div class="theory-card">
                 <h4>1.1.1 Alçak Geçiren Filtreler (Lowpass - LP)</h4>
-                <p>DC frekansından ($0\\text{ Hz}$) geçirme bandı sınır frekansına ($f_{\\text{pass}}$) kadar olan sinyalleri geçirir, durdurma sınır frekansının ($f_{\\text{stop}}$) üzerindeki bileşenleri zayıflatır.</p>
+                <div class="filter-spec-diagram-wrap">
+                  <svg viewBox="0 0 460 210" class="filter-spec-svg" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background zones -->
+                    <rect x="55" y="30" width="115" height="140" fill="rgba(47, 158, 110, 0.08)" />
+                    <rect x="170" y="30" width="85" height="140" fill="rgba(234, 179, 8, 0.08)" />
+                    <rect x="255" y="30" width="175" height="140" fill="rgba(235, 87, 87, 0.08)" />
+
+                    <!-- Zone Labels -->
+                    <text x="112" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f9e6e">Geçirme Bandı</text>
+                    <text x="212" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#b45309">Geçiş</text>
+                    <text x="342" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#eb5757">Durdurma Bandı</text>
+
+                    <!-- Axes -->
+                    <line x1="55" y1="170" x2="430" y2="170" stroke="#2f2e2b" stroke-width="1.8" />
+                    <line x1="55" y1="25" x2="55" y2="170" stroke="#2f2e2b" stroke-width="1.8" />
+                    <!-- Axis arrows -->
+                    <polygon points="430,167 437,170 430,173" fill="#2f2e2b" />
+                    <polygon points="52,25 55,18 58,25" fill="#2f2e2b" />
+
+                    <!-- Frequency labels & tick marks -->
+                    <line x1="170" y1="170" x2="170" y2="175" stroke="#2f2e2b" stroke-width="1.5" />
+                    <line x1="255" y1="170" x2="255" y2="175" stroke="#2f2e2b" stroke-width="1.5" />
+                    <text x="170" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#2f9e6e">f_pass</text>
+                    <text x="255" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#eb5757">f_stop</text>
+                    <text x="425" y="190" text-anchor="end" font-family="Inter, sans-serif" font-size="11" fill="#787774">Frekans (f / ω) →</text>
+
+                    <!-- dB levels -->
+                    <line x1="50" y1="65" x2="55" y2="65" stroke="#2f2e2b" stroke-width="1.5" />
+                    <line x1="50" y1="85" x2="55" y2="85" stroke="#2f2e2b" stroke-width="1.5" />
+                    <line x1="50" y1="140" x2="55" y2="140" stroke="#2f2e2b" stroke-width="1.5" />
+
+                    <text x="48" y="69" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f2e2b">0 dB</text>
+                    <text x="48" y="89" text-anchor="end" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="#2f9e6e">-a_pass</text>
+                    <text x="48" y="144" text-anchor="end" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="#eb5757">-a_stop</text>
+
+                    <!-- Dashed tolerance lines -->
+                    <line x1="55" y1="85" x2="170" y2="85" stroke="#2f9e6e" stroke-width="1.2" stroke-dasharray="3,3" />
+                    <line x1="170" y1="30" x2="170" y2="170" stroke="#2f9e6e" stroke-width="1" stroke-dasharray="2,2" />
+                    <line x1="255" y1="30" x2="255" y2="170" stroke="#eb5757" stroke-width="1" stroke-dasharray="2,2" />
+                    <line x1="255" y1="140" x2="430" y2="140" stroke="#eb5757" stroke-width="1.2" stroke-dasharray="3,3" />
+
+                    <!-- Ideal brick-wall response (dashed gray) -->
+                    <path d="M 55,65 L 170,65 L 170,165 L 430,165" fill="none" stroke="#9ca3af" stroke-width="1.6" stroke-dasharray="4,4" />
+
+                    <!-- Filter response curve (bold accent blue) -->
+                    <path d="M 55,65 C 130,65 160,70 170,85 C 185,110 230,135 255,140 C 300,146 360,152 430,156" fill="none" stroke="#3d5afe" stroke-width="2.8" />
+                  </svg>
+                </div>
+                <p>DC frekansından ($0\text{ Hz}$) geçirme frekansına ($f_{\text{pass}}$) kadar olan sinyalleri minimum zayıflamayla geçirir, $f_{\text{stop}}$ üzerini zayıflatır.</p>
                 <ul>
-                  <li><strong>$a_{\\text{pass}}$:</strong> Geçirme bandındaki izin verilen maksimum zayıflama (tipik olarak $0.1\\text{ dB} \\dots 3\\text{ dB}$).</li>
-                  <li><strong>$a_{\\text{stop}}$:</strong> Durdurma bandında istenen minimum bastırma (tipik olarak $20\\text{ dB} \\dots 80\\text{ dB}$).</li>
-                  <li><strong>Geçiş Oranı (Transition Ratio):</strong> $r = \\frac{\\omega_{\\text{stop}}}{\\omega_{\\text{pass}}} > 1$.</li>
+                  <li><strong>Geçirme Zayıflaması ($a_{\text{pass}}$):</strong> $\le a_{\text{pass}}\text{ dB}$ (tipik $0.1 \dots 3\text{ dB}$).</li>
+                  <li><strong>Durdurma Zayıflaması ($a_{\text{stop}}$):</strong> $\ge a_{\text{stop}}\text{ dB}$ (tipik $20 \dots 80\text{ dB}$).</li>
+                  <li><strong>Geçiş Oranı:</strong> $r = f_{\text{stop}} / f_{\text{pass}} > 1$.</li>
                 </ul>
               </div>
 
+              <!-- 2. Highpass Card -->
               <div class="theory-card">
                 <h4>1.1.2 Yüksek Geçiren Filtreler (Highpass - HP)</h4>
-                <p>Alçak frekansları bastırır ve $f_{\\text{pass}}$ üzerindeki yüksek frekansları minimum kayıpla geçirir. Güç kaynağı vızıltılarını (50/60 Hz) ve DC ofset gerilimlerini engellemede yaygın kullanılır.</p>
+                <div class="filter-spec-diagram-wrap">
+                  <svg viewBox="0 0 460 210" class="filter-spec-svg" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background zones -->
+                    <rect x="55" y="30" width="135" height="140" fill="rgba(235, 87, 87, 0.08)" />
+                    <rect x="190" y="30" width="80" height="140" fill="rgba(234, 179, 8, 0.08)" />
+                    <rect x="270" y="30" width="160" height="140" fill="rgba(47, 158, 110, 0.08)" />
+
+                    <!-- Zone Labels -->
+                    <text x="122" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#eb5757">Durdurma Bandı</text>
+                    <text x="230" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#b45309">Geçiş</text>
+                    <text x="350" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f9e6e">Geçirme Bandı</text>
+
+                    <!-- Axes -->
+                    <line x1="55" y1="170" x2="430" y2="170" stroke="#2f2e2b" stroke-width="1.8" />
+                    <line x1="55" y1="25" x2="55" y2="170" stroke="#2f2e2b" stroke-width="1.8" />
+                    <polygon points="430,167 437,170 430,173" fill="#2f2e2b" />
+                    <polygon points="52,25 55,18 58,25" fill="#2f2e2b" />
+
+                    <!-- Frequency labels -->
+                    <line x1="190" y1="170" x2="190" y2="175" stroke="#2f2e2b" stroke-width="1.5" />
+                    <line x1="270" y1="170" x2="270" y2="175" stroke="#2f2e2b" stroke-width="1.5" />
+                    <text x="190" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#eb5757">f_stop</text>
+                    <text x="270" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#2f9e6e">f_pass</text>
+                    <text x="425" y="190" text-anchor="end" font-family="Inter, sans-serif" font-size="11" fill="#787774">Frekans (f / ω) →</text>
+
+                    <!-- dB levels -->
+                    <line x1="50" y1="65" x2="55" y2="65" stroke="#2f2e2b" stroke-width="1.5" />
+                    <line x1="50" y1="85" x2="55" y2="85" stroke="#2f2e2b" stroke-width="1.5" />
+                    <line x1="50" y1="140" x2="55" y2="140" stroke="#2f2e2b" stroke-width="1.5" />
+
+                    <text x="48" y="69" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f2e2b">0 dB</text>
+                    <text x="48" y="89" text-anchor="end" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="#2f9e6e">-a_pass</text>
+                    <text x="48" y="144" text-anchor="end" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="#eb5757">-a_stop</text>
+
+                    <!-- Dashed tolerance lines -->
+                    <line x1="55" y1="140" x2="190" y2="140" stroke="#eb5757" stroke-width="1.2" stroke-dasharray="3,3" />
+                    <line x1="190" y1="30" x2="190" y2="170" stroke="#eb5757" stroke-width="1" stroke-dasharray="2,2" />
+                    <line x1="270" y1="30" x2="270" y2="170" stroke="#2f9e6e" stroke-width="1" stroke-dasharray="2,2" />
+                    <line x1="270" y1="85" x2="430" y2="85" stroke="#2f9e6e" stroke-width="1.2" stroke-dasharray="3,3" />
+
+                    <!-- Filter response curve -->
+                    <path d="M 55,160 C 110,155 170,148 190,140 C 220,130 250,95 270,85 C 300,72 360,65 430,65" fill="none" stroke="#3d5afe" stroke-width="2.8" />
+                  </svg>
+                </div>
+                <p>Alçak frekansları ($0 \dots f_{\text{stop}}$) zayıflatır ve $f_{\text{pass}}$ üzerindeki yüksek frekansları minimum kayıpla iletir.</p>
                 <ul>
-                  <li><strong>Durdurma Bandı:</strong> $0 \\le \\omega \\le \\omega_{\\text{stop}}$</li>
-                  <li><strong>Geçirme Bandı:</strong> $\\omega \\ge \\omega_{\\text{pass}}$ (burada $\\omega_{\\text{stop}} < \\omega_{\\text{pass}}$)</li>
-                  <li><strong>Geçiş Oranı:</strong> $r = \\frac{\\omega_{\\text{pass}}}{\\omega_{\\text{stop}}} > 1$.</li>
+                  <li><strong>Durdurma Bölgesi:</strong> $0 \le f \le f_{\text{stop}}$</li>
+                  <li><strong>Geçirme Bölgesi:</strong> $f \ge f_{\text{pass}}$ ($f_{\text{stop}} < f_{\text{pass}}$)</li>
+                  <li><strong>Geçiş Oranı:</strong> $r = f_{\text{pass}} / f_{\text{stop}} > 1$.</li>
                 </ul>
               </div>
 
+              <!-- 3. Bandpass Card -->
               <div class="theory-card">
                 <h4>1.1.3 Bant Geçiren Filtreler (Bandpass - BP)</h4>
-                <p>Belirli bir alt ($f_{\\text{pass1}}$) ve üst ($f_{\\text{pass2}}$) frekans aralığını geçirirken, bu aralığın dışındaki düşük ve yüksek frekansları bastırır.</p>
+                <div class="filter-spec-diagram-wrap">
+                  <svg viewBox="0 0 460 210" class="filter-spec-svg" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background zones -->
+                    <rect x="55" y="30" width="70" height="140" fill="rgba(235, 87, 87, 0.08)" />
+                    <rect x="125" y="30" width="55" height="140" fill="rgba(234, 179, 8, 0.08)" />
+                    <rect x="180" y="30" width="100" height="140" fill="rgba(47, 158, 110, 0.08)" />
+                    <rect x="280" y="30" width="55" height="140" fill="rgba(234, 179, 8, 0.08)" />
+                    <rect x="335" y="30" width="95" height="140" fill="rgba(235, 87, 87, 0.08)" />
+
+                    <!-- Zone Labels -->
+                    <text x="90" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#eb5757">Durdurma 1</text>
+                    <text x="230" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f9e6e">Geçirme Bandı (B)</text>
+                    <text x="382" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#eb5757">Durdurma 2</text>
+
+                    <!-- Axes -->
+                    <line x1="55" y1="170" x2="430" y2="170" stroke="#2f2e2b" stroke-width="1.8" />
+                    <line x1="55" y1="25" x2="55" y2="170" stroke="#2f2e2b" stroke-width="1.8" />
+                    <polygon points="430,167 437,170 430,173" fill="#2f2e2b" />
+                    <polygon points="52,25 55,18 58,25" fill="#2f2e2b" />
+
+                    <!-- Frequency ticks & labels -->
+                    <text x="125" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#eb5757">f_s1</text>
+                    <text x="180" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#2f9e6e">f_p1</text>
+                    <text x="230" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-weight="700" fill="#3d5afe">f₀</text>
+                    <text x="280" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#2f9e6e">f_p2</text>
+                    <text x="335" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#eb5757">f_s2</text>
+
+                    <!-- Center line -->
+                    <line x1="230" y1="65" x2="230" y2="170" stroke="#3d5afe" stroke-width="1" stroke-dasharray="2,2" />
+
+                    <!-- Tolerance lines -->
+                    <line x1="55" y1="140" x2="125" y2="140" stroke="#eb5757" stroke-width="1" stroke-dasharray="3,3" />
+                    <line x1="180" y1="85" x2="280" y2="85" stroke="#2f9e6e" stroke-width="1.2" stroke-dasharray="3,3" />
+                    <line x1="335" y1="140" x2="430" y2="140" stroke="#eb5757" stroke-width="1" stroke-dasharray="3,3" />
+
+                    <!-- Filter response curve -->
+                    <path d="M 55,160 C 95,155 115,148 125,140 C 150,120 165,95 180,85 C 205,70 215,65 230,65 C 245,65 255,70 280,85 C 295,95 310,120 335,140 C 355,150 395,158 430,160" fill="none" stroke="#3d5afe" stroke-width="2.8" />
+                  </svg>
+                </div>
+                <p>Belirli bir alt ($f_{\text{p1}}$) ve üst ($f_{\text{p2}}$) frekans aralığını geçirirken bandın dışını söndürür.</p>
                 <ul>
-                  <li><strong>Bant Genişliği ($B$):</strong> $B = \\omega_{\\text{pass2}} - \\omega_{\\text{pass1}} = 2\\pi (f_{\\text{pass2}} - f_{\\text{pass1}})$</li>
-                  <li><strong>Geometrik Merkez Frekansı ($\\omega_0$):</strong> $\\omega_0 = \\sqrt{\\omega_{\\text{pass1}} \\cdot \\omega_{\\text{pass2}}}$</li>
-                  <li><strong>Kalite Faktörü ($Q$):</strong> $Q = \\frac{\\omega_0}{B}$ (Dar bantlar için $Q > 10$, geniş bantlar için $Q < 2$).</li>
+                  <li><strong>Bant Genişliği ($B$):</strong> $B = f_{\text{p2}} - f_{\text{p1}}$</li>
+                  <li><strong>Merkez Frekansı ($f_0$):</strong> $f_0 = \sqrt{f_{\text{p1}} \cdot f_{\text{p2}}}$</li>
+                  <li><strong>Kalite Faktörü ($Q$):</strong> $Q = f_0 / B$.</li>
                 </ul>
               </div>
 
+              <!-- 4. Bandstop / Notch Card -->
               <div class="theory-card">
-                <h4>1.1.4 Bant Söndüren / Çentik Filtreler (Bandstop / Notch)</h4>
-                <p>Merkez frekansı $\\omega_0$ civarındaki belirli bir frekans bandını tamamen bloke eder ve bu bandın altındaki ve üstündeki tüm sinyalleri geçirir.</p>
+                <h4>1.1.4 Bant Söndüren / Çentik (Bandstop / Notch)</h4>
+                <div class="filter-spec-diagram-wrap">
+                  <svg viewBox="0 0 460 210" class="filter-spec-svg" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background zones -->
+                    <rect x="55" y="30" width="85" height="140" fill="rgba(47, 158, 110, 0.08)" />
+                    <rect x="140" y="30" width="50" height="140" fill="rgba(234, 179, 8, 0.08)" />
+                    <rect x="190" y="30" width="80" height="140" fill="rgba(235, 87, 87, 0.08)" />
+                    <rect x="270" y="30" width="50" height="140" fill="rgba(234, 179, 8, 0.08)" />
+                    <rect x="320" y="30" width="110" height="140" fill="rgba(47, 158, 110, 0.08)" />
+
+                    <!-- Zone Labels -->
+                    <text x="97" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#2f9e6e">Geçirme 1</text>
+                    <text x="230" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="#eb5757">Çentik / Durdurma</text>
+                    <text x="375" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#2f9e6e">Geçirme 2</text>
+
+                    <!-- Axes -->
+                    <line x1="55" y1="170" x2="430" y2="170" stroke="#2f2e2b" stroke-width="1.8" />
+                    <line x1="55" y1="25" x2="55" y2="170" stroke="#2f2e2b" stroke-width="1.8" />
+                    <polygon points="430,167 437,170 430,173" fill="#2f2e2b" />
+                    <polygon points="52,25 55,18 58,25" fill="#2f2e2b" />
+
+                    <!-- Frequency ticks & labels -->
+                    <text x="140" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#2f9e6e">f_p1</text>
+                    <text x="190" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#eb5757">f_s1</text>
+                    <text x="230" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-weight="700" fill="#3d5afe">f₀</text>
+                    <text x="270" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#eb5757">f_s2</text>
+                    <text x="320" y="190" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#2f9e6e">f_p2</text>
+
+                    <!-- Tolerance lines -->
+                    <line x1="55" y1="85" x2="140" y2="85" stroke="#2f9e6e" stroke-width="1.2" stroke-dasharray="3,3" />
+                    <line x1="190" y1="140" x2="270" y2="140" stroke="#eb5757" stroke-width="1" stroke-dasharray="3,3" />
+                    <line x1="320" y1="85" x2="430" y2="85" stroke="#2f9e6e" stroke-width="1.2" stroke-dasharray="3,3" />
+
+                    <!-- Deep notch filter response curve -->
+                    <path d="M 55,65 C 105,65 125,70 140,85 C 165,115 180,135 190,140 C 215,155 228,168 230,168 C 232,168 245,155 270,140 C 280,135 295,115 320,85 C 335,70 365,65 430,65" fill="none" stroke="#3d5afe" stroke-width="2.8" />
+                  </svg>
+                </div>
+                <p>Merkez frekansı civarındaki dar veya geniş bir bandı tamamen bloke eder (örneğin 50/60 Hz şebeke çentiği).</p>
                 <ul>
-                  <li><strong>Durdurma Bandı:</strong> $[\\omega_{\\text{stop1}}, \\omega_{\\text{stop2}}]$</li>
-                  <li><strong>Geçirme Bantları:</strong> $0 \\le \\omega \\le \\omega_{\\text{pass1}}$ ve $\\omega \\ge \\omega_{\\text{pass2}}$</li>
-                  <li><strong>Önemli Kullanım Alanı:</strong> Biyomedikal (EKG/EMG) cihazlarında ve ses sistemlerinde 50/60 Hz şebeke vızıltısını yok etmek.</li>
+                  <li><strong>Durdurma (Çentik) Bölgesi:</strong> $[f_{\text{s1}}, f_{\text{s2}}]$</li>
+                  <li><strong>Geçirme Bölgeleri:</strong> $0 \le f \le f_{\text{p1}}$ ve $f \ge f_{\text{p2}}$</li>
+                  <li><strong>Çentik Frekansı:</strong> $f_0 = \sqrt{f_{\text{s1}} f_{\text{s2}}}$.</li>
                 </ul>
               </div>
             </div>
@@ -72,16 +243,54 @@ const BookContent = (() => {
         },
         {
           id: 'ch1-2',
-          title: '1.2 Filtre Yaklaşım Teorisi (Filter Approximation)',
+          title: '1.2 Filtre Yaklaşım Teorisi: İdeal ve Pratik Yanıtlar (Figure 1.5)',
           content: `
-            <p>İdeal bir filtre geçirme bandında kesinlikle $0\\text{ dB}$ zayıflamaya, durdurma bandında sonsuz zayıflamaya ($-\\infty\\text{ dB}$) ve bu iki bölge arasında sıfır genişlikli dikey bir geçişe ("tuğla duvar" - brick wall) sahip olmalıdır. Ancak <strong>Paley-Wiener kriteri</strong> ve nedensellik (causality) ilkesi gereği, gerçek fiziksel sistemlerde bu imkansızdır:</p>
-            <div class="math-block">
-              $$\\int_{-\\infty}^{\\infty} \\frac{|\\ln |H(j\\omega)||}{1 + \\omega^2} d\\omega < \\infty$$
+            <p>İdeal bir filtre geçirme bandında kesinlikle $0\text{ dB}$ zayıflamaya, durdurma bandında sonsuz zayıflamaya ($-\infty\text{ dB}$) ve bu iki bölge arasında sıfır genişlikli dikey bir geçişe ("tuğla duvar" - brick wall) sahip olmalıdır:</p>
+            
+            <div class="theory-card" style="margin: 16px 0;">
+              <h4 style="margin-bottom: 8px;">İdeal (Tuğla Duvar) vs Pratik Filtre Yanıtı Karşılaştırması</h4>
+              <div class="filter-spec-diagram-wrap">
+                <svg viewBox="0 0 540 220" class="filter-spec-svg" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Axes -->
+                  <line x1="60" y1="180" x2="500" y2="180" stroke="#2f2e2b" stroke-width="1.8" />
+                  <line x1="60" y1="25" x2="60" y2="180" stroke="#2f2e2b" stroke-width="1.8" />
+                  <polygon points="500,177 508,180 500,183" fill="#2f2e2b" />
+                  <polygon points="57,25 60,17 63,25" fill="#2f2e2b" />
+
+                  <!-- Grid labels -->
+                  <text x="50" y="55" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f2e2b">1.0 (0 dB)</text>
+                  <text x="50" y="180" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f2e2b">0.0 (-∞ dB)</text>
+                  <text x="60" y="200" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#787774">0</text>
+                  <text x="210" y="200" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#2f9e6e">ω_pass</text>
+                  <text x="320" y="200" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#eb5757">ω_stop</text>
+                  <text x="495" y="200" text-anchor="end" font-family="Inter, sans-serif" font-size="11" fill="#787774">Frekans (ω) →</text>
+
+                  <!-- Transition band highlight -->
+                  <rect x="210" y="40" width="110" height="140" fill="rgba(234, 179, 8, 0.08)" />
+                  <text x="265" y="110" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#b45309">Geçiş Bandı (Transition Band)</text>
+
+                  <!-- Ideal Brick-Wall curve (Dashed red) -->
+                  <path d="M 60,50 L 210,50 L 210,180 L 500,180" fill="none" stroke="#ef4444" stroke-width="2.4" stroke-dasharray="6,4" />
+                  <!-- Practical response curve (Solid blue) -->
+                  <path d="M 60,50 C 160,50 195,55 210,70 C 235,95 285,155 320,165 C 370,175 430,178 500,179" fill="none" stroke="#3d5afe" stroke-width="3" />
+
+                  <!-- Legend -->
+                  <line x1="280" y1="35" x2="310" y2="35" stroke="#ef4444" stroke-width="2.4" stroke-dasharray="6,4" />
+                  <text x="318" y="39" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#ef4444">İdeal "Tuğla Duvar" (Brick-Wall)</text>
+                  <line x1="280" y1="52" x2="310" y2="52" stroke="#3d5afe" stroke-width="3" />
+                  <text x="318" y="56" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">Pratik Yaklaşım (Fiziksel Filtre)</text>
+                </svg>
+              </div>
             </div>
-            <p>Eğer bir filtre belirli bir frekans bandında tamamen sıfır kazanca ($|H(j\\omega)| = 0$) sahip olursa, yukarıdaki integral ıraksar ve sistemin darbe yanıtı $h(t)$, uyarım uygulanmadan önce ($t < 0$) sıfırdan farklı bir değer almak zorunda kalır (nedensellik ihlali). Bu nedenle filtre tasarımının temeli, ideal yanıta en yakın matematiksel fonksiyonları bulma problemidir (yaklaşım teorisi).</p>
+
+            <p>Ancak <strong>Paley-Wiener kriteri</strong> ve nedensellik (causality) ilkesi gereği, gerçek fiziksel sistemlerde sonsuz diklikte bir tuğla duvar oluşturulamaz:</p>
+            <div class="math-block">
+              $$\int_{-\infty}^{\infty} \frac{|\ln |H(j\omega)||}{1 + \omega^2} d\omega < \infty$$
+            </div>
+            <p>Eğer bir filtre belirli bir frekans bandında tamamen sıfır kazanca ($|H(j\omega)| = 0$) sahip olursa, yukarıdaki integral ıraksar ve sistemin darbe yanıtı $h(t)$, uyarım uygulanmadan önce ($t < 0$) sıfırdan farklı bir değer almak zorunda kalır (nedensellik ihlali). Bu nedenle filtre tasarımının temeli, ideal yanıta en yakın matematiksel fonksiyonları bulma problemidir (yaklaşım teorisi).</p>
             <p>Dört temel klasik yaklaşım yöntemi geliştirilmiştir:</p>
             <ul>
-              <li><strong>Butterworth:</strong> $\\omega = 0$ noktasında türevleri sıfırlayarak maksimum düzlük (maximally flat) sağlar.</li>
+              <li><strong>Butterworth:</strong> $\omega = 0$ noktasında türevleri sıfırlayarak maksimum düzlük (maximally flat) sağlar.</li>
               <li><strong>Chebyshev Tip I:</strong> Geçirme bandında eşit dalgalanmaya (equiripple) izin vererek çok daha dik bir geçiş bandı elde eder.</li>
               <li><strong>Ters Chebyshev (Tip II):</strong> Geçirme bandı Butterworth gibi düzdür, durdurma bandında dalgalanma ve sonlu iletim sıfırları barındırır.</li>
               <li><strong>Eliptik (Cauer):</strong> Hem geçirme hem durdurma bandında dalgalanmaya izin verir. Verilen spesifikasyonlar için gereken teorik <strong>en küçük dereceyi ($N$)</strong> sunar.</li>

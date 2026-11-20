@@ -940,6 +940,26 @@ body {
   line-height: 1.45;
 }
 
+/* Theory Filter Specification SVG Diagrams */
+.filter-spec-diagram-wrap {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  margin: 10px 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.filter-spec-svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  display: block;
+}
+
 /* Theory Examples Grid */
 .theory-examples-grid {
   display: grid;
