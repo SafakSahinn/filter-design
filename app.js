@@ -419,6 +419,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         window.location.hash = '#/designer';
         recalculateAll();
+      },
+      loadExample: (ex) => {
+        loadBookExample(ex);
       }
     };
 

@@ -1,7 +1,9 @@
 /**
  * FilterDesign Studio - Normalized Filter Approximations Modal Module
  * Detailed mathematical derivations, formulas, pole-zero distributions, SVG diagrams,
- * and step-by-step algorithms for Butterworth, Chebyshev I, Inverse Chebyshev, and Elliptic filters.
+ * step-by-step algorithms, and complete textbook worked examples (odd and even order)
+ * for Butterworth, Chebyshev I, Inverse Chebyshev, and Elliptic filters.
+ * Based on Les Thede - "Practical Analog and Digital Filter Design" (Chapter 2).
  */
 
 const FilterApproxModal = (() => {
@@ -9,7 +11,7 @@ const FilterApproxModal = (() => {
     butterworth: {
       id: 'butterworth',
       title: 'Butterworth Yaklaşımı (Maksimum Düz - Maximally Flat)',
-      badge: 'Bölüm 2.2 & Kitap Denklem 2.6 - 2.15',
+      badge: 'Bölüm 2.2 & Kitap Denklem 2.6 - 2.18',
       color: '#3d5afe',
       summary: 'Geçirme bandında hiçbir dalgalanma barındırmayan, DC (ω=0) civarında ilk 2n-1 türevi sıfır olan maksimum düz genlik yanıtı ve üstün faz doğrusallığı sunan klasik yaklaşım.',
       svgMag: `
@@ -24,7 +26,7 @@ const FilterApproxModal = (() => {
           <text x="425" y="190" text-anchor="end" font-family="Inter, sans-serif" font-size="11" fill="#787774">Frekans (ω) →</text>
 
           <text x="44" y="64" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f2e2b">0 dB</text>
-          <text x="44" y="89" text-anchor="end" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="#2f9e6e">-3 dB</text>
+          <text x="44" y="89" text-anchor="end" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="#2f9e6e">-a_pass</text>
           <text x="44" y="149" text-anchor="end" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="#eb5757">-a_stop</text>
 
           <line x1="50" y1="85" x2="170" y2="85" stroke="#2f9e6e" stroke-width="1.2" stroke-dasharray="3,3" />
@@ -39,7 +41,6 @@ const FilterApproxModal = (() => {
       `,
       svgPoles: `
         <svg viewBox="0 0 260 210" class="filter-spec-svg" xmlns="http://www.w3.org/2000/svg" style="max-height: 200px; width: 100%;">
-          <!-- Real & Imaginary Axes -->
           <line x1="20" y1="105" x2="240" y2="105" stroke="#787774" stroke-width="1.5" />
           <line x1="130" y1="20" x2="130" y2="190" stroke="#787774" stroke-width="1.5" />
           <text x="235" y="120" font-family="Inter, sans-serif" font-size="11" fill="#787774">σ</text>
@@ -50,11 +51,8 @@ const FilterApproxModal = (() => {
           <text x="135" y="175" font-family="Inter, sans-serif" font-size="9.5" fill="#9ca3af">Birim Çember (R=1)</text>
 
           <!-- Poles for n=3 (theta = 30, 90, 150) on LHS -->
-          <!-- p1: theta=30 deg => re = -sin(30)=-0.5, im = cos(30)=0.866 => x = 130 - 32.5 = 97.5, y = 105 - 56.3 = 48.7 -->
           <text x="97" y="52" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="#3d5afe">×</text>
-          <!-- p2: real pole theta=90 => re = -1.0, im = 0 => x = 130 - 65 = 65, y = 105 -->
           <text x="65" y="110" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="#3d5afe">×</text>
-          <!-- p3: theta=150 deg => re = -0.5, im = -0.866 => x = 97.5, y = 105 + 56.3 = 161.3 -->
           <text x="97" y="166" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="#3d5afe">×</text>
 
           <text x="60" y="85" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#3d5afe">p₁, p₂, p₃</text>
@@ -98,6 +96,64 @@ const FilterApproxModal = (() => {
           math: '$$n \\text{ çift ise: } H_{B,n}(S) = \\prod_{m=0}^{(n/2)-1} \\frac{B_{2,m}}{S^2 + B_{1,m} S + B_{2,m}}$$\n$$n \\text{ tek ise: } H_{B,n}(S) = \\frac{R}{S + R} \\prod_{m=0}^{[(n-1)/2]-1} \\frac{B_{2,m}}{S^2 + B_{1,m} S + B_{2,m}}$$'
         }
       ],
+      examples: [
+        {
+          id: 'ex2_2',
+          badge: 'Örnek 2.2 (Kitap Sayfa 33) - Tek Derece (n = 3)',
+          title: 'Butterworth 3. Derece Normalize Transfer Fonksiyonu',
+          specs: 'Spesifikasyonlar: $a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -12.0\\text{ dB}, \\omega_{\\text{pass}} = 1.0\\text{ rad/s}, \\omega_{\\text{stop}} = 2.0\\text{ rad/s}$',
+          solutionSteps: [
+            {
+              stepTitle: 'Adım 1: Dalgalanma Faktörü (ε) ve Derece (n) Hesabı (Denklem 2.7 & 2.8)',
+              desc: 'Tolerans değerleri formüle yerleştirilerek $\\epsilon$ ve minimum derece hesaplanır:',
+              math: '$$\\epsilon = \\sqrt{10^{-0.1(-1)} - 1} = \\sqrt{10^{0.1} - 1} = 0.508847$$\n$$n_B \\ge \\frac{\\log_{10}\\left[ \\frac{10^{-0.1(-12)} - 1}{10^{-0.1(-1)} - 1} \\right]}{2 \\log_{10}(2/1)} = \\frac{\\log_{10}\\left( \\frac{15.8489 - 1}{1.2589 - 1} \\right)}{2 \\cdot 0.30103} = \\frac{\\log_{10}(57.348)}{0.60206} = 2.92 \\implies n = 3 \\text{ (Tek Derece)}$$'
+            },
+            {
+              stepTitle: 'Adım 2: Çember Yarıçapı (R) Hesabı (Denklem 2.9)',
+              desc: 'Kutupların üzerinde dizildiği çemberin yarıçapı $R$ bulunur:',
+              math: '$$R = \\epsilon^{-1/n} = (0.508847)^{-1/3} = 1.252576$$'
+            },
+            {
+              stepTitle: 'Adım 3: Kutup Açıları ve Konumları (Denklem 2.10b - 2.13)',
+              desc: '$n=3$ tek derece olduğu için bir adet reel kutup ve bir adet 2. bölge karmaşık eşlenik kutup çifti ($m=0$) oluşur:',
+              math: '$$\\text{1. Derece Reel Kutup: } \\sigma_R = -R = -1.252576, \\quad \\omega_R = 0$$\n$$\\text{İndis } m=0: \\quad \\theta_0 = \\frac{2(0) + 1 + 3}{2(3)}\\pi = \\frac{4\\pi}{6} = \\frac{2\\pi}{3} = 120^\\circ$$\n$$\\sigma_0 = R \\cos(120^\\circ) = 1.252576 \\cdot (-0.5) = -0.626288$$\n$$\\omega_0 = R \\sin(120^\\circ) = 1.252576 \\cdot \\frac{\\sqrt{3}}{2} = +1.084763 \\implies p_{1,2} = -0.626288 \\pm j 1.084763$$'
+            },
+            {
+              stepTitle: 'Adım 4: Kuadratik Biquad Katsayıları ve Transfer Fonksiyonu (Denklem 2.14 - 2.18b)',
+              desc: 'Katsayılar eşlenerek 1. derece ve 2. derece katlar oluşturulur:',
+              math: '$$B_{1,0} = -2\\sigma_0 = -2(-0.626288) = 1.252576$$\n$$B_{2,0} = \\sigma_0^2 + \\omega_0^2 = R^2 = (1.252576)^2 = 1.568948$$\n$$H_{B,3}(S) = \\frac{1.252576}{S + 1.252576} \\cdot \\frac{1.568948}{S^2 + 1.252576 S + 1.568948}$$\n$$\\text{WFilter Doğrulaması: } G = 1.00000000, \\quad H_1(S) = \\frac{1.252576}{S + 1.252576}, \\quad H_2(S) = \\frac{1.568948}{S^2 + 1.252576 S + 1.568948}$$'
+            }
+          ]
+        },
+        {
+          id: 'ex2_3',
+          badge: 'Örnek 2.3 (Kitap Sayfa 34) - Çift Derece (n = 4)',
+          title: 'Butterworth 4. Derece Normalize Transfer Fonksiyonu',
+          specs: 'Spesifikasyonlar: $a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -18.0\\text{ dB}, \\omega_{\\text{pass}} = 1.0\\text{ rad/s}, \\omega_{\\text{stop}} = 2.0\\text{ rad/s}$',
+          solutionSteps: [
+            {
+              stepTitle: 'Adım 1: Dalgalanma Faktörü (ε) ve Derece (n) Hesabı (Denklem 2.7 & 2.8)',
+              desc: 'Daha sıkı durdurma bandı ($-18\\text{ dB}$) için gereken minimum derece:',
+              math: '$$\\epsilon = \\sqrt{10^{0.1} - 1} = 0.508847$$\n$$n_B \\ge \\frac{\\log_{10}\\left[ \\frac{10^{1.8} - 1}{10^{0.1} - 1} \\right]}{2 \\log_{10}(2)} = \\frac{\\log_{10}\\left( \\frac{63.0957 - 1}{0.258925} \\right)}{0.60206} = \\frac{\\log_{10}(239.82)}{0.60206} = 3.95 \\implies n = 4 \\text{ (Çift Derece)}$$'
+            },
+            {
+              stepTitle: 'Adım 2: Çember Yarıçapı (R) Hesabı (Denklem 2.9)',
+              desc: '$n=4$ için normalize çember yarıçapı:',
+              math: '$$R = \\epsilon^{-1/4} = (0.508847)^{-0.25} = 1.184004$$'
+            },
+            {
+              stepTitle: 'Adım 3: İkinci Bölge Kutup Açıları ve Koordinatları (Denklem 2.10a - 2.13)',
+              desc: '$n=4$ çift derece olduğu için reel kutup yoktur. İki adet karmaşık eşlenik kutup çifti ($m = 0, 1$) yer alır:',
+              math: '$$\\text{İndis } m=0: \\quad \\theta_0 = \\frac{2(0) + 1 + 4}{2(4)}\\pi = \\frac{5\\pi}{8} = 112.5^\\circ$$\n$$\\sigma_0 = R \\cos(112.5^\\circ) = -0.453099, \\quad \\omega_0 = R \\sin(112.5^\\circ) = +1.093877$$\n$$\\text{İndis } m=1: \\quad \\theta_1 = \\frac{2(1) + 1 + 4}{2(4)}\\pi = \\frac{7\\pi}{8} = 157.5^\\circ$$\n$$\\sigma_1 = R \\cos(157.5^\\circ) = -1.093877, \\quad \\omega_1 = R \\sin(157.5^\\circ) = +0.453099$$'
+            },
+            {
+              stepTitle: 'Adım 4: Kuadratik Biquad Katsayıları ve Transfer Fonksiyonu (Denklem 2.14 - 2.18a)',
+              desc: 'Her iki kutup çifti iki adet 2. derece aktif biquad katına dönüştürülür:',
+              math: '$$\\text{Kat 1 } (m=0): B_{1,0} = -2\\sigma_0 = 0.906198, \\quad B_{2,0} = R^2 = 1.401865$$\n$$\\text{Kat 2 } (m=1): B_{1,1} = -2\\sigma_1 = 2.187754, \\quad B_{2,1} = R^2 = 1.401865$$\n$$H_{B,4}(S) = \\frac{1.401865}{S^2 + 0.906198 S + 1.401865} \\cdot \\frac{1.401865}{S^2 + 2.187754 S + 1.401865}$$\n$$\\text{WFilter Doğrulaması: } G = 1.00000000, \\quad Q_1 = 1.3065, \\quad Q_2 = 0.5412$$'
+            }
+          ]
+        }
+      ],
       pros: [
         'Geçirme bandında kesinlikle dalgalanma yoktur (tamamen düz).',
         'Faz yanıtı tüm klasik filtreler arasında en doğrusala yakın olandır.',
@@ -112,7 +168,7 @@ const FilterApproxModal = (() => {
     chebyshev: {
       id: 'chebyshev',
       title: 'Chebyshev Tip I Yaklaşımı (Eşit Dalgalı - Equiripple)',
-      badge: 'Bölüm 2.3 & Kitap Denklem 2.16 - 2.26',
+      badge: 'Bölüm 2.3 & Kitap Denklem 2.19 - 2.33',
       color: '#ef4444',
       summary: 'Geçirme bandında izin verilen bir dalgalanma (apass dB) karşılığında, Butterworth\'e kıyasla çok daha dik bir geçiş bandı ve daha düşük derece (N) sunan popüler yaklaşım.',
       svgMag: `
@@ -152,11 +208,8 @@ const FilterApproxModal = (() => {
           <text x="135" y="175" font-family="Inter, sans-serif" font-size="9.5" fill="#9ca3af">Kutup Elipsi (Foci=±j)</text>
 
           <!-- Poles for n=3 on ellipse LHS -->
-          <!-- p1: sigma = -sinh(g)*sin(30), omega = cosh(g)*cos(30) -->
           <text x="112" y="52" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="#ef4444">×</text>
-          <!-- p2: real pole sigma = -sinh(g), omega=0 -->
           <text x="95" y="110" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="#ef4444">×</text>
-          <!-- p3: conjugate of p1 -->
           <text x="112" y="166" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="#ef4444">×</text>
 
           <text x="75" y="85" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#ef4444">p₁, p₂, p₃</text>
@@ -165,27 +218,85 @@ const FilterApproxModal = (() => {
       steps: [
         {
           stepNum: 'Adım 1',
-          title: 'Dalgalanma Faktörü (ε) ve Filtre Derecesi (n) Hesabı (Denklem 2.18)',
+          title: 'Dalgalanma Faktörü (ε) ve Filtre Derecesi (n) Hesabı (Denklem 2.20 & 2.21)',
           desc: 'Geçirme bandı zayıflamasından $\\epsilon$ dalgalanma faktörü ve ters hiperbolik kosinüs ile derece $n$ bulunur:',
           math: '$$\\epsilon = \\sqrt{10^{-a_{\\text{pass}}/10} - 1}$$\n$$n \\ge \\frac{\\operatorname{arcosh}\\left( \\sqrt{\\frac{10^{-a_{\\text{stop}}/10} - 1}{\\epsilon^2}} \\right)}{\\operatorname{arcosh}(\\omega_{\\text{stop}} / \\omega_{\\text{pass}})}$$'
         },
         {
           stepNum: 'Adım 2',
-          title: 'Elips Parametresi (γ) ve Kutup Konumları (Denklem 2.21)',
-          desc: 'Chebyshev kutupları odakları $\\pm j$ sanal ekseninde olan bir elips üzerinde yer alır:',
-          math: '$$\\gamma = \\frac{1}{n} \\operatorname{arsinh}\\left(\\frac{1}{\\epsilon}\\right)$$\n$$\\sigma_k = -\\sinh(\\gamma) \\sin(\\theta_k), \\quad \\omega_k = \\cosh(\\gamma) \\cos(\\theta_k)$$\n$$p_k = \\sigma_k + j \\omega_k, \\quad \\theta_k = \\frac{2k - 1}{2n}\\pi$$'
+          title: 'Elips Parametresi (D) ve Hiperbolik Fonksiyonlar (Denklem 2.22 & 2.23)',
+          desc: 'Chebyshev kutupları odakları $\\pm j$ üzerinde olan bir elips üzerindedir; elips parametresi $D$ hesaplanır:',
+          math: '$$D = \\frac{1}{n} \\operatorname{arsinh}\\left(\\frac{1}{\\epsilon}\\right)$$\n$$\\sinh(D), \\quad \\cosh(D)$$'
         },
         {
           stepNum: 'Adım 3',
-          title: 'Kuadratik Çarpanlar ve Katsayı Eşleme',
-          desc: 'Eşlenik kutup çiftleri çarpılarak ikinci derece faktörler ($s^2 + b_1 s + b_2$) elde edilir:',
-          math: '$$b_1 = -2\\sigma_k = 2\\sinh(\\gamma)\\sin(\\theta_k)$$\n$$b_2 = \\sigma_k^2 + \\omega_k^2 = \\sinh^2(\\gamma)\\sin^2(\\theta_k) + \\cosh^2(\\gamma)\\cos^2(\\theta_k)$$\n$$Q = \\frac{\\sqrt{b_2}}{b_1}$$'
+          title: 'Kutup Konumları (σ_k, ω_k) ve Açı Dağılımı (Denklem 2.24 - 2.27)',
+          desc: 'Elips üzerindeki karmaşık eşlenik kutuplar ve varsa tek derecedeki reel kutup hesaplanır:',
+          math: '$$\\theta_k = \\frac{2k - 1}{2n}\\pi \\quad (k = 1, 2, \\dots, n)$$\n$$\\sigma_k = -\\sinh(D) \\sin(\\theta_k), \\quad \\omega_k = \\cosh(D) \\cos(\\theta_k)$$\n$$\\text{Tek } n \\text{ için gerçel kutup: } \\sigma_R = -\\sinh(D), \\quad \\omega_R = 0$$'
         },
         {
           stepNum: 'Adım 4',
-          title: 'Çift Derecelerde DC Kazanç Düzeltmesi (Denklem 2.25)',
-          desc: '$n$ çift sayı olduğunda $\\omega=0$\'da polinom $C_n(0)=1$ olduğu için DC kazancı $1/\\sqrt{1+\\epsilon^2} = 10^{a_{\\text{pass}}/20}$ olur. Bu kazanç kaybı çıkıştaki aktif gerilim bölücü ile dengelenir.',
-          math: '$$H(0) = \\begin{cases} 1.0 (0\\text{ dB}), & n \\text{ tek ise} \\\\ 10^{a_{\\text{pass}}/20}, & n \\text{ çift ise} \\end{cases}$$'
+          title: 'Biquad Katsayıları ve Çift Derece DC Kazanç Düzeltmesi (Denklem 2.28 - 2.33)',
+          desc: 'Kuadratik katlar $B_1, B_2$ katsayılarına dönüştürülür. Çift derecede $C_n(0)=1$ olduğundan $G = 10^{0.05 a_{\\text{pass}}}$ kazanç çarpanı uygulanır:',
+          math: '$$B_{1,m} = -2\\sigma_m, \\quad B_{2,m} = \\sigma_m^2 + \\omega_m^2$$\n$$G = \\begin{cases} 1.0 (0\\text{ dB}), & n \\text{ tek ise} \\\\ 10^{0.05 a_{\\text{pass}}}, & n \\text{ çift ise} \\end{cases}$$\n$$H_C(S) = G \\prod_m \\frac{B_{2,m}}{S^2 + B_{1,m} S + B_{2,m}}$$'
+        }
+      ],
+      examples: [
+        {
+          id: 'ex2_4',
+          badge: 'Örnek 2.4 (Kitap Sayfa 40) - Tek Derece (n = 3)',
+          title: 'Chebyshev Tip I 3. Derece Normalize Transfer Fonksiyonu',
+          specs: 'Spesifikasyonlar: $a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -22.0\\text{ dB}, \\omega_{\\text{pass}} = 1.0\\text{ rad/s}, \\omega_{\\text{stop}} = 2.0\\text{ rad/s}$',
+          solutionSteps: [
+            {
+              stepTitle: 'Adım 1: Dalgalanma Faktörü (ε) ve Derece (n) Hesabı (Denklem 2.20 & 2.21)',
+              desc: 'Tolerans değerleri yerleştirilerek $\\epsilon$ ve minimum derece $n$ bulunur:',
+              math: '$$\\epsilon = \\sqrt{10^{0.1} - 1} = 0.508847$$\n$$n \\ge \\frac{\\operatorname{arcosh}\\left( \\sqrt{\\frac{10^{2.2}-1}{0.508847^2}} \\right)}{\\operatorname{arcosh}(2/1)} = \\frac{\\operatorname{arcosh}\\left( \\frac{12.5494}{0.508847} \\right)}{\\operatorname{arcosh}(2)} = \\frac{\\operatorname{arcosh}(24.662)}{1.31696} = 2.96 \\implies n = 3 \\text{ (Tek Derece)}$$'
+            },
+            {
+              stepTitle: 'Adım 2: Elips Parametresi (D) ve Hiperbolik Değerler (Denklem 2.22 & 2.23)',
+              desc: '$n=3$ için hiperbolik elips sabiti $D$ hesaplanır:',
+              math: '$$D = \\frac{1}{3} \\operatorname{arsinh}\\left(\\frac{1}{0.508847}\\right) = \\frac{1}{3} \\operatorname{arsinh}(1.96523) = 0.475992$$\n$$\\sinh(D) = \\sinh(0.475992) = 0.494171$$\n$$\\cosh(D) = \\cosh(0.475992) = 1.115439$$'
+            },
+            {
+              stepTitle: 'Adım 3: Kutup Konumları (Denklem 2.24 - 2.27)',
+              desc: 'Tek derece olduğu için 1 gerçel kutup ve 1 kompleks kutup çifti ($\phi_0 = \\pi/6 = 30^\\circ$):',
+              math: '$$\\text{1. Derece Gerçel Kutup: } \\sigma_R = -\\sinh(D) = -0.494171, \\quad \\omega_R = 0$$\n$$\\text{Kompleks Kutup Çifti } (\\phi_0 = 30^\\circ):$$\n$$\\sigma_0 = -\\sinh(D)\\sin(30^\\circ) = -0.494171 \\cdot 0.5 = -0.247085$$\n$$\\omega_0 = \\cosh(D)\\cos(30^\\circ) = 1.115439 \\cdot \\frac{\\sqrt{3}}{2} = +0.965999 \\implies p_{1,2} = -0.247085 \\pm j 0.965999$$'
+            },
+            {
+              stepTitle: 'Adım 4: Biquad Katsayıları ve Transfer Fonksiyonu (Denklem 2.28 - 2.33b)',
+              desc: '$n=3$ tek olduğundan $C_3(0) = 0$ ve DC kazancı $1.0$ ($0\\text{ dB}$)\'dir:',
+              math: '$$B_{1,0} = -2\\sigma_0 = 0.494171, \\quad B_{2,0} = \\sigma_0^2 + \\omega_0^2 = (-0.247085)^2 + (0.965999)^2 = 0.994205$$\n$$H_{C,3}(S) = \\frac{0.494171}{S + 0.494171} \\cdot \\frac{0.994205}{S^2 + 0.494171 S + 0.994205}$$\n$$\\text{WFilter Doğrulaması: } G = 1.00000000, \\quad H_1(S) = \\frac{0.494171}{S + 0.494171}, \\quad H_2(S) = \\frac{0.994205}{S^2 + 0.494171 S + 0.994205}$$'
+            }
+          ]
+        },
+        {
+          id: 'ex2_5',
+          badge: 'Örnek 2.5 (Kitap Sayfa 42) - Çift Derece (n = 4)',
+          title: 'Chebyshev Tip I 4. Derece Normalize Transfer Fonksiyonu',
+          specs: 'Spesifikasyonlar: $a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -33.0\\text{ dB}, \\omega_{\\text{pass}} = 1.0\\text{ rad/s}, \\omega_{\\text{stop}} = 2.0\\text{ rad/s}$',
+          solutionSteps: [
+            {
+              stepTitle: 'Adım 1: Dalgalanma Faktörü (ε) ve Derece (n) Hesabı (Denklem 2.20 & 2.21)',
+              desc: '$-33\\text{ dB}$ durdurma zayıflaması için Chebyshev derecesi:',
+              math: '$$\\epsilon = 0.508847$$\n$$n \\ge \\frac{\\operatorname{arcosh}\\left( \\sqrt{\\frac{10^{3.3}-1}{0.508847^2}} \\right)}{\\operatorname{arcosh}(2)} = \\frac{\\operatorname{arcosh}(87.755)}{1.31696} = \\frac{5.1676}{1.31696} = 3.92 \\implies n = 4 \\text{ (Çift Derece)}$$'
+            },
+            {
+              stepTitle: 'Adım 2: Elips Parametresi (D) ve Hiperbolik Sabitler (Denklem 2.22 & 2.23)',
+              desc: '$n=4$ için $D$ değeri ve hiperbolik fonksiyonlar:',
+              math: '$$D = \\frac{1}{4} \\operatorname{arsinh}(1.96523) = 0.356994$$\n$$\\sinh(D) = 0.364625, \\quad \\cosh(D) = 1.064402$$'
+            },
+            {
+              stepTitle: 'Adım 3: İkinci Bölge Kutup Koordinatları (Denklem 2.24 - 2.27)',
+              desc: 'İki adet karmaşık kutup çifti ($\\theta_0 = \\pi/8 = 22.5^\\circ, \\theta_1 = 3\\pi/8 = 67.5^\\circ$):',
+              math: '$$\\text{Kat 1 } (m=0): \\sigma_0 = -\\sinh(D)\\sin(22.5^\\circ) = -0.139536, \\quad \\omega_0 = \\cosh(D)\\cos(22.5^\\circ) = +0.983379$$\n$$\\text{Kat 2 } (m=1): \\sigma_1 = -\\sinh(D)\\sin(67.5^\\circ) = -0.336870, \\quad \\omega_1 = \\cosh(D)\\cos(67.5^\\circ) = +0.407329$$'
+            },
+            {
+              stepTitle: 'Adım 4: Kuadratik Biquad Katsayıları ve DC Kazanç Düzeltmesi (Denklem 2.32 & 2.33a)',
+              desc: '$n=4$ çift olduğu için $\\omega=0$\'da $1\\text{ dB}$ düşüşü dengeleyen $G = 10^{0.05 a_{\\text{pass}}}$ kazanç çarpanı eklenir:',
+              math: '$$\\text{Kat 1: } B_{1,0} = -2\\sigma_0 = 0.279072, \\quad B_{2,0} = \\sigma_0^2 + \\omega_0^2 = 0.986502$$\n$$\\text{Kat 2: } B_{1,1} = -2\\sigma_1 = 0.673740, \\quad B_{2,1} = \\sigma_1^2 + \\omega_1^2 = 0.279401$$\n$$G = 10^{0.05(-1)} = 10^{-0.05} = 0.891251 \\quad (-1.0\\text{ dB})$$\n$$H_{C,4}(S) = 0.891251 \\cdot \\frac{0.986502}{S^2 + 0.279072 S + 0.986502} \\cdot \\frac{0.279401}{S^2 + 0.673740 S + 0.279401}$$\n$$\\text{WFilter Doğrulaması: } G = 8.91250938E-01, \\quad Q_1 = 3.56, \\quad Q_2 = 0.78$$'
+            }
+          ]
         }
       ],
       pros: [
@@ -202,7 +313,7 @@ const FilterApproxModal = (() => {
     inv_chebyshev: {
       id: 'inv_chebyshev',
       title: 'Ters Chebyshev Yaklaşımı (Tip II - Durdurma Bandı Dalgalı)',
-      badge: 'Bölüm 2.4 & Kitap Denklem 2.27 - 2.32',
+      badge: 'Bölüm 2.4 & Kitap Denklem 2.34 - 2.54',
       color: '#10b981',
       summary: 'Geçirme bandı Butterworth gibi tamamen düz ve dalgalanmasız olan, durdurma bandında ise jω sanal eksenindeki iletim sıfırları sayesinde eş-dalgalı derin zayıflama sunan hibrit yaklaşım.',
       svgMag: `
@@ -252,27 +363,91 @@ const FilterApproxModal = (() => {
       steps: [
         {
           stepNum: 'Adım 1',
-          title: 'Durdurma Faktörü (ε_s) ve Derece (n) Hesabı (Denklem 2.27)',
-          desc: 'Ters Chebyshev prototipinde dalgalanma geçirme bandında değil durdurma bandında yer aldığından parametre $\\epsilon_s$ ile başlanır:',
-          math: '$$\\epsilon_s = \\frac{1}{\\sqrt{10^{-a_{\\text{stop}}/10} - 1}}$$\n$$n \\ge \\frac{\\operatorname{arcosh}\\left(\\frac{1}{\\epsilon_s \\sqrt{10^{-a_{\\text{pass}}/10} - 1}}\\right)}{\\operatorname{arcosh}(\\omega_{\\text{stop}} / \\omega_{\\text{pass}})}$$'
+          title: 'Durdurma Faktörü (ε_i) ve Derece (n) Hesabı (Denklem 2.35 & 2.36)',
+          desc: 'Ters Chebyshev prototipinde dalgalanma geçirme bandında değil durdurma bandında yer aldığından parametre $\\epsilon_i$ ile başlanır:',
+          math: '$$\\epsilon_i = \\frac{1}{\\sqrt{10^{-a_{\\text{stop}}/10} - 1}}$$\n$$n \\ge \\frac{\\operatorname{arcosh}\\left( \\frac{\\sqrt{10^{-a_{\\text{stop}}/10} - 1}}{\\sqrt{10^{-a_{\\text{pass}}/10} - 1}} \\right)}{\\operatorname{arcosh}(\\omega_{\\text{stop}} / \\omega_{\\text{pass}})}$$'
         },
         {
           stepNum: 'Adım 2',
-          title: 'jω Sanal Eksenindeki İletim Sıfırlarının (Zeros) Konumu',
-          desc: 'Chebyshev polinomunun kökleri sanal eksende tam sıfırlama noktaları ($-\\infty\\text{ dB}$) oluşturur:',
-          math: '$$\\omega_{z,k} = \\frac{1}{\\cos(\\theta_k)}, \\quad \\theta_k = \\frac{2k - 1}{2n}\\pi \\quad (\\cos\\theta_k \\ne 0)$$\n$$z_k = \\pm j \\omega_{z,k}$$'
+          title: 'Ters Elips Parametresi (D_i) Hesabı (Denklem 2.39)',
+          desc: 'Ters Chebyshev hiperbolik elips sabiti $D_i$ türetilir:',
+          math: '$$D_i = \\frac{1}{n} \\operatorname{arsinh}\\left(\\frac{1}{\\epsilon_i}\\right)$$\n$$\\sinh(D_i), \\quad \\cosh(D_i)$$'
         },
         {
           stepNum: 'Adım 3',
-          title: 'Kutupların Chebyshev Kutuplarının Terslenmesiyle Eldesi',
-          desc: 'Standart Chebyshev kutup koordinatları ters çevrilerek ($p_k\' = 1/p_{ch,k}$) sol yarı düzlem kutupları oluşturulur:',
-          math: '$$p_k = \\frac{\\sigma_{ch,k} - j \\omega_{ch,k}}{\\sigma_{ch,k}^2 + \\omega_{ch,k}^2}, \\quad \\gamma = \\frac{1}{n} \\operatorname{arsinh}\\left(\\frac{1}{\\epsilon_s}\\right)$$'
+          title: 'jω Sanal Eksenindeki İletim Sıfırları (Denklem 2.40 & 2.41)',
+          desc: 'Chebyshev polinomunun kökleri sanal eksende tam sıfırlama çentikleri ($-\\infty\\text{ dB}$) oluşturur:',
+          math: '$$\\omega_{z,m} = \\frac{1}{\\cos(\\phi_m)}, \\quad \\phi_m = \\frac{2m + 1}{2n}\\pi \\quad (\\cos\\phi_m \\ne 0)$$\n$$z_m = \\pm j \\omega_{z,m} \\implies (S^2 + \\omega_{z,m}^2)$$'
         },
         {
           stepNum: 'Adım 4',
-          title: 'Sıfır İçeren İkinci Derece Biquad Faktörün Normalize Edilmesi',
-          desc: 'DC kazancının ($s=0$) tam $1.0$ ($0\\text{ dB}$) olması için pay katsayısı normalize edilir:',
-          math: '$$H_k(s) = \\frac{\\frac{b_{2k}}{\\omega_{zk}^2} s^2 + b_{2k}}{s^2 + b_{1k} s + b_{2k}}$$'
+          title: 'Kutupların Çarpmaya Göre Terslenmesi (Denklem 2.42 - 2.47)',
+          desc: 'Standart Chebyshev kutup koordinatları ters çevrilerek ($p_m = 1 / p\'_m$) kutuplar elde edilir:',
+          math: '$$\\sigma\'_m = -\\sinh(D_i) \\sin(\\phi_m), \\quad \\omega\'_m = \\cosh(D_i) \\cos(\\phi_m)$$\n$$\\sigma_m = \\frac{\\sigma\'_m}{{\\sigma\'_m}^2 + {\\omega\'_m}^2}, \\quad \\omega_m = \\frac{-\\omega\'_m}{{\\sigma\'_m}^2 + {\\omega\'_m}^2}$$\n$$\\text{Tek } n \\text{ için gerçel kutup: } \\sigma_R = -\\frac{1}{\\sinh(D_i)}$$'
+        },
+        {
+          stepNum: 'Adım 5',
+          title: 'Biquad Katsayıları ve Normalize Transfer Fonksiyonu (Denklem 2.48 - 2.54)',
+          desc: 'DC kazancı daima $1.0$ ($0\\text{ dB}$) olacak şekilde normalize edilir:',
+          math: '$$B_{1,m} = -2\\sigma_m, \\quad B_{2,m} = \\sigma_m^2 + \\omega_m^2, \\quad A_{0,m} = \\omega_{z,m}^2$$\n$$H_{I,n}(S) = \\prod_m \\frac{S^2 + A_{0,m}}{S^2 + B_{1,m} S + B_{2,m}} \\cdot \\frac{B_{2,m}}{A_{0,m}}$$'
+        }
+      ],
+      examples: [
+        {
+          id: 'ex2_6',
+          badge: 'Örnek 2.6 (Kitap Sayfa 48) - Tek Derece (n = 3)',
+          title: 'Ters Chebyshev 3. Derece Normalize Transfer Fonksiyonu',
+          specs: 'Spesifikasyonlar: $a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -22.0\\text{ dB}, \\omega_{\\text{pass}} = 1.0\\text{ rad/s}, \\omega_{\\text{stop}} = 2.0\\text{ rad/s}$',
+          solutionSteps: [
+            {
+              stepTitle: 'Adım 1: Durdurma Faktörü (ε_i) ve Derece (n) Hesabı (Denklem 2.35 & 2.36)',
+              desc: 'Ters Chebyshev dalgalanma faktörü durdurma bandı zayıflamasından hesaplanır:',
+              math: '$$\\epsilon_i = \\frac{1}{\\sqrt{10^{2.2}-1}} = \\frac{1}{\\sqrt{158.489 - 1}} = 0.079685$$\n$$n \\ge \\frac{\\operatorname{arcosh}\\left( \\frac{\\sqrt{10^{2.2}-1}}{\\sqrt{10^{0.1}-1}} \\right)}{\\operatorname{arcosh}(2)} = \\frac{\\operatorname{arcosh}(24.662)}{1.31696} = 2.96 \\implies n = 3 \\text{ (Tek Derece)}$$'
+            },
+            {
+              stepTitle: 'Adım 2: Ters Elips Sabiti (D_i) (Denklem 2.39)',
+              desc: '$n=3$ için $D_i$ parametresi ve hiperbolik değerler:',
+              math: '$$D_i = \\frac{1}{3} \\operatorname{arsinh}\\left(\\frac{1}{0.079685}\\right) = \\frac{1}{3} \\operatorname{arsinh}(12.5494) = 1.074803$$\n$$\\sinh(D_i) = 1.294026, \\quad \\cosh(D_i) = 1.635391$$'
+            },
+            {
+              stepTitle: 'Adım 3: Sanal Eksen Sıfırları ve Kutuplar (Denklem 2.40 - 2.47)',
+              desc: 'Sanal eksende ($j\\omega$) derin iletim sıfırı ve evrilmiş kutup konumları:',
+              math: '$$\\text{İletim Sıfırı } (\\phi_0 = 30^\\circ): \\quad \\omega_{z0} = \\frac{1}{\\cos(30^\\circ)} = 1.154701 \\implies z_{1,2} = \\pm j 1.154701$$\n$$\\text{Standart Kutup: } \\sigma\'_0 = -\\sinh(D_i)\\sin(30^\\circ) = -0.647013, \\quad \\omega\'_0 = \\cosh(D_i)\\cos(30^\\circ) = 1.416290$$\n$$\\text{Evrilmiş Kutup: } \\sigma_0 = \\frac{\\sigma\'_0}{{\\sigma\'_0}^2 + {\\omega\'_0}^2} = -0.266864, \\quad \\omega_0 = \\frac{-\\omega\'_0}{{\\sigma\'_0}^2 + {\\omega\'_0}^2} = -0.584157$$\n$$\\text{1. Derece Gerçel Kutup: } \\sigma_R = -\\frac{1}{\\sinh(D_i)} = -0.772782, \\quad \\omega_R = 0$$'
+            },
+            {
+              stepTitle: 'Adım 4: Normalize Transfer Fonksiyonu ve WFilter Katsayıları (Sayfa 50)',
+              desc: 'Kitapta açıklandığı gibi $\\omega_{\\text{pass}} = 1.0\\text{ rad/s}$ kesimine göre normalize edilen son fonksiyon:',
+              math: '$$H_{I,3}(S) = \\frac{1.545564}{S + 1.545564} \\cdot \\frac{0.309342 (S^2 + 5.333333)}{S^2 + 1.067457 S + 1.649823}$$\n$$\\text{DC Kazancı: } S=0 \\implies H_{I,3}(0) = 1.00000000 \\quad (0\\text{ dB})$$\n$$\\text{WFilter Doğrulaması: } G = 3.09341803E-01, \\quad \\text{Pay: } S^2 + 5.333333, \\quad \\text{Payda: } S^2 + 1.067457 S + 1.649823$$'
+            }
+          ]
+        },
+        {
+          id: 'ex2_7',
+          badge: 'Örnek 2.7 (Kitap Sayfa 50) - Çift Derece (n = 4)',
+          title: 'Ters Chebyshev 4. Derece Normalize Transfer Fonksiyonu',
+          specs: 'Spesifikasyonlar: $a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -33.0\\text{ dB}, \\omega_{\\text{pass}} = 1.0\\text{ rad/s}, \\omega_{\\text{stop}} = 2.0\\text{ rad/s}$',
+          solutionSteps: [
+            {
+              stepTitle: 'Adım 1: Durdurma Faktörü (ε_i) ve Derece (n) Hesabı (Denklem 2.35 & 2.36)',
+              desc: '$-33\\text{ dB}$ durdurma zayıflaması için:',
+              math: '$$\\epsilon_i = \\frac{1}{\\sqrt{10^{3.3}-1}} = 0.022393$$\n$$n \\ge \\frac{\\operatorname{arcosh}(87.755)}{1.31696} = 3.92 \\implies n = 4 \\text{ (Çift Derece)}$$'
+            },
+            {
+              stepTitle: 'Adım 2: Ters Elips Sabiti (D_i) (Denklem 2.39)',
+              desc: '$n=4$ için parametre $D_i$:',
+              math: '$$D_i = \\frac{1}{4} \\operatorname{arsinh}\\left(\\frac{1}{0.022393}\\right) = 1.123072$$\n$$\\sinh(D_i) = 1.374502, \\quad \\cosh(D_i) = 1.699781$$'
+            },
+            {
+              stepTitle: 'Adım 3: İletim Sıfırları ve Evrilmiş Kutuplar (Denklem 2.40 - 2.47)',
+              desc: 'İki adet sonlu sıfır çifti ve iki adet kuadratik kutup çifti:',
+              math: '$$\\text{Sıfırlar: } \\omega_{z0} = \\frac{1}{\\cos(\\pi/8)} = 1.082392, \\quad \\omega_{z1} = \\frac{1}{\\cos(3\\pi/8)} = 2.613126$$\n$$\\text{Kat 1 Kutbu: } \\sigma_0 = -0.191774, \\quad \\omega_0 = -0.572549 \\implies p_{1,2} = -0.191774 \\pm j 0.572549$$\n$$\\text{Kat 2 Kutbu: } \\sigma_1 = -0.623801, \\quad \\omega_1 = -0.319535 \\implies p_{3,4} = -0.623801 \\pm j 0.319535$$'
+            },
+            {
+              stepTitle: 'Adım 4: Normalize Transfer Fonksiyonu (Denklem 2.54a)',
+              desc: 'Normalize edilmiş 4. derece transfer fonksiyonu:',
+              math: '$$H_{I,4}(S) = 0.022387 \\cdot \\frac{S^2 + 4.6863}{S^2 + 0.76710 S + 1.4584} \\cdot \\frac{S^2 + 27.314}{S^2 + 2.4952 S + 1.9649}$$\n$$\\text{WFilter Doğrulaması: } G = 2.23870E-02, \\quad \\text{Sıfır 1: } 4.6863, \\quad \\text{Sıfır 2: } 27.314$$'
+            }
+          ]
         }
       ],
       pros: [
@@ -288,7 +463,7 @@ const FilterApproxModal = (() => {
     elliptic: {
       id: 'elliptic',
       title: 'Eliptik Yaklaşımı (Cauer Filtresi - Çift Eşit Dalgalı)',
-      badge: 'Bölüm 2.5 & Kitap Denklem 2.33 - 2.40',
+      badge: 'Bölüm 2.5 & Kitap Denklem 2.55 - 2.79',
       color: '#8b5cf6',
       summary: 'Hem geçirme hem de durdurma bandında dalgalanmaya izin vererek, verilen toleransları kuramsal olarak sağlayan EN DÜŞÜK filtre derecesini (N) ve en dik geçiş bandını veren optimum yaklaşım.',
       svgMag: `
@@ -337,27 +512,75 @@ const FilterApproxModal = (() => {
       steps: [
         {
           stepNum: 'Adım 1',
-          title: 'Seçicilik Faktörü (k) ve Jacobi Eliptik Modülü',
-          desc: 'Geçiş bandı dikliği $k$ modülü ile, tolerans oranları ise $k_1$ ile tanımlanır:',
-          math: '$$k = \\frac{\\omega_{\\text{pass}}}{\\omega_{\\text{stop}}}, \\quad k_1 = \\frac{\\sqrt{10^{-a_{\\text{pass}}/10} - 1}}{\\sqrt{10^{-a_{\\text{stop}}/10} - 1}}$$'
+          title: 'Seçicilik Faktörü (k) ve Jacobi Eliptik Modülleri (Denklem 2.55 - 2.58)',
+          desc: 'Geçiş bandı seçicilik faktörü $k = r_t$ ve tolerans oranı $k_1 = k_n$ tanımlanır:',
+          math: '$$r_t = k = \\frac{\\omega_{\\text{pass}}}{\\omega_{\\text{stop}}}, \\quad k_n = k_1 = \\frac{\\sqrt{10^{-0.1 a_{\\text{pass}}} - 1}}{\\sqrt{10^{-0.1 a_{\\text{stop}}} - 1}}$$'
         },
         {
           stepNum: 'Adım 2',
-          title: 'Eliptik Nome Fonksiyonu ile Minimum Derece Hesabı (Denklem 2.37)',
-          desc: 'Eliptik fonksiyonların nome parametresi $q$ kullanılarak kuramsal minimum derece $n$ bulunur:',
-          math: '$$q = \\text{nome}(k), \\quad q_1 = \\text{nome}(k_1)$$\n$$n \\ge \\frac{\\ln(16 / q_1)}{\\ln(1 / q)}$$'
+          title: 'Tam Eliptik İntegraller (CEI) ve Minimum Derece Hesabı (Denklem 2.59 - 2.61)',
+          desc: 'Birinci tür tam eliptik integraller $K(k)$ hesaplanarak teorik minimum derece bulunur:',
+          math: '$$n_E \\ge \\frac{K(r_t) \\cdot K(\\sqrt{1 - k_n^2})}{K(\\sqrt{1 - r_t^2}) \\cdot K(k_n)}$$'
         },
         {
           stepNum: 'Adım 3',
-          title: 'Jacobi sn/cn Fonksiyonları ile Sıfırların ve Kutupların Konumu',
-          desc: 'İletim sıfırları $\\omega_{\\text{stop}}$ üzerinde yer alır ve geçiş bandını aşırı dikleştirir:',
-          math: '$$\\omega_{z,k} = \\frac{1}{k \\operatorname{sn}\\left(\\frac{2k-1}{n} K, k\\right)}$$'
+          title: 'Jacobi sn/cn Fonksiyonları ile Sıfırlar ve Kutuplar (Denklem 2.62 - 2.72)',
+          desc: 'Sanal eksen iletim sıfırları ve sol yarı düzlem kutupları Jacobi eliptik fonksiyonlarıyla hesaplanır:',
+          math: '$$\\omega_{z,m} = \\frac{1}{r_t \\operatorname{sn}\\left( \\frac{2m+1}{n} K(r_t), r_t \\right)}$$\n$$p_m = \\sigma_m + j \\omega_m, \\quad \\text{Tek } n \\text{ için reel kutup: } \\sigma_R$$'
         },
         {
           stepNum: 'Adım 4',
-          title: 'İkinci Derece Faktörlerin Ayrıştırılması ve Katsayı Normalizasyonu',
-          desc: 'Her kuadratik kat payında sıfır ($s^2 + \\omega_{zk}^2$) ve paydasında kutup ($s^2 + b_1 s + b_2$) barındırır:',
-          math: '$$H_k(s) = \\frac{\\frac{b_{2k}}{\\omega_{zk}^2} s^2 + b_{2k}}{s^2 + b_{1k} s + b_{2k}}$$'
+          title: 'Biquad Katsayıları ve Çift Derece Kazanç Ayarı (Denklem 2.73 - 2.79)',
+          desc: 'Sıfır içeren kuadratik katlar oluşturulur. Çift derecede $G = 10^{0.05 a_{\\text{pass}}}$ uygulanır:',
+          math: '$$H_{E}(S) = G \\prod_m \\frac{S^2 + \\omega_{z,m}^2}{S^2 + B_{1,m} S + B_{2,m}} \\cdot \\frac{B_{2,m}}{\\omega_{z,m}^2}$$'
+        }
+      ],
+      examples: [
+        {
+          id: 'ex2_9',
+          badge: 'Örnek 2.9 (Kitap Sayfa 58) - Tek Derece (n = 3)',
+          title: 'Eliptik (Cauer) 3. Derece Normalize Transfer Fonksiyonu',
+          specs: 'Spesifikasyonlar: $a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -34.0\\text{ dB}, \\omega_{\\text{pass}} = 1.0\\text{ rad/s}, \\omega_{\\text{stop}} = 2.0\\text{ rad/s}$',
+          solutionSteps: [
+            {
+              stepTitle: 'Adım 1: Modüller ve Derece (n) Hesabı (Denklem 2.55 - 2.61)',
+              desc: 'Seçicilik faktörleri ve tam eliptik integraller ile derece hesaplanır:',
+              math: '$$r_t = 0.50, \\quad k_n = \\frac{\\sqrt{10^{0.1}-1}}{\\sqrt{10^{3.4}-1}} = 0.010153$$\n$$K(0.50) = 1.685750, \\quad K(k_n) = 1.570838$$\n$$n_E = \\frac{1.685750 \\cdot 5.9754}{2.156516 \\cdot 1.570838} = 2.87 \\implies n = 3 \\text{ (Tek Derece)}$$'
+            },
+            {
+              stepTitle: 'Adım 2: İletim Sıfırları ve Kutup Konumları (Denklem 2.62 - 2.72)',
+              desc: 'Jacobi fonksiyonları ile hesaplanan sıfırlar ve kutuplar:',
+              math: '$$\\text{İletim Sıfırı: } \\omega_{z0} = 2.270068 \\implies S^2 + (2.270068)^2 = S^2 + 5.153209$$\n$$\\text{1. Derece Gerçel Kutup: } \\sigma_R = -0.539954, \\quad \\omega_R = 0$$\n$$\\text{Kompleks Kutup Çifti: } \\sigma_0 = -0.217032, \\quad \\omega_0 = 0.981575$$'
+            },
+            {
+              stepTitle: 'Adım 3: Kuadratik Biquad Katsayıları ve Transfer Fonksiyonu (Denklem 2.73)',
+              desc: '$n=3$ için tam normalize transfer fonksiyonu:',
+              math: '$$B_{1,0} = -2\\sigma_0 = 0.434064, \\quad B_{2,0} = \\sigma_0^2 + \\omega_0^2 = 1.010590$$\n$$H_{E,3}(S) = \\frac{0.539954}{S + 0.539954} \\cdot \\frac{0.196109 (S^2 + 5.153209)}{S^2 + 0.434064 S + 1.010590}$$\n$$\\text{WFilter Doğrulaması: } G = 1.96108843E-01, \\quad \\text{Pay: } S^2 + 5.153209, \\quad \\text{Payda: } S^2 + 0.434064 S + 1.010590$$'
+            }
+          ]
+        },
+        {
+          id: 'ex2_10',
+          badge: 'Örnek 2.10 (Kitap Sayfa 60) - Çift Derece (n = 4)',
+          title: 'Eliptik (Cauer) 4. Derece Normalize Transfer Fonksiyonu',
+          specs: 'Spesifikasyonlar: $a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -51.0\\text{ dB}, \\omega_{\\text{pass}} = 1.0\\text{ rad/s}, \\omega_{\\text{stop}} = 2.0\\text{ rad/s}$',
+          solutionSteps: [
+            {
+              stepTitle: 'Adım 1: Modüller ve Derece (n) Hesabı (Denklem 2.55 - 2.61)',
+              desc: '$-51\\text{ dB}$ durdurma zayıflaması için Eliptik filtre derecesi:',
+              math: '$$r_t = 0.50, \\quad k_n = 0.00143413$$\n$$K(r_t) = 1.685750, \\quad K(k_n) = 1.570797, \\quad v_0 = 0.383119$$\n$$n_E = \\frac{1.685750 \\cdot 7.933494}{2.156516 \\cdot 1.570797} = 3.95 \\implies n = 4 \\text{ (Çift Derece)}$$'
+            },
+            {
+              stepTitle: 'Adım 2: İletim Sıfırları ve Kutup Konumları (Denklem 2.62 - 2.72)',
+              desc: 'İki adet iletim sıfırı ve iki adet kuadratik kutup çifti:',
+              math: '$$\\text{Sıfırlar: } \\omega_{z0} = 4.922113 \\implies S^2 + 24.22720, \\quad \\omega_{z1} = 2.143189 \\implies S^2 + 4.59326$$\n$$\\text{Kat 1 Kutbu: } \\sigma_0 = -0.351273, \\quad \\omega_0 = 0.442498 \\implies B_{1,0} = 0.702546, \\quad B_{2,0} = 0.319197$$\n$$\\text{Kat 2 Kutbu: } \\sigma_1 = -0.121478, \\quad \\omega_1 = 0.989176 \\implies B_{1,1} = 0.242957, \\quad B_{2,1} = 0.993226$$'
+            },
+            {
+              stepTitle: 'Adım 3: DC Kazanç Ayarı ve Nihai Transfer Fonksiyonu (Denklem 2.73 - 2.79)',
+              desc: '$n=4$ çift derece kazanç düzeltmesi $G = 10^{0.05(-1)} = 0.891251$ ile birleştirilerek genel kazanç çarpanı $K_g$ bulunur:',
+              math: '$$K_g = 0.891251 \\cdot \\frac{B_{2,0}}{\\omega_{z0}^2} \\cdot \\frac{B_{2,1}}{\\omega_{z1}^2} = 0.002539115$$\n$$H_{E,4}(S) = 0.0025391 \\cdot \\frac{S^2 + 24.2272}{S^2 + 0.702546 S + 0.319197} \\cdot \\frac{S^2 + 4.59326}{S^2 + 0.242957 S + 0.993226}$$\n$$\\text{WFilter Doğrulaması: } G = 2.53911537E-03, \\quad \\text{Kat 1 Payda: } S^2 + 0.702546 S + 0.319197, \\quad \\text{Kat 2: } S^2 + 0.242957 S + 0.993226$$'
+            }
+          ]
         }
       ],
       pros: [
@@ -479,18 +702,54 @@ const FilterApproxModal = (() => {
     let stepsHtml = '';
     data.steps.forEach(s => {
       stepsHtml += `
-        <div style="background: var(--panel); padding: 12px 16px; border-radius: var(--radius-sm); border-left: 3px solid ${data.color}; margin-bottom: 10px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-            <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: ${data.color}; background: rgba(0,0,0,0.04); padding: 2px 6px; border-radius: 3px;">${s.stepNum}</span>
-            <span style="font-size: 13px; font-weight: 700; color: var(--text-h);">${s.title}</span>
+        <div style="background: #fff; border: 1px solid var(--border); border-left: 4px solid ${data.color}; border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span class="stage-badge" style="background: ${data.color}; color: #fff; font-weight: 700;">${s.stepNum}</span>
+            <strong style="font-size: 13.5px; color: var(--text-h);">${s.title}</strong>
           </div>
-          <p style="font-size: 12.5px; color: var(--text); margin: 4px 0 8px;">${s.desc}</p>
-          <div class="math-block" style="padding: 10px; margin: 4px 0 0; font-size: 13.5px; background: #fff;">
+          <p style="font-size: 13px; color: var(--muted); margin: 0 0 8px;">${s.desc}</p>
+          <div class="math-block" style="background: #fafaf9; padding: 10px 12px; border-radius: 4px; overflow-x: auto; margin: 0;">
             ${s.math}
           </div>
         </div>
       `;
     });
+
+    let examplesHtml = '';
+    if (data.examples && data.examples.length > 0) {
+      data.examples.forEach(ex => {
+        let stepsInnerHtml = '';
+        ex.solutionSteps.forEach(st => {
+          stepsInnerHtml += `
+            <div style="background: #fafaf9; border-left: 3px solid ${data.color}; border-radius: 4px; padding: 10px 12px; margin-bottom: 8px;">
+              <strong style="color: ${data.color}; font-size: 12.5px;">${st.stepTitle}</strong>
+              <p style="font-size: 12px; color: var(--muted); margin: 3px 0 6px;">${st.desc}</p>
+              <div class="math-block" style="background: #fff; padding: 8px 10px; border-radius: 4px; margin: 0; overflow-x: auto; font-size: 12px;">
+                ${st.math}
+              </div>
+            </div>
+          `;
+        });
+
+        examplesHtml += `
+          <div style="background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow-sm);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+              <div>
+                <span class="stage-badge" style="background: rgba(61,90,254,0.08); color: ${data.color}; font-weight: 700;">${ex.badge}</span>
+                <h4 style="margin: 4px 0 2px; font-size: 15px; font-weight: 700; color: var(--text-h);">${ex.title}</h4>
+                <div style="font-size: 12px; color: var(--muted);">${ex.specs}</div>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline" data-load-modal-ex="${ex.id}" style="color: ${data.color}; border-color: ${data.color}; font-size: 11.5px; font-weight: 600; cursor: pointer;">
+                🚀 Bu Örneği Tasarımcıya Yükle
+              </button>
+            </div>
+            <div style="margin-top: 10px;">
+              ${stepsInnerHtml}
+            </div>
+          </div>
+        `;
+      });
+    }
 
     let prosHtml = '';
     data.pros.forEach(p => {
@@ -542,7 +801,16 @@ const FilterApproxModal = (() => {
           </div>
         </div>
 
-        <!-- Row 3: Pros, Cons & Engineering Performance -->
+        <!-- Row 3: Step-by-Step Textbook Numerical Examples (Odd & Even Order) -->
+        <div class="type-detail-section">
+          <h4>📚 Kitaptaki Adım Adım Sayısal Çözüm Örnekleri (Tek ve Çift Derece)</h4>
+          <p style="font-size: 13px; color: var(--muted); margin: 0 0 12px;">Les Thede'in "Practical Analog and Digital Filter Design" kitabında yer alan sayısal örnekler, yukarıdaki adımlar ve formüller birebir uygulanarak detaylı şekilde çözülmüştür:</p>
+          <div style="margin-top: 10px;">
+            ${examplesHtml}
+          </div>
+        </div>
+
+        <!-- Row 4: Pros, Cons & Engineering Performance -->
         <div class="type-detail-grid">
           <div class="type-detail-section">
             <h4>🌟 Avantajları ve Güçlü Yönleri</h4>
@@ -576,6 +844,18 @@ const FilterApproxModal = (() => {
         }
       });
     }
+
+    // Hook example buttons [data-load-modal-ex]
+    container.querySelectorAll('[data-load-modal-ex]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const exId = btn.getAttribute('data-load-modal-ex');
+        close();
+        if (typeof BookExamples !== 'undefined' && window.FilterStudio && typeof window.FilterStudio.loadExample === 'function') {
+          const targetEx = BookExamples.find(e => e.id === exId);
+          if (targetEx) window.FilterStudio.loadExample(targetEx);
+        }
+      });
+    });
 
     // Render KaTeX in the modal
     if (window.renderMathInElement) {
