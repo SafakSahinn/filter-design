@@ -3,6 +3,8 @@
 **Analog Filtre Tasarımı, Analiz, Op-Amp Devre Sentezi ve MATLAB Kod Üretim Portalı**  
 *Les Thede'in **"Practical Analog and Digital Filter Design"** (Bölüm 1 - 4) kitabına dayalı interaktif mühendislik aracı.*
 
+🌐 **Canlı Web Sürümü (GitHub Pages):** [https://safaksahinn.github.io/filter-design/](https://safaksahinn.github.io/filter-design/)
+
 Arayüz stili ve kullanıcı deneyimi, minimalist ve ferah yapısıyla [Thalamus](https://safaksahinn.github.io/thalamus/) tasarım sisteminden esinlenerek geliştirilmiştir.
 
 ---
