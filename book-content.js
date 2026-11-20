@@ -79,11 +79,11 @@ const BookContent = (() => {
                     <path d="M 55,65 C 130,65 160,70 170,85 C 185,110 230,135 255,140 C 300,146 360,152 430,156" fill="none" stroke="#3d5afe" stroke-width="2.8" />
                   </svg>
                 </div>
-                <p>DC frekansından ($0\text{ Hz}$) geçirme frekansına ($f_{\text{pass}}$) kadar olan sinyalleri minimum zayıflamayla geçirir, $f_{\text{stop}}$ üzerini zayıflatır.</p>
+                <p>DC frekansından ($0\\text{ Hz}$) geçirme frekansına ($f_{\\text{pass}}$) kadar olan sinyalleri minimum zayıflamayla geçirir, $f_{\\text{stop}}$ üzerini zayıflatır.</p>
                 <ul>
-                  <li><strong>Geçirme Zayıflaması ($a_{\text{pass}}$):</strong> $\le a_{\text{pass}}\text{ dB}$ (tipik $0.1 \dots 3\text{ dB}$).</li>
-                  <li><strong>Durdurma Zayıflaması ($a_{\text{stop}}$):</strong> $\ge a_{\text{stop}}\text{ dB}$ (tipik $20 \dots 80\text{ dB}$).</li>
-                  <li><strong>Geçiş Oranı:</strong> $r = f_{\text{stop}} / f_{\text{pass}} > 1$.</li>
+                  <li><strong>Geçirme Zayıflaması ($a_{\\text{pass}}$):</strong> $\\le a_{\\text{pass}}\\text{ dB}$ (tipik $0.1 \\dots 3\\text{ dB}$).</li>
+                  <li><strong>Durdurma Zayıflaması ($a_{\\text{stop}}$):</strong> $\\ge a_{\\text{stop}}\\text{ dB}$ (tipik $20 \\dots 80\\text{ dB}$).</li>
+                  <li><strong>Geçiş Oranı:</strong> $r = f_{\\text{stop}} / f_{\\text{pass}} > 1$.</li>
                 </ul>
               </div>
 
@@ -134,11 +134,11 @@ const BookContent = (() => {
                     <path d="M 55,160 C 110,155 170,148 190,140 C 220,130 250,95 270,85 C 300,72 360,65 430,65" fill="none" stroke="#3d5afe" stroke-width="2.8" />
                   </svg>
                 </div>
-                <p>Alçak frekansları ($0 \dots f_{\text{stop}}$) zayıflatır ve $f_{\text{pass}}$ üzerindeki yüksek frekansları minimum kayıpla iletir.</p>
+                <p>Alçak frekansları ($0 \\dots f_{\\text{stop}}$) zayıflatır ve $f_{\\text{pass}}$ üzerindeki yüksek frekansları minimum kayıpla iletir.</p>
                 <ul>
-                  <li><strong>Durdurma Bölgesi:</strong> $0 \le f \le f_{\text{stop}}$</li>
-                  <li><strong>Geçirme Bölgesi:</strong> $f \ge f_{\text{pass}}$ ($f_{\text{stop}} < f_{\text{pass}}$)</li>
-                  <li><strong>Geçiş Oranı:</strong> $r = f_{\text{pass}} / f_{\text{stop}} > 1$.</li>
+                  <li><strong>Durdurma Bölgesi:</strong> $0 \\le f \\le f_{\\text{stop}}$</li>
+                  <li><strong>Geçirme Bölgesi:</strong> $f \\ge f_{\\text{pass}}$ ($f_{\\text{stop}} < f_{\\text{pass}}$)</li>
+                  <li><strong>Geçiş Oranı:</strong> $r = f_{\\text{pass}} / f_{\\text{stop}} > 1$.</li>
                 </ul>
               </div>
 
@@ -184,10 +184,10 @@ const BookContent = (() => {
                     <path d="M 55,160 C 95,155 115,148 125,140 C 150,120 165,95 180,85 C 205,70 215,65 230,65 C 245,65 255,70 280,85 C 295,95 310,120 335,140 C 355,150 395,158 430,160" fill="none" stroke="#3d5afe" stroke-width="2.8" />
                   </svg>
                 </div>
-                <p>Belirli bir alt ($f_{\text{p1}}$) ve üst ($f_{\text{p2}}$) frekans aralığını geçirirken bandın dışını söndürür.</p>
+                <p>Belirli bir alt ($f_{\\text{p1}}$) ve üst ($f_{\\text{p2}}$) frekans aralığını geçirirken bandın dışını söndürür.</p>
                 <ul>
-                  <li><strong>Bant Genişliği ($B$):</strong> $B = f_{\text{p2}} - f_{\text{p1}}$</li>
-                  <li><strong>Merkez Frekansı ($f_0$):</strong> $f_0 = \sqrt{f_{\text{p1}} \cdot f_{\text{p2}}}$</li>
+                  <li><strong>Bant Genişliği ($B$):</strong> $B = f_{\\text{p2}} - f_{\\text{p1}}$</li>
+                  <li><strong>Merkez Frekansı ($f_0$):</strong> $f_0 = \\sqrt{f_{\\text{p1}} \\cdot f_{\\text{p2}}}$</li>
                   <li><strong>Kalite Faktörü ($Q$):</strong> $Q = f_0 / B$.</li>
                 </ul>
               </div>
@@ -233,9 +233,9 @@ const BookContent = (() => {
                 </div>
                 <p>Merkez frekansı civarındaki dar veya geniş bir bandı tamamen bloke eder (örneğin 50/60 Hz şebeke çentiği).</p>
                 <ul>
-                  <li><strong>Durdurma (Çentik) Bölgesi:</strong> $[f_{\text{s1}}, f_{\text{s2}}]$</li>
-                  <li><strong>Geçirme Bölgeleri:</strong> $0 \le f \le f_{\text{p1}}$ ve $f \ge f_{\text{p2}}$</li>
-                  <li><strong>Çentik Frekansı:</strong> $f_0 = \sqrt{f_{\text{s1}} f_{\text{s2}}}$.</li>
+                  <li><strong>Durdurma (Çentik) Bölgesi:</strong> $[f_{\\text{s1}}, f_{\\text{s2}}]$</li>
+                  <li><strong>Geçirme Bölgeleri:</strong> $0 \\le f \\le f_{\\text{p1}}$ ve $f \\ge f_{\\text{p2}}$</li>
+                  <li><strong>Çentik Frekansı:</strong> $f_0 = \\sqrt{f_{\\text{s1}} f_{\\text{s2}}}$.</li>
                 </ul>
               </div>
             </div>
@@ -245,22 +245,22 @@ const BookContent = (() => {
           id: 'ch1-2',
           title: '1.2 Filtre Yaklaşım Teorisi: İdeal ve Pratik Yanıtlar (Figure 1.5)',
           content: `
-            <p>İdeal bir filtre geçirme bandında kesinlikle $0\text{ dB}$ zayıflamaya, durdurma bandında sonsuz zayıflamaya ($-\infty\text{ dB}$) ve bu iki bölge arasında sıfır genişlikli dikey bir geçişe ("tuğla duvar" - brick wall) sahip olmalıdır:</p>
+            <p>İdeal bir filtre geçirme bandında kesinlikle $0\\text{ dB}$ zayıflamaya, durdurma bandında sonsuz zayıflamaya ($-\\infty\\text{ dB}$) ve bu iki bölge arasında sıfır genişlikli dikey bir geçişe ("tuğla duvar" - brick wall) sahip olmalıdır:</p>
             
             <div class="theory-card" style="margin: 16px 0;">
               <h4 style="margin-bottom: 8px;">İdeal (Tuğla Duvar) vs Pratik Filtre Yanıtı Karşılaştırması</h4>
               <div class="filter-spec-diagram-wrap">
-                <svg viewBox="0 0 540 220" class="filter-spec-svg" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 560 220" class="filter-spec-svg" xmlns="http://www.w3.org/2000/svg">
                   <!-- Axes -->
-                  <line x1="60" y1="180" x2="500" y2="180" stroke="#2f2e2b" stroke-width="1.8" />
-                  <line x1="60" y1="25" x2="60" y2="180" stroke="#2f2e2b" stroke-width="1.8" />
+                  <line x1="75" y1="180" x2="520" y2="180" stroke="#2f2e2b" stroke-width="1.8" />
+                  <line x1="75" y1="25" x2="75" y2="180" stroke="#2f2e2b" stroke-width="1.8" />
                   <polygon points="500,177 508,180 500,183" fill="#2f2e2b" />
-                  <polygon points="57,25 60,17 63,25" fill="#2f2e2b" />
+                  <polygon points="72,25 75,17 78,25" fill="#2f2e2b" />
 
                   <!-- Grid labels -->
-                  <text x="50" y="55" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f2e2b">1.0 (0 dB)</text>
-                  <text x="50" y="180" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f2e2b">0.0 (-∞ dB)</text>
-                  <text x="60" y="200" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#787774">0</text>
+                  <text x="68" y="55" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f2e2b">1.0 (0 dB)</text>
+                  <text x="68" y="180" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#2f2e2b">0.0 (-∞ dB)</text>
+                  <text x="75" y="200" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#787774">0</text>
                   <text x="210" y="200" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#2f9e6e">ω_pass</text>
                   <text x="320" y="200" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" fill="#eb5757">ω_stop</text>
                   <text x="495" y="200" text-anchor="end" font-family="Inter, sans-serif" font-size="11" fill="#787774">Frekans (ω) →</text>
@@ -270,9 +270,9 @@ const BookContent = (() => {
                   <text x="265" y="110" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#b45309">Geçiş Bandı (Transition Band)</text>
 
                   <!-- Ideal Brick-Wall curve (Dashed red) -->
-                  <path d="M 60,50 L 210,50 L 210,180 L 500,180" fill="none" stroke="#ef4444" stroke-width="2.4" stroke-dasharray="6,4" />
+                  <path d="M 75,50 L 215,50 L 215,180 L 520,180" fill="none" stroke="#ef4444" stroke-width="2.4" stroke-dasharray="6,4" />
                   <!-- Practical response curve (Solid blue) -->
-                  <path d="M 60,50 C 160,50 195,55 210,70 C 235,95 285,155 320,165 C 370,175 430,178 500,179" fill="none" stroke="#3d5afe" stroke-width="3" />
+                  <path d="M 75,50 C 165,50 195,55 210,70 C 235,95 285,155 320,165 C 370,175 430,178 500,179" fill="none" stroke="#3d5afe" stroke-width="3" />
 
                   <!-- Legend -->
                   <line x1="280" y1="35" x2="310" y2="35" stroke="#ef4444" stroke-width="2.4" stroke-dasharray="6,4" />
@@ -285,12 +285,12 @@ const BookContent = (() => {
 
             <p>Ancak <strong>Paley-Wiener kriteri</strong> ve nedensellik (causality) ilkesi gereği, gerçek fiziksel sistemlerde sonsuz diklikte bir tuğla duvar oluşturulamaz:</p>
             <div class="math-block">
-              $$\int_{-\infty}^{\infty} \frac{|\ln |H(j\omega)||}{1 + \omega^2} d\omega < \infty$$
+              $$\\int_{-\\infty}^{\\infty} \\frac{|\\ln |H(j\\omega)||}{1 + \\omega^2} d\\omega < \\infty$$
             </div>
-            <p>Eğer bir filtre belirli bir frekans bandında tamamen sıfır kazanca ($|H(j\omega)| = 0$) sahip olursa, yukarıdaki integral ıraksar ve sistemin darbe yanıtı $h(t)$, uyarım uygulanmadan önce ($t < 0$) sıfırdan farklı bir değer almak zorunda kalır (nedensellik ihlali). Bu nedenle filtre tasarımının temeli, ideal yanıta en yakın matematiksel fonksiyonları bulma problemidir (yaklaşım teorisi).</p>
+            <p>Eğer bir filtre belirli bir frekans bandında tamamen sıfır kazanca ($|H(j\\omega)| = 0$) sahip olursa, yukarıdaki integral ıraksar ve sistemin darbe yanıtı $h(t)$, uyarım uygulanmadan önce ($t < 0$) sıfırdan farklı bir değer almak zorunda kalır (nedensellik ihlali). Bu nedenle filtre tasarımının temeli, ideal yanıta en yakın matematiksel fonksiyonları bulma problemidir (yaklaşım teorisi).</p>
             <p>Dört temel klasik yaklaşım yöntemi geliştirilmiştir:</p>
             <ul>
-              <li><strong>Butterworth:</strong> $\omega = 0$ noktasında türevleri sıfırlayarak maksimum düzlük (maximally flat) sağlar.</li>
+              <li><strong>Butterworth:</strong> $\\omega = 0$ noktasında türevleri sıfırlayarak maksimum düzlük (maximally flat) sağlar.</li>
               <li><strong>Chebyshev Tip I:</strong> Geçirme bandında eşit dalgalanmaya (equiripple) izin vererek çok daha dik bir geçiş bandı elde eder.</li>
               <li><strong>Ters Chebyshev (Tip II):</strong> Geçirme bandı Butterworth gibi düzdür, durdurma bandında dalgalanma ve sonlu iletim sıfırları barındırır.</li>
               <li><strong>Eliptik (Cauer):</strong> Hem geçirme hem durdurma bandında dalgalanmaya izin verir. Verilen spesifikasyonlar için gereken teorik <strong>en küçük dereceyi ($N$)</strong> sunar.</li>
