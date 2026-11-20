@@ -704,12 +704,16 @@ body {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 14px;
+  padding: 16px;
   box-sizing: border-box;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-.theory-card .btn {
+.theory-card .btn,
+.theory-card [data-open-filter-modal] {
+  margin-top: auto !important;
   white-space: normal;
   line-height: 1.35;
   box-sizing: border-box;
