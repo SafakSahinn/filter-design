@@ -1217,26 +1217,38 @@ body {
 }
 
 .formula-param-val {
-  font-size: 14.5px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-h);
   font-family: var(--font-mono);
+}
+
+.formula-param-val .katex {
+  font-size: 1.18em !important;
 }
 
 .formula-math-box {
   background: #fafaf9;
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 12px 14px;
-  margin: 8px 0;
+  padding: 14px 18px;
+  margin: 10px 0;
   overflow-x: auto;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+
+.formula-math-box .katex {
+  font-size: 1.25em !important;
+}
+
+.formula-math-box .katex .katex-display {
+  margin: 0.75em 0 !important;
 }
 
 .formula-table-wrap {
   overflow-x: auto;
-  margin-top: 10px;
+  margin-top: 12px;
   border: 1px solid var(--border);
   border-radius: 6px;
 }
@@ -1244,21 +1256,40 @@ body {
 .formula-table-wrap table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12.5px;
+  font-size: 14px;
 }
 
 .formula-table-wrap th {
   background: #fafaf9;
-  padding: 8px 12px;
+  padding: 10px 14px;
   font-weight: 700;
+  font-size: 13.5px;
   color: var(--text-h);
   border-bottom: 1px solid var(--border);
   text-align: left;
 }
 
 .formula-table-wrap td {
-  padding: 8px 12px;
+  padding: 11px 14px;
   border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.formula-table-wrap td.formula-tf-col {
+  font-size: 16px !important;
+  font-weight: 600;
+}
+
+.formula-table-wrap .katex {
+  font-size: 1.25em !important;
+}
+
+#transferFuncMath {
+  font-size: 16px !important;
+}
+
+#transferFuncMath .katex {
+  font-size: 1.22em !important;
 }
 
 .formula-table-wrap tr:last-child td {

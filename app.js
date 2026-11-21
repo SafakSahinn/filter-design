@@ -934,7 +934,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Render transfer function H(s) in LaTeX or text
-    let latex = isNorm ? 'H(S) = ' : 'H(s) = ';
+    let latex = isNorm ? '\\displaystyle H(S) = ' : '\\displaystyle H(s) = ';
     latex += `\\prod_{m=1}^{${totalStages}} ${isNorm ? 'H_m(S)' : 'H_m(s)'}`;
     if (window.katex && els.transferFuncMath) {
       try {
@@ -1068,8 +1068,8 @@ document.addEventListener('DOMContentLoaded', () => {
           : (f.phi_rad !== undefined ? `${f.phi_rad.toFixed(4)} rad (${f.phi_deg.toFixed(1)}°)` : '-');
 
         const biquadEq = (d.approx === 'inv_chebyshev' && f.wz)
-          ? `$\\frac{${(f.B2 / (f.wz * f.wz)).toFixed(4)}S^2 + ${f.B2.toFixed(4)}}{S^2 + ${f.B1.toFixed(4)}S + ${f.B2.toFixed(4)}}$`
-          : `$\\frac{${f.B2.toFixed(4)}}{S^2 + ${f.B1.toFixed(4)}S + ${f.B2.toFixed(4)}}$`;
+          ? `$\\displaystyle H_${f.m}(S) = \\frac{${(f.B2 / (f.wz * f.wz)).toFixed(4)}S^2 + ${f.B2.toFixed(4)}}{S^2 + ${f.B1.toFixed(4)}S + ${f.B2.toFixed(4)}}$`
+          : `$\\displaystyle H_${f.m}(S) = \\frac{${f.B2.toFixed(4)}}{S^2 + ${f.B1.toFixed(4)}S + ${f.B2.toFixed(4)}}$`;
 
         mRowsHtml += `
           <tr>
@@ -1080,7 +1080,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${wzCol}
             <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B1.toFixed(5)}</td>
             <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B2.toFixed(5)}</td>
-            <td style="font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap;">${biquadEq}</td>
+            <td class="formula-tf-col" style="font-family: var(--font-mono); white-space: nowrap;">${biquadEq}</td>
           </tr>
         `;
       });
@@ -1098,7 +1098,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${wzCol}
           <td style="font-family: var(--font-mono); white-space: nowrap;">-</td>
           <td style="font-family: var(--font-mono); white-space: nowrap;">${d.realPole.B2.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap;">$\\frac{${d.realPole.B2.toFixed(4)}}{S + ${d.realPole.B2.toFixed(4)}}$</td>
+          <td class="formula-tf-col" style="font-family: var(--font-mono); white-space: nowrap;">$\\displaystyle H_0(S) = \\frac{${d.realPole.B2.toFixed(4)}}{S + ${d.realPole.B2.toFixed(4)}}$</td>
         </tr>
       `;
     }
@@ -1187,7 +1187,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <td style="font-family: var(--font-mono); font-weight: 600;">Q = ${st.Q ? st.Q.toFixed(3) : '-'}</td>
               <td style="font-family: var(--font-mono);">${st.b1 ? st.b1.toFixed(2) : '-'}</td>
               <td style="font-family: var(--font-mono);">${st.b2.toFixed(2)}</td>
-              <td style="font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap;">$H_${idx + 1}(s) = \\frac{${numStr}}{${denStr}}$</td>
+              <td class="formula-tf-col" style="font-family: var(--font-mono); white-space: nowrap;">$\\displaystyle H_${idx + 1}(s) = \\frac{${numStr}}{${denStr}}$</td>
             </tr>
           `;
         });
