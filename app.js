@@ -8,6 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const state = {
     currentTab: 'designer', // 'designer', 'circuit', 'matlab', 'compare', 'theory'
     currentChapter: 'ch1',
+    calcMode: 'unnormalized', // 'unnormalized' (default: Chapter 3-4) or 'normalized' (Chapter 2: Omega_p = 1 rad/s)
+    priorFpass: 1000,
+    priorFstop: 2500,
+    priorType: 'lowpass',
+    priorUnit: 'Hz',
     approx: 'butterworth',
     type: 'lowpass',
     unit: 'Hz', // 'Hz' or 'rad/s'
@@ -99,6 +104,24 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadMatlabBtn: document.getElementById('downloadMatlabBtn'),
     copySpiceBtn: document.getElementById('copySpiceBtn'),
 
+    // Mode Selector (Normalize vs. Normalize Olmayan)
+    btnModeUnnormalized: document.getElementById('btnModeUnnormalized'),
+    btnModeNormalized: document.getElementById('btnModeNormalized'),
+    calcModeBadgeText: document.getElementById('calcModeBadgeText'),
+    formulaModeBadge: document.getElementById('formulaModeBadge'),
+    formulaWindowSubtitle: document.getElementById('formulaWindowSubtitle'),
+
+    // Live Formula Window & Modals
+    toggleAnalyticalStepsBtn: document.getElementById('toggleAnalyticalStepsBtn'),
+    btnToggleAnalyticalStepsAccordion: document.getElementById('btnToggleAnalyticalStepsAccordion'),
+    btnOpenFormulaModal: document.getElementById('btnOpenFormulaModal'),
+    formulaModalOverlay: document.getElementById('formulaModalOverlay'),
+    closeFormulaModalBtn: document.getElementById('closeFormulaModalBtn'),
+    btnPrintFormulaReportBtn: document.getElementById('btnPrintFormulaReportBtn'),
+    formulaModalBody: document.getElementById('formulaModalBody'),
+    analyticalStepsBody: document.getElementById('analyticalStepsBody'),
+    analyticalStepsToggleText: document.getElementById('analyticalStepsToggleText'),
+
     // Theory & Book
     chapterPills: document.getElementById('chapterPills'),
     theoryBody: document.getElementById('theoryBody')
@@ -175,6 +198,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateFrequencyHints() {
+    if (state.calcMode === 'normalized') {
+      if (els.fpassHint) els.fpassHint.textContent = 'Normalize temel geçirme frekansı Ω_p = 1.0 rad/s.';
+      if (els.fstopHint) els.fstopHint.textContent = `Normalize durdurma bandı geçiş oranı r = ${state.fstop.toFixed(2)}.`;
+      if (els.fpass2Hint) els.fpass2Hint.textContent = '';
+      if (els.fstop2Hint) els.fstop2Hint.textContent = '';
+      return;
+    }
+
     const isRadS = state.unit === 'rad/s';
 
     const getHint = (val) => {
@@ -336,6 +367,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function loadBookExample(ex) {
+    if (ex.chapter === 2) {
+      setCalcMode('normalized', false);
+    } else {
+      setCalcMode('unnormalized', false);
+    }
+
     state.approx = ex.approx;
     state.type = ex.type;
     state.unit = ex.unit || 'Hz';
@@ -361,7 +398,9 @@ document.addEventListener('DOMContentLoaded', () => {
       els.unitRadBtn.classList.toggle('active', state.unit === 'rad/s');
     }
 
-    updateFrequencyLabelsAndUnits();
+    if (state.calcMode !== 'normalized') {
+      updateFrequencyLabelsAndUnits();
+    }
 
     els.fpassInput.value = state.fpass;
     els.fstopInput.value = state.fstop;
@@ -373,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.autoOrderToggle.checked = !state.manualOrder;
     els.orderInputGroup.style.display = state.manualOrder ? 'flex' : 'none';
 
-    const isBand = state.type === 'bandpass' || state.type === 'bandstop';
+    const isBand = state.calcMode !== 'normalized' && (state.type === 'bandpass' || state.type === 'bandstop');
     els.fpass2Group.style.display = isBand ? 'flex' : 'none';
     els.fstop2Group.style.display = isBand ? 'flex' : 'none';
 
@@ -577,6 +616,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Form Controls Binding
   function setupFormEvents() {
+    // Mode Switcher (Normalize vs. Normalize Olmayan)
+    if (els.btnModeUnnormalized && els.btnModeNormalized) {
+      els.btnModeUnnormalized.addEventListener('click', () => {
+        setCalcMode('unnormalized');
+      });
+      els.btnModeNormalized.addEventListener('click', () => {
+        setCalcMode('normalized');
+      });
+    }
+
     // Filter Type
     els.filterTypeSelect.addEventListener('change', (e) => {
       state.type = e.target.value;
@@ -689,19 +738,125 @@ document.addEventListener('DOMContentLoaded', () => {
     recalculateAll();
   }
 
+  // Calculation Mode Switcher (Normalize vs. Normalize Olmayan)
+  function setCalcMode(mode, triggerRecalc = true) {
+    if (!mode) mode = 'unnormalized';
+    state.calcMode = mode;
+    const isNorm = mode === 'normalized';
+
+    if (els.btnModeNormalized) els.btnModeNormalized.classList.toggle('active', isNorm);
+    if (els.btnModeUnnormalized) els.btnModeUnnormalized.classList.toggle('active', !isNorm);
+
+    if (els.calcModeBadgeText) {
+      els.calcModeBadgeText.textContent = isNorm
+        ? 'Bölüm 2: Ω_p = 1.0 rad/s Normalize Prototip Hesabı'
+        : 'Bölüm 3 & 4: Gerçek Frekans & Aktif Devre Sentezi';
+      els.calcModeBadgeText.style.background = isNorm ? 'rgba(61,90,254,0.1)' : 'rgba(16,185,129,0.1)';
+      els.calcModeBadgeText.style.color = isNorm ? '#3d5afe' : '#10b981';
+    }
+
+    if (els.formulaModeBadge) {
+      els.formulaModeBadge.textContent = isNorm
+        ? 'Bölüm 2 Normalize Prototip Formülleri'
+        : 'Bölüm 2-3-4 Canlı Çözüm';
+    }
+
+    if (els.formulaWindowSubtitle) {
+      els.formulaWindowSubtitle.textContent = isNorm
+        ? 'Ω_p = 1 rad/s Normalize Prototip için Les Thede Bölüm 2 Formülleri ve Sayısal İkame'
+        : 'Girdiğiniz spesifikasyonlara göre Les Thede formülleri ve canlı sayısal çözümler';
+    }
+
+    if (isNorm) {
+      // Remember previous unnormalized settings
+      if (state.fpass !== 1.0) state.priorFpass = state.fpass;
+      if (state.fstop !== 2.0) state.priorFstop = state.fstop;
+      state.priorType = state.type;
+      state.priorUnit = state.unit;
+
+      state.type = 'lowpass';
+      if (els.filterTypeSelect) {
+        els.filterTypeSelect.value = 'lowpass';
+        els.filterTypeSelect.disabled = true;
+        els.filterTypeSelect.title = 'Bölüm 2 standartları gereği normalize filtre prototipi daima Ω_p = 1 rad/s alçak geçirendir.';
+      }
+
+      state.fpass = 1.0;
+      if (els.fpassInput) {
+        els.fpassInput.value = '1.0';
+        els.fpassInput.disabled = true;
+      }
+
+      if (els.fstopInput) {
+        let curStop = parseFloat(els.fstopInput.value);
+        if (isNaN(curStop) || curStop <= 1.05 || curStop > 50) {
+          curStop = 2.0;
+          els.fstopInput.value = '2.0';
+        }
+        state.fstop = curStop;
+      }
+
+      if (els.fpassLabel) els.fpassLabel.textContent = 'Normalize Geçirme (Ω_p)';
+      if (els.fpassUnit) els.fpassUnit.textContent = 'rad/s';
+      if (els.fstopLabel) els.fstopLabel.textContent = 'Normalize Durdurma (Ω_s = r)';
+      if (els.fstopUnit) els.fstopUnit.textContent = 'rad/s';
+
+      if (els.fpass2Group) els.fpass2Group.style.display = 'none';
+      if (els.fstop2Group) els.fstop2Group.style.display = 'none';
+      if (els.fpassHint) els.fpassHint.textContent = 'Normalize temel açısal frekans Ω_p = 1.0 rad/s.';
+      if (els.fstopHint) els.fstopHint.textContent = `Normalize durdurma bandı geçiş oranı r = ${state.fstop.toFixed(2)}.`;
+    } else {
+      if (els.filterTypeSelect) {
+        els.filterTypeSelect.disabled = false;
+        els.filterTypeSelect.title = '';
+        state.type = state.priorType || 'lowpass';
+        els.filterTypeSelect.value = state.type;
+      }
+
+      state.fpass = state.priorFpass || 1000;
+      state.fstop = state.priorFstop || 2500;
+      if (els.fpassInput) {
+        els.fpassInput.disabled = false;
+        els.fpassInput.value = state.fpass;
+      }
+      if (els.fstopInput) {
+        els.fstopInput.value = state.fstop;
+      }
+
+      const isBand = state.type === 'bandpass' || state.type === 'bandstop';
+      if (els.fpass2Group) els.fpass2Group.style.display = isBand ? 'flex' : 'none';
+      if (els.fstop2Group) els.fstop2Group.style.display = isBand ? 'flex' : 'none';
+
+      updateFrequencyLabelsAndUnits();
+      updateFrequencyHints();
+    }
+
+    if (triggerRecalc) recalculateAll();
+  }
+
   // Core Calculation Pipeline
   function recalculateAll() {
-    const isBand = state.type === 'bandpass' || state.type === 'bandstop';
-    const isRadS = state.unit === 'rad/s';
-    const fp = isBand ? [state.fpass, state.fpass2] : state.fpass;
-    const fs = isBand ? [state.fstop, state.fstop2] : state.fstop;
+    const isNorm = state.calcMode === 'normalized';
+    const isBand = !isNorm && (state.type === 'bandpass' || state.type === 'bandstop');
+    const isRadS = isNorm ? true : (state.unit === 'rad/s');
 
-    const toOmega = (v) => (isRadS ? v : 2 * Math.PI * v);
-    const wp = isBand ? [toOmega(fp[0]), toOmega(fp[1])] : toOmega(fp);
-    const ws = isBand ? [toOmega(fs[0]), toOmega(fs[1])] : toOmega(fs);
+    let fp, fs, wp, ws;
+    if (isNorm) {
+      fp = 1.0;
+      fs = Math.max(1.05, state.fstop);
+      wp = 1.0;
+      ws = fs; // transition ratio r = Omega_s
+    } else {
+      fp = isBand ? [state.fpass, state.fpass2] : state.fpass;
+      fs = isBand ? [state.fstop, state.fstop2] : state.fstop;
+      const toOmega = (v) => (isRadS ? v : 2 * Math.PI * v);
+      wp = isBand ? [toOmega(fp[0]), toOmega(fp[1])] : toOmega(fp);
+      ws = isBand ? [toOmega(fs[0]), toOmega(fs[1])] : toOmega(fs);
+    }
 
     // 1. Calculate Order
-    let calcN = FilterMath.calculateOrder(state.type, state.approx, state.passDb, state.stopDb, wp, ws);
+    const filterTypeForOrder = isNorm ? 'lowpass' : state.type;
+    let calcN = FilterMath.calculateOrder(filterTypeForOrder, state.approx, state.passDb, state.stopDb, wp, ws);
     let effectiveN = state.manualOrder ? state.order : calcN;
     state.order = effectiveN;
     if (!state.manualOrder && els.orderInput) {
@@ -709,23 +864,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Normalized Prototype (Chapter 2)
-    const proto = FilterMath.getNormalizedPrototype(state.approx, effectiveN, state.passDb, state.stopDb);
+    const ratio_r = isNorm ? ws : (isBand ? Math.abs(ws[0] - ws[1]) / Math.abs(wp[0] - wp[1]) : (Array.isArray(ws) ? ws[0] / wp[0] : ws / wp));
+    const proto = FilterMath.getNormalizedPrototype(state.approx, effectiveN, state.passDb, state.stopDb, ratio_r);
     state.proto = proto;
 
-    // 3. Unnormalize to target specs (Chapter 3) - supports isRadS directly
-    const filterModel = FilterMath.unnormalizeFilter(proto, state.type, fp, fs, isRadS);
+    // 3. Unnormalize to target specs (Chapter 3)
+    let filterModel;
+    if (isNorm) {
+      // Prototype filter with cutoff 1 rad/s
+      filterModel = FilterMath.unnormalizeFilter(proto, 'lowpass', 1.0 / (2 * Math.PI), ws / (2 * Math.PI), false);
+    } else {
+      filterModel = FilterMath.unnormalizeFilter(proto, state.type, fp, fs, isRadS);
+    }
     state.filterModel = filterModel;
 
     // 4. Synthesize Active Circuit (Chapter 4)
     const circuitModel = CircuitEngine.synthesizeCircuit(filterModel, state.baseC, state.baseRA, state.useStandard);
     state.circuitModel = circuitModel;
 
-    // 5. Update UI Summary and 2*pi*f conversion hints
-    updateFrequencyHints();
+    // 5. Update UI Summary and conversion hints
+    if (!isNorm) updateFrequencyHints();
     updateSummaryBanner(effectiveN, filterModel, circuitModel);
 
-    // 5b. Render Live Analytical Calculation Steps (Les Thede Chapter 2 Equations)
-    renderAnalyticalSteps(proto, filterModel, effectiveN);
+    // 5b. Render Live Analytical Calculation Steps & Substituted Formulas (Chapters 1-4)
+    renderComprehensiveFormulas(proto, filterModel, circuitModel, effectiveN);
 
     // 6. Draw Plots
     drawAllPlots();
@@ -742,9 +904,14 @@ document.addEventListener('DOMContentLoaded', () => {
     els.sumOrder.textContent = `N = ${n}`;
     els.sumStages.textContent = `${totalStages} Aşama (${totalStages} Op-Amp)`;
 
-    const isBand = state.type === 'bandpass' || state.type === 'bandstop';
-    const isRadS = state.unit === 'rad/s';
-    if (isBand) {
+    const isNorm = state.calcMode === 'normalized';
+    const isBand = !isNorm && (state.type === 'bandpass' || state.type === 'bandstop');
+    const isRadS = isNorm ? true : (state.unit === 'rad/s');
+
+    if (isNorm) {
+      els.sumW0.textContent = `Ω_p = 1.0 rad/s | Ω_s = ${state.fstop.toFixed(2)} rad/s (r = ${state.fstop.toFixed(2)})`;
+      els.sumGain.textContent = (state.proto && state.proto.gain) ? `G = ${state.proto.gain.toFixed(3)}` : 'G = 1.000';
+    } else if (isBand) {
       if (isRadS) {
         const w0 = Math.sqrt(state.fpass * state.fpass2);
         const f0 = w0 / (2 * Math.PI);
@@ -754,6 +921,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const w0 = 2 * Math.PI * f0;
         els.sumW0.textContent = `f₀ = ${f0.toFixed(1)} Hz (${w0.toFixed(0)} rad/s) | B = ${(state.fpass2 - state.fpass).toFixed(1)} Hz`;
       }
+      els.sumGain.textContent = `K_tot = ${circuitModel.Ktot.toFixed(3)}`;
     } else {
       if (isRadS) {
         const f = state.fpass / (2 * Math.PI);
@@ -762,13 +930,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const w = 2 * Math.PI * state.fpass;
         els.sumW0.textContent = `f_kesim = ${state.fpass} Hz (${w.toFixed(0)} rad/s)`;
       }
+      els.sumGain.textContent = `K_tot = ${circuitModel.Ktot.toFixed(3)}`;
     }
 
-    els.sumGain.textContent = `K_tot = ${circuitModel.Ktot.toFixed(3)}`;
-
     // Render transfer function H(s) in LaTeX or text
-    let latex = 'H(s) = ';
-    latex += `\\prod_{m=1}^{${totalStages}} H_m(s)`;
+    let latex = isNorm ? 'H(S) = ' : 'H(s) = ';
+    latex += `\\prod_{m=1}^{${totalStages}} ${isNorm ? 'H_m(S)' : 'H_m(s)'}`;
     if (window.katex && els.transferFuncMath) {
       try {
         window.katex.render(latex, els.transferFuncMath, { throwOnError: false });
@@ -778,264 +945,297 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Render Live Analytical Steps Card (Les Thede Chapter 2 Equations & Tables)
-  function renderAnalyticalSteps(proto, filterModel, effectiveN) {
-    const container = document.getElementById('analyticalStepsBody');
-    if (!container || !proto || !proto.details) return;
+  // Comprehensive Live Analytical Calculations & Formulas Window (Chapters 1, 2, 3, 4)
+  function renderComprehensiveFormulas(proto, filterModel, circuitModel, effectiveN) {
+    const inlineContainer = els.analyticalStepsBody;
+    const modalContainer = els.formulaModalBody;
+    if (!inlineContainer || !proto || !proto.details) return;
+
+    const isNorm = state.calcMode === 'normalized';
+    const isBand = !isNorm && (state.type === 'bandpass' || state.type === 'bandstop');
+    const isRadS = isNorm ? true : (state.unit === 'rad/s');
+    const toOmega = (v) => (isRadS ? v : 2 * Math.PI * v);
+
+    const wp_val = isNorm ? 1.0 : (isBand ? [toOmega(state.fpass), toOmega(state.fpass2)] : toOmega(state.fpass));
+    const ws_val = isNorm ? state.fstop : (isBand ? [toOmega(state.fstop), toOmega(state.fstop2)] : toOmega(state.fstop));
+
+    // Transition ratio r
+    let r_val = isNorm ? ws_val : 1.0;
+    if (!isNorm) {
+      if (state.type === 'lowpass') {
+        r_val = ws_val / wp_val;
+      } else if (state.type === 'highpass') {
+        r_val = wp_val / ws_val;
+      } else if (state.type === 'bandpass') {
+        const Bp = wp_val[1] - wp_val[0];
+        const w02 = wp_val[0] * wp_val[1];
+        const r1 = Math.abs((ws_val[0] * ws_val[0] - w02) / (Bp * ws_val[0]));
+        const r2 = Math.abs((ws_val[1] * ws_val[1] - w02) / (Bp * ws_val[1]));
+        r_val = Math.min(r1, r2);
+      } else if (state.type === 'bandstop') {
+        const Bp = wp_val[1] - wp_val[0];
+        const w02 = ws_val[0] * ws_val[1];
+        const r1 = Math.abs((Bp * ws_val[0]) / (ws_val[0] * ws_val[0] - w02));
+        const r2 = Math.abs((Bp * ws_val[1]) / (ws_val[1] * ws_val[1] - w02));
+        r_val = Math.min(r1, r2);
+      }
+    }
 
     const d = proto.details;
-    const isBand = state.type === 'bandpass' || state.type === 'bandstop';
-    const isRadS = state.unit === 'rad/s';
-    const toOmega = (v) => (isRadS ? v : 2 * Math.PI * v);
-    const wp_val = isBand ? toOmega(state.fpass) : toOmega(state.fpass);
-    const ws_val = isBand ? toOmega(state.fstop) : toOmega(state.fstop);
+    const eps = Math.sqrt(Math.pow(10, 0.1 * state.passDb) - 1);
+    const eps_s = Math.sqrt(Math.pow(10, 0.1 * state.stopDb) - 1);
 
-    let html = '';
+    // =========================================================================
+    // SECTION 1: CHAPTER 2 NORMALIZED PROTOTYPE FORMULAS & LIVE SUBSTITUTION
+    // =========================================================================
+    let orderDerivationHtml = '';
+    let geomParamHtml = '';
 
     if (d.approx === 'butterworth') {
-      const eps = d.eps;
-      const R = d.R;
-      const mRows = d.m_factors.map(f => `
-        <tr>
-          <td style="font-weight: 700; font-family: var(--font-mono); color: var(--accent); white-space: nowrap;">m = ${f.m}</td>
-          <td style="font-family: var(--font-mono); white-space: nowrap;">${f.theta_rad.toFixed(4)} rad (${f.theta_deg.toFixed(1)}°)</td>
-          <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${f.sigma.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); color: #10b981; white-space: nowrap;">±${f.omega.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B1.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B2.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); font-size: 12px; white-space: nowrap;">$H_${f.m}(S) = \\frac{${f.B2.toFixed(4)}}{S^2 + ${f.B1.toFixed(4)}S + ${f.B2.toFixed(4)}}$</td>
-        </tr>
-      `).join('');
+      const logRatio = Math.log10(eps_s / eps);
+      const logR = Math.log10(r_val);
+      const exactN = logRatio / logR;
+      orderDerivationHtml = `
+        <div>• <strong>Derece Hesabı (Denklem 2.8):</strong>
+          $$n_B \\ge \\frac{\\log_{10}(\\epsilon_s / \\epsilon)}{\\log_{10}(r)} = \\frac{\\log_{10}(${eps_s.toFixed(4)} / ${eps.toFixed(4)})}{\\log_{10}(${r_val.toFixed(4)})} = \\frac{${logRatio.toFixed(4)}}{${logR.toFixed(4)}} = ${exactN.toFixed(3)} \\implies n = ${effectiveN}$$
+        </div>
+      `;
+      geomParamHtml = `
+        <div>• <strong>Birim Çember Yarıçapı (Denklem 2.9):</strong>
+          $$R = \\epsilon^{-1/n} = (${eps.toFixed(4)})^{-1/${effectiveN}} = ${d.R.toFixed(5)}$$
+        </div>
+        <div>• <strong>Kutup Açı Formülü (Denklem 2.10):</strong>
+          $$\\theta_m = \\frac{2m + 1 + n}{2n}\\pi, \\quad m = 1, 2, \\dots, ${Math.floor(effectiveN / 2)}$$
+        </div>
+        <div>• <strong>Kutup Koordinatları & Biquad Katsayıları (Denklem 2.11, 2.12, 2.16, 2.17):</strong>
+          $$\\sigma_m = R\\cos\\theta_m, \\quad \\omega_m = R\\sin\\theta_m, \\quad B_{1,m} = -2\\sigma_m, \\quad B_{2,m} = R^2 = ${d.R.toFixed(5)}^2 = ${(d.R * d.R).toFixed(5)}$$
+        </div>
+      `;
+    } else if (d.approx === 'chebyshev') {
+      const numAc = Math.acosh(eps_s / eps);
+      const denAc = Math.acosh(r_val);
+      const exactN = numAc / denAc;
+      orderDerivationHtml = `
+        <div>• <strong>Derece Hesabı (Denklem 2.21):</strong>
+          $$n_C \\ge \\frac{\\cosh^{-1}(\\epsilon_s / \\epsilon)}{\\cosh^{-1}(r)} = \\frac{\\cosh^{-1}(${(eps_s / eps).toFixed(4)})}{\\cosh^{-1}(${r_val.toFixed(4)})} = \\frac{${numAc.toFixed(4)}}{${denAc.toFixed(4)}} = ${exactN.toFixed(3)} \\implies n = ${effectiveN}$$
+        </div>
+      `;
+      geomParamHtml = `
+        <div>• <strong>Elips Parametresi D (Denklem 2.23):</strong>
+          $$D = \\frac{1}{n}\\sinh^{-1}(1/\\epsilon) = \\frac{1}{${effectiveN}}\\sinh^{-1}(1/${eps.toFixed(4)}) = ${d.D.toFixed(5)}$$
+        </div>
+        <div>• <strong>Elips Eksenleri & Açı Formülü (Denklem 2.24 - 2.26):</strong>
+          $$a = \\sinh(D) = ${d.sinhD.toFixed(5)}, \\quad b = \\cosh(D) = ${d.coshD.toFixed(5)}, \\quad \\phi_m = \\frac{2m - 1}{2n}\\pi$$
+        </div>
+        <div>• <strong>Kutup Koordinatları & Biquad Katsayıları (Denklem 2.27 - 2.31):</strong>
+          $$\\sigma_m = -\\sinh(D)\\sin\\phi_m, \\quad \\omega_m = \\cosh(D)\\cos\\phi_m, \\quad B_{1,m} = -2\\sigma_m, \\quad B_{2,m} = \\sigma_m^2 + \\omega_m^2$$
+        </div>
+      `;
+    } else if (d.approx === 'inv_chebyshev') {
+      orderDerivationHtml = `
+        <div>• <strong>Derece Hesabı (Denklem 2.21):</strong>
+          $$n_{IC} \\ge \\frac{\\cosh^{-1}(\\epsilon_s / \\epsilon)}{\\cosh^{-1}(r)} \\implies n = ${effectiveN}$$
+        </div>
+      `;
+      geomParamHtml = `
+        <div>• <strong>Durdurma Bandı Parametresi D_s (Denklem 2.28):</strong>
+          $$D_s = \\frac{1}{n}\\sinh^{-1}(\\epsilon_s) = \\frac{1}{${effectiveN}}\\sinh^{-1}(${eps_s.toFixed(4)}) = ${(Math.asinh(eps_s) / effectiveN).toFixed(5)}$$
+        </div>
+        <div>• <strong>İletim Sıfırları & Kutup Formülleri (Denklem 2.29 - 2.31):</strong>
+          $$\\omega_{z,m} = \\frac{1}{\\cos\\phi_m}, \\quad \\sigma_m = \\frac{-\\sinh(D_s)\\sin\\phi_m}{\\sinh^2(D_s)\\sin^2\\phi_m + \\cosh^2(D_s)\\cos^2\\phi_m}$$
+        </div>
+      `;
+    } else if (d.approx === 'elliptic') {
+      orderDerivationHtml = `
+        <div>• <strong>Jacobi Eliptik Modülü ve Derece Hesabı (Bölüm 2.5):</strong>
+          $$k = \\frac{1}{r} = \\frac{1}{${r_val.toFixed(4)}} = ${(1 / r_val).toFixed(4)}, \\quad k_1 = \\frac{\\epsilon}{\\epsilon_s} = \\frac{${eps.toFixed(4)}}{${eps_s.toFixed(4)}} = ${(eps / eps_s).toFixed(4)} \\implies N_{\\min} = ${effectiveN}$$
+        </div>
+      `;
+      geomParamHtml = `
+        <div>• <strong>Eliptik Rasyonel Fonksiyonlar:</strong> Hem geçirme hem durdurma bandında Chebyshev polinomları yerine Jacobi $cd(u, k)$ eliptik fonksiyonları kullanılır.</div>
+      `;
+    }
 
-      const realPoleRow = d.realPole ? `
+    // Rows for table in Step 1
+    let mRowsHtml = '';
+    if (d.m_factors && d.m_factors.length > 0) {
+      d.m_factors.forEach(f => {
+        const wzCol = (d.approx === 'inv_chebyshev' || d.approx === 'elliptic')
+          ? `<td style="font-family: var(--font-mono); color: #8b5cf6; white-space: nowrap;">±j${(f.wz || 0).toFixed(4)}</td>`
+          : '';
+        const angleCol = f.theta_rad !== undefined
+          ? `${f.theta_rad.toFixed(4)} rad (${f.theta_deg.toFixed(1)}°)`
+          : (f.phi_rad !== undefined ? `${f.phi_rad.toFixed(4)} rad (${f.phi_deg.toFixed(1)}°)` : '-');
+
+        const biquadEq = (d.approx === 'inv_chebyshev' && f.wz)
+          ? `$\\frac{${(f.B2 / (f.wz * f.wz)).toFixed(4)}S^2 + ${f.B2.toFixed(4)}}{S^2 + ${f.B1.toFixed(4)}S + ${f.B2.toFixed(4)}}$`
+          : `$\\frac{${f.B2.toFixed(4)}}{S^2 + ${f.B1.toFixed(4)}S + ${f.B2.toFixed(4)}}$`;
+
+        mRowsHtml += `
+          <tr>
+            <td style="font-weight: 700; font-family: var(--font-mono); color: var(--accent); white-space: nowrap;">Kat ${f.m}</td>
+            <td style="font-family: var(--font-mono); white-space: nowrap;">${angleCol}</td>
+            <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${f.sigma.toFixed(5)}</td>
+            <td style="font-family: var(--font-mono); color: #10b981; white-space: nowrap;">±j${f.omega.toFixed(5)}</td>
+            ${wzCol}
+            <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B1.toFixed(5)}</td>
+            <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B2.toFixed(5)}</td>
+            <td style="font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap;">${biquadEq}</td>
+          </tr>
+        `;
+      });
+    }
+
+    let realPoleRowHtml = '';
+    if (d.realPole) {
+      const wzCol = (d.approx === 'inv_chebyshev' || d.approx === 'elliptic') ? `<td>-</td>` : '';
+      realPoleRowHtml = `
         <tr style="background: rgba(61,90,254,0.03);">
           <td style="font-weight: 700; font-family: var(--font-mono); color: #3d5afe; white-space: nowrap;">1. Derece (Reel)</td>
           <td style="font-family: var(--font-mono); white-space: nowrap;">π rad (180.0°)</td>
           <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${d.realPole.sigma_R.toFixed(5)}</td>
           <td style="font-family: var(--font-mono); color: #787774; white-space: nowrap;">0.00000</td>
+          ${wzCol}
           <td style="font-family: var(--font-mono); white-space: nowrap;">-</td>
           <td style="font-family: var(--font-mono); white-space: nowrap;">${d.realPole.B2.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); font-size: 12px; white-space: nowrap;">$H_0(S) = \\frac{${d.realPole.B2.toFixed(4)}}{S + ${d.realPole.B2.toFixed(4)}}$</td>
+          <td style="font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap;">$\\frac{${d.realPole.B2.toFixed(4)}}{S + ${d.realPole.B2.toFixed(4)}}$</td>
         </tr>
-      ` : '';
-
-      html = `
-        <div style="display: flex; flex-direction: column; gap: 14px;">
-          <!-- Top Parameter Badges -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px;">
-            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
-              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">DALGALANMA FAKTÖRÜ (Denklem 2.7)</div>
-              <div style="font-size: 15px; font-weight: 700; color: var(--text-h); font-family: var(--font-mono); margin-top: 2px;">
-                $\\epsilon = \\sqrt{10^{${(d.A_pass/10).toFixed(2)}} - 1} = ${eps.toFixed(6)}$
-              </div>
-            </div>
-
-            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
-              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">FİLTRE DERECESİ (Denklem 2.8)</div>
-              <div style="font-size: 15px; font-weight: 700; color: var(--text-h); font-family: var(--font-mono); margin-top: 2px;">
-                $n_B = ${effectiveN}$ (Yuvarlanan Tamsayı)
-              </div>
-            </div>
-
-            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; border-left: 3px solid var(--accent);">
-              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">ÇEMBER YARIÇAPI (Denklem 2.9)</div>
-              <div style="font-size: 15px; font-weight: 700; color: var(--accent); font-family: var(--font-mono); margin-top: 2px;">
-                $R = \\epsilon^{-1/n} = ${R.toFixed(6)}$
-              </div>
-            </div>
-          </div>
-
-          <!-- Step by Step Equations Summary -->
-          <div style="background: #fafaf9; border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px;">
-            <div style="font-size: 12.5px; font-weight: 700; color: var(--text-h); margin-bottom: 6px;">
-              Les Thede Bölüm 2.2 Analitik Kutup ve Katsayı Formülleri:
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 8px; font-size: 12px; color: var(--text);">
-              <div>• <strong>Açı Hesabı (2.10):</strong> $\\theta_m = \\frac{2m + 1 + n}{2n}\\pi$</div>
-              <div>• <strong>Kutup Koordinatları (2.11 & 2.12):</strong> $\\sigma_m = R\\cos\\theta_m, \\; \\omega_m = R\\sin\\theta_m$</div>
-              <div>• <strong>Biquad Katsayıları (2.16 & 2.17):</strong> $B_{1,m} = -2\\sigma_m, \\; B_{2,m} = \\sigma_m^2 + \\omega_m^2 = R^2$</div>
-              <div>• <strong>Tek Derece Reel Kutup (2.13 & 2.14):</strong> $\\sigma_R = -R \\implies H_0(S) = \\frac{R}{S + R}$</div>
-            </div>
-          </div>
-
-          <!-- Poles and Biquad Table -->
-          <div style="overflow-x: auto;">
-            <table class="compare-table" style="font-size: 12px; width: 100%;">
-              <thead>
-                <tr>
-                  <th style="white-space: nowrap;">Kat (m)</th>
-                  <th style="white-space: nowrap;">Açı ($\\theta_m$)</th>
-                  <th style="white-space: nowrap;">Reel ($\\sigma_m$)</th>
-                  <th style="white-space: nowrap;">İmajiner ($\\pm\\omega_m$)</th>
-                  <th style="white-space: nowrap;">$B_{1,m}$ ($-2\\sigma_m$)</th>
-                  <th style="white-space: nowrap;">$B_{2,m}$ ($R^2$)</th>
-                  <th style="white-space: nowrap;">Normalize Biquad Katı $H_m(S)$ (Denklem 2.15)</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${mRows}
-                ${realPoleRow}
-              </tbody>
-            </table>
-          </div>
-        </div>
       `;
-    } else if (d.approx === 'chebyshev') {
-      const eps = d.eps;
-      const D = d.D;
-      const mRows = d.m_factors.map(f => `
-        <tr>
-          <td style="font-weight: 700; font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">m = ${f.m}</td>
-          <td style="font-family: var(--font-mono); white-space: nowrap;">${f.phi_rad.toFixed(4)} rad (${f.phi_deg.toFixed(1)}°)</td>
-          <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${f.sigma.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); color: #10b981; white-space: nowrap;">±${f.omega.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B1.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B2.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); font-size: 12px; white-space: nowrap;">$H_${f.m}(S) = \\frac{${f.B2.toFixed(4)}}{S^2 + ${f.B1.toFixed(4)}S + ${f.B2.toFixed(4)}}$</td>
-        </tr>
-      `).join('');
+    }
 
-      const realPoleRow = d.realPole ? `
-        <tr style="background: rgba(239,68,68,0.03);">
-          <td style="font-weight: 700; font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">1. Derece (Reel)</td>
-          <td style="font-family: var(--font-mono); white-space: nowrap;">-</td>
-          <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${d.realPole.sigma_R.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); color: #787774; white-space: nowrap;">0.00000</td>
-          <td style="font-family: var(--font-mono); white-space: nowrap;">-</td>
-          <td style="font-family: var(--font-mono); white-space: nowrap;">${d.realPole.B2.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); font-size: 12px; white-space: nowrap;">$H_0(S) = \\frac{${d.realPole.B2.toFixed(4)}}{S + ${d.realPole.B2.toFixed(4)}}$</td>
-        </tr>
-      ` : '';
+    // =========================================================================
+    // SECTION 2: CHAPTER 3 FREQUENCY TRANSFORMATIONS (Normalize Olmayan modda)
+    // =========================================================================
+    let section2Html = '';
+    if (!isNorm) {
+      let typeTitle = '';
+      let transformKernel = '';
+      let paramDerivation = '';
+      let biquadScalingDesc = '';
 
-      html = `
-        <div style="display: flex; flex-direction: column; gap: 14px;">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
-              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">DALGALANMA FAKTÖRÜ (Denklem 2.20)</div>
-              <div style="font-size: 15px; font-weight: 700; color: var(--text-h); font-family: var(--font-mono); margin-top: 2px;">
-                $\\epsilon = ${eps.toFixed(6)}$
-              </div>
+      if (state.type === 'lowpass') {
+        typeTitle = 'Alçak Geçiren (Lowpass Dönüşümü: LP → LP, Denklem 3.1 & 3.2)';
+        transformKernel = 'S \\leftarrow \\frac{s}{\\omega_0}';
+        const w0 = Array.isArray(wp_val) ? wp_val[0] : wp_val;
+        paramDerivation = `
+          $$\\omega_0 = 2\\pi \\cdot f_{\\text{pass}} = 2\\pi \\cdot ${state.fpass} = ${w0.toFixed(2)}\\text{ rad/s}$$
+        `;
+        biquadScalingDesc = `
+          Normalize katın paydasındaki $S$ yerine $\\frac{s}{\\omega_0}$ yazıldığında:
+          $$H_m(s) = \\left. \\frac{B_2}{S^2 + B_1 S + B_2} \\right|_{S = \\frac{s}{\\omega_0}} = \\frac{B_2 \\omega_0^2}{s^2 + (B_1 \\omega_0) s + (B_2 \\omega_0^2)}$$
+          Buradan gerçek biquad katsayıları:
+          $$b_{1,m} = B_{1,m} \\cdot \\omega_0 = B_{1,m} \\cdot ${w0.toFixed(1)}$$
+          $$b_{2,m} = B_{2,m} \\cdot \\omega_0^2 = B_{2,m} \\cdot (${w0.toFixed(1)})^2$$
+        `;
+      } else if (state.type === 'highpass') {
+        typeTitle = 'Yüksek Geçiren (Highpass Dönüşümü: LP → HP, Denklem 3.5 & 3.6)';
+        transformKernel = 'S \\leftarrow \\frac{\\omega_0}{s}';
+        const w0 = Array.isArray(wp_val) ? wp_val[0] : wp_val;
+        paramDerivation = `
+          $$\\omega_0 = 2\\pi \\cdot f_{\\text{pass}} = 2\\pi \\cdot ${state.fpass} = ${w0.toFixed(2)}\\text{ rad/s}$$
+        `;
+        biquadScalingDesc = `
+          Normalize katın paydasındaki $S$ yerine $\\frac{\\omega_0}{s}$ yazıldığında:
+          $$H_m(s) = \\left. \\frac{B_2}{S^2 + B_1 S + B_2} \\right|_{S = \\frac{\\omega_0}{s}} = \\frac{s^2}{s^2 + \\left(\\frac{B_1 \\omega_0}{B_2}\\right) s + \\left(\\frac{\\omega_0^2}{B_2}\\right)}$$
+          Buradan gerçek biquad katsayıları:
+          $$b_{1,m} = \\frac{B_{1,m} \\cdot \\omega_0}{B_{2,m}}, \\quad b_{2,m} = \\frac{\\omega_0^2}{B_{2,m}}$$
+        `;
+      } else if (state.type === 'bandpass') {
+        typeTitle = 'Bant Geçiren (Bandpass Dönüşümü: LP → BP, Denklem 3.12 - 3.14)';
+        transformKernel = 'S \\leftarrow \\frac{s^2 + \\omega_0^2}{B s}';
+        const w0 = Math.sqrt(wp_val[0] * wp_val[1]);
+        const B = wp_val[1] - wp_val[0];
+        paramDerivation = `
+          $$\\omega_0 = \\sqrt{\\omega_{p1} \\cdot \\omega_{p2}} = \\sqrt{${wp_val[0].toFixed(1)} \\cdot ${wp_val[1].toFixed(1)}} = ${w0.toFixed(2)}\\text{ rad/s}$$
+          $$B = \\omega_{p2} - \\omega_{p1} = ${wp_val[1].toFixed(1)} - ${wp_val[0].toFixed(1)} = ${B.toFixed(2)}\\text{ rad/s}, \\quad Q = \\frac{\\omega_0}{B} = ${(w0 / B).toFixed(3)}$$
+        `;
+        biquadScalingDesc = `
+          Her 2. derece normalize prototip katı ($S^2 + B_1 S + B_2$), geometrik simetrik iki adet 2. derece bant geçiren biquad kata ayrışır:
+          $$\\omega_{01} = \\omega_0 \\left(1 + \\frac{B}{2\\omega_0}\\right), \\quad \\omega_{02} = \\omega_0 \\left(1 + \\frac{B}{2\\omega_0}\\right)^{-1}$$
+        `;
+      } else if (state.type === 'bandstop') {
+        typeTitle = 'Bant Söndüren (Bandstop / Çentik Dönüşümü: LP → BS, Denklem 3.20 - 3.22)';
+        transformKernel = 'S \\leftarrow \\frac{B s}{s^2 + \\omega_0^2}';
+        const w0 = Math.sqrt(ws_val[0] * ws_val[1]);
+        const B = wp_val[1] - wp_val[0];
+        paramDerivation = `
+          $$\\omega_0 = \\sqrt{\\omega_{s1} \\cdot \\omega_{s2}} = \\sqrt{${ws_val[0].toFixed(1)} \\cdot ${ws_val[1].toFixed(1)}} = ${w0.toFixed(2)}\\text{ rad/s}$$
+          $$B = \\omega_{p2} - \\omega_{p1} = ${wp_val[1].toFixed(1)} - ${wp_val[0].toFixed(1)} = ${B.toFixed(2)}\\text{ rad/s}$$
+        `;
+        biquadScalingDesc = `
+          $j\\omega_0$ sanal ekseninde saf imajiner sıfırlar $\\pm j\\omega_0$ oluşturularak derin çentik zayıflatması sağlanır:
+          $$H_m(s) = \\frac{s^2 + \\omega_0^2}{s^2 + b_1 s + \\omega_0^2}$$
+        `;
+      }
+
+      // Stage rows for unnormalized filter model
+      let unnormStagesRows = '';
+      if (filterModel && filterModel.stages) {
+        filterModel.stages.forEach((st, idx) => {
+          const numStr = st.order === 1
+            ? (st.stageType === 'highpass_1st' ? 's' : `${(st.b2 || 0).toFixed(1)}`)
+            : (st.a2 && st.a0 ? `${st.a2.toFixed(3)}s^2 + ${st.a0.toFixed(1)}` : (st.a2 ? 's^2' : (st.a1 ? `${st.a1.toFixed(1)}s` : `${st.b2.toFixed(1)}`)));
+          const denStr = st.order === 1
+            ? `s + ${st.b2.toFixed(1)}`
+            : `s^2 + ${st.b1.toFixed(1)}s + ${st.b2.toFixed(1)}`;
+
+          unnormStagesRows += `
+            <tr>
+              <td style="font-weight: 700; font-family: var(--font-mono); color: #10b981;">Aşama ${idx + 1}</td>
+              <td>${st.order}. Derece (${st.stageType})</td>
+              <td style="font-family: var(--font-mono);">${st.w0 ? st.w0.toFixed(1) : '-'} rad/s (${(st.w0 / (2 * Math.PI)).toFixed(1)} Hz)</td>
+              <td style="font-family: var(--font-mono); font-weight: 600;">Q = ${st.Q ? st.Q.toFixed(3) : '-'}</td>
+              <td style="font-family: var(--font-mono);">${st.b1 ? st.b1.toFixed(2) : '-'}</td>
+              <td style="font-family: var(--font-mono);">${st.b2.toFixed(2)}</td>
+              <td style="font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap;">$H_${idx + 1}(s) = \\frac{${numStr}}{${denStr}}$</td>
+            </tr>
+          `;
+        });
+      }
+
+      section2Html = `
+        <div class="formula-step-card stage-ch3">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="stage-badge" style="background: #10b981; color: #fff; font-weight: 700;">AŞAMA 2</span>
+              <strong style="font-size: 15px; color: var(--text-h);">${typeTitle}</strong>
             </div>
-            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
-              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">ELİPS PARAMETRESİ D (Denklem 2.23)</div>
-              <div style="font-size: 15px; font-weight: 700; color: #ef4444; font-family: var(--font-mono); margin-top: 2px;">
-                $D = ${D.toFixed(6)}$ ($\\sinh=${d.sinhD.toFixed(4)}, \\cosh=${d.coshD.toFixed(4)}$)
-              </div>
+            <span class="stage-badge" style="background: rgba(16,185,129,0.1); color: #10b981;">Frekans Dönüşümü</span>
+          </div>
+
+          <div class="formula-param-grid">
+            <div class="formula-param-item">
+              <div class="formula-param-label">Dönüşüm Çekirdeği Formülü</div>
+              <div class="formula-param-val" style="color: #10b981;">$${transformKernel}$</div>
             </div>
-            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
-              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">KAZANÇ AYARI (Denklem 2.32)</div>
-              <div style="font-size: 15px; font-weight: 700; color: var(--text-h); font-family: var(--font-mono); margin-top: 2px;">
-                ${effectiveN % 2 === 0 ? `$G = 10^{0.05 a_p} = ${d.G_even.toFixed(4)}$` : `$G = 1.0$ (Tek $n$)`}
-              </div>
+            <div class="formula-param-item">
+              <div class="formula-param-label">Frekans Birimi</div>
+              <div class="formula-param-val">${isRadS ? 'Açısal (rad/s)' : 'Hertz (Hz) → ω = 2πf'}</div>
             </div>
           </div>
 
-          <div style="overflow-x: auto;">
-            <table class="compare-table" style="font-size: 12px; width: 100%;">
+          <div class="formula-math-box">
+            ${paramDerivation}
+            <div style="font-size: 13px; color: var(--text); margin-top: 6px;">
+              ${biquadScalingDesc}
+            </div>
+          </div>
+
+          <div class="formula-table-wrap">
+            <table>
               <thead>
                 <tr>
-                  <th style="white-space: nowrap;">Kat (m)</th>
-                  <th style="white-space: nowrap;">Açı ($\\phi_m$)</th>
-                  <th style="white-space: nowrap;">Reel ($\\sigma_m$)</th>
-                  <th style="white-space: nowrap;">İmajiner ($\\pm\\omega_m$)</th>
-                  <th style="white-space: nowrap;">$B_{1,m}$</th>
-                  <th style="white-space: nowrap;">$B_{2,m}$</th>
-                  <th style="white-space: nowrap;">Normalize Biquad Katı $H_m(S)$ (Denklem 2.29)</th>
+                  <th>Aşama</th>
+                  <th>Kat Yapısı</th>
+                  <th>Kutup Frekansı (ω₀)</th>
+                  <th>Kalite Faktörü (Q)</th>
+                  <th>b₁ Katsayısı</th>
+                  <th>b₂ Katsayısı</th>
+                  <th>Gerçek Frekanslı Transfer Katı H(s)</th>
                 </tr>
               </thead>
               <tbody>
-                ${mRows}
-                ${realPoleRow}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
-    } else if (d.approx === 'inv_chebyshev') {
-      const mRows = d.m_factors.map(f => `
-        <tr>
-          <td style="font-weight: 700; font-family: var(--font-mono); color: #10b981; white-space: nowrap;">m = ${f.m}</td>
-          <td style="font-family: var(--font-mono); white-space: nowrap;">${f.phi_rad.toFixed(4)} rad</td>
-          <td style="font-family: var(--font-mono); color: #10b981; white-space: nowrap;">±${f.wz.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${f.sigma.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); color: #10b981; white-space: nowrap;">±${f.omega.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B1.toFixed(5)}</td>
-          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B2.toFixed(5)}</td>
-        </tr>
-      `).join('');
-
-      html = `
-        <div style="display: flex; flex-direction: column; gap: 14px;">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
-            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
-              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">DURDURMA FAKTÖRÜ ε_s (Denklem 2.27)</div>
-              <div style="font-size: 15px; font-weight: 700; color: #10b981; font-family: var(--font-mono); margin-top: 2px;">
-                $\\epsilon_s = ${d.eps_s.toFixed(6)}$
-              </div>
-            </div>
-            <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
-              <div style="font-size: 11px; color: var(--muted); font-weight: 600;">İLETİM SIFIRLARI (Denklem 2.29)</div>
-              <div style="font-size: 15px; font-weight: 700; color: var(--text-h); font-family: var(--font-mono); margin-top: 2px;">
-                $\\omega_{z,m} = 1 / \\cos(\\phi_m)$
-              </div>
-            </div>
-          </div>
-
-          <div style="overflow-x: auto;">
-            <table class="compare-table" style="font-size: 12px; width: 100%;">
-              <thead>
-                <tr>
-                  <th style="white-space: nowrap;">Kat (m)</th>
-                  <th style="white-space: nowrap;">Açı ($\\phi_m$)</th>
-                  <th style="white-space: nowrap;">Sıfır ($\\pm j\\omega_{z,m}$)</th>
-                  <th style="white-space: nowrap;">Reel ($\\sigma_m$)</th>
-                  <th style="white-space: nowrap;">İmajiner ($\\pm\\omega_m$)</th>
-                  <th style="white-space: nowrap;">$B_{1,m}$</th>
-                  <th style="white-space: nowrap;">$B_{2,m}$</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${mRows}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
-    } else if (d.approx === 'elliptic') {
-      const mRows = d.m_factors.map(f => `
-        <tr>
-          <td style="font-weight: 700; font-family: var(--font-mono); color: #8b5cf6; white-space: nowrap;">m = ${f.m}</td>
-          <td style="font-family: var(--font-mono); color: #8b5cf6; white-space: nowrap;">±${f.wz.toFixed(4)}</td>
-          <td style="font-family: var(--font-mono); color: #ef4444; white-space: nowrap;">${f.sigma.toFixed(4)}</td>
-          <td style="font-family: var(--font-mono); color: #10b981; white-space: nowrap;">±${f.omega.toFixed(4)}</td>
-          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B1.toFixed(4)}</td>
-          <td style="font-family: var(--font-mono); font-weight: 600; white-space: nowrap;">${f.B2.toFixed(4)}</td>
-        </tr>
-      `).join('');
-
-      html = `
-        <div style="display: flex; flex-direction: column; gap: 14px;">
-          <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px;">
-            <div style="font-size: 11px; color: var(--muted); font-weight: 600;">ELİPTİK (CAUER) MODÜL PARAMETRELERİ (Bölüm 2.5)</div>
-            <div style="font-size: 14px; font-weight: 600; color: var(--text-h); font-family: var(--font-mono); margin-top: 4px;">
-              $k = \\omega_p / \\omega_s = ${(wp_val / ws_val).toFixed(4)}$ | $N_{\\text{min}} = ${effectiveN}$ (Jacobi Eliptik Rasyonel Katları)
-            </div>
-          </div>
-
-          <div style="overflow-x: auto;">
-            <table class="compare-table" style="font-size: 12px; width: 100%;">
-              <thead>
-                <tr>
-                  <th style="white-space: nowrap;">Kat (m)</th>
-                  <th style="white-space: nowrap;">İletim Sıfırı ($\\pm j\\omega_z$)</th>
-                  <th style="white-space: nowrap;">Kutup Reel ($\\sigma$)</th>
-                  <th style="white-space: nowrap;">Kutup İmajiner ($\\pm\\omega$)</th>
-                  <th style="white-space: nowrap;">$B_{1,m}$</th>
-                  <th style="white-space: nowrap;">$B_{2,m}$</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${mRows}
+                ${unnormStagesRows}
               </tbody>
             </table>
           </div>
@@ -1043,29 +1243,275 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
-    container.innerHTML = html;
+    // =========================================================================
+    // SECTION 3: CHAPTER 4 ACTIVE OP-AMP CIRCUIT SYNTHESIS (Normalize Olmayan modda)
+    // =========================================================================
+    let section3Html = '';
+    if (!isNorm && circuitModel && circuitModel.stages) {
+      let stagesCircuitRows = '';
+      circuitModel.stages.forEach(st => {
+        const lbl = st.labels || {};
+        let compSummary = '';
+        if (lbl.R1 && lbl.R2) {
+          compSummary = `R₁ = ${lbl.R1}, R₂ = ${lbl.R2}, C₁ = ${lbl.C1 || '-'}, C₂ = ${lbl.C2 || '-'}`;
+        } else if (lbl.R1 && lbl.C1) {
+          compSummary = `R₁ = ${lbl.R1}, C₁ = ${lbl.C1}`;
+        } else if (lbl.R && lbl.C) {
+          compSummary = `R = ${lbl.R}, C = ${lbl.C}${lbl.R_half ? `, R/2 = ${lbl.R_half}` : ''}${lbl.C_double ? `, 2C = ${lbl.C_double}` : ''}`;
+        } else {
+          compSummary = 'R, C Elemanları';
+        }
 
-    // Trigger KaTeX rendering on math in the container
+        const gainResistors = (lbl.RA && lbl.RB)
+          ? `R_A = ${lbl.RA}, R_B = ${lbl.RB}`
+          : (st.K === 1 ? 'Tampon (Geribesleme Direnci Gerekmez)' : '-');
+
+        stagesCircuitRows += `
+          <tr>
+            <td style="font-weight: 700; font-family: var(--font-mono); color: #f59e0b;">Kat ${st.stageNum}</td>
+            <td>${st.topology}</td>
+            <td style="font-family: var(--font-mono); font-weight: 700; color: #3d5afe;">K = ${st.K ? st.K.toFixed(3) : '1.000'}</td>
+            <td style="font-family: var(--font-mono);">${compSummary}</td>
+            <td style="font-family: var(--font-mono);">${gainResistors}</td>
+          </tr>
+        `;
+      });
+
+      const div = circuitModel.divider;
+      const divHtml = div && div.needed ? `
+        <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.25); border-radius: 6px; padding: 12px 16px; margin-top: 12px;">
+          <div style="font-size: 13px; font-weight: 700; color: #b45309; margin-bottom: 4px;">
+            ⚡ Çıkış Gerilim Bölücüsü ile Kazanç Dengeleme (0 dB DC Kazanç Hedefi):
+          </div>
+          <div style="font-size: 12.5px; color: var(--text);">
+            Filtre katlarının toplam kazancı $K_{\\text{tot}} = ${circuitModel.Ktot.toFixed(3)}$ olduğundan, hedef $1.000$ kazancı elde etmek için çıkış gerilim bölücüsü zayıflatması:
+            $$G_A = \\frac{1}{K_{\\text{tot}}} = \\frac{1}{${circuitModel.Ktot.toFixed(3)}} = ${div.GA.toFixed(3)}$$
+            Hedef $10\\text{ k}\\Omega$ çıkış empedansı için bölücü dirençleri:
+            $$R_x = \\frac{R_{\\text{hedef}}}{G_A} = ${div.labelRx}, \\quad R_y = \\frac{R_{\\text{hedef}}}{1 - G_A} = ${div.labelRy}$$
+          </div>
+        </div>
+      ` : `
+        <div style="background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.25); border-radius: 6px; padding: 10px 14px; margin-top: 12px; font-size: 12.5px; color: #065f46;">
+          ✓ Toplam devre kazancı hedeflenen kazanç ile uyumludur ($K_{\\text{tot}} = ${circuitModel.Ktot.toFixed(3)}$), ilave gerilim bölücü zayıflatması gerekmez.
+        </div>
+      `;
+
+      section3Html = `
+        <div class="formula-step-card stage-ch4">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="stage-badge" style="background: #f59e0b; color: #fff; font-weight: 700;">AŞAMA 3</span>
+              <strong style="font-size: 15px; color: var(--text-h);">Op-Amp Aktif Devre Sentezi & Eleman Değerleri Formülleri (Les Thede Bölüm 4)</strong>
+            </div>
+            <span class="stage-badge" style="background: rgba(245,158,11,0.1); color: #f59e0b;">Sallen-Key Devreleri</span>
+          </div>
+
+          <div class="formula-param-grid">
+            <div class="formula-param-item">
+              <div class="formula-param-label">Seçilen Taban Kapasitör (C)</div>
+              <div class="formula-param-val" style="color: #f59e0b;">${(state.baseC * 1e9).toFixed(1)} nF</div>
+            </div>
+            <div class="formula-param-item">
+              <div class="formula-param-label">Geri Besleme Referans Direnci (RA)</div>
+              <div class="formula-param-val">10.0 kΩ</div>
+            </div>
+            <div class="formula-param-item">
+              <div class="formula-param-label">Standart Değer Yuvarlama</div>
+              <div class="formula-param-val">${state.useStandard ? 'E24 / E12 Standart Değerler' : 'Hassas (Tam) Değerler'}</div>
+            </div>
+          </div>
+
+          <div class="formula-math-box">
+            <div style="font-weight: 700; color: var(--text-h); margin-bottom: 4px;">Devre Elemanı Tasarım Formülleri (Denklem 4.6 - 4.12):</div>
+            <div>• <strong>Eşit Direnç Formülü:</strong> $R = \\frac{1}{C\\sqrt{b_2}}$ (1. Derece RC Tampon katı için: $R = \\frac{1}{b_2 C}$)</div>
+            <div>• <strong>Op-Amp DC Kazancı Formülü:</strong> $K = 3 - \\frac{b_1}{\\sqrt{b_2}}$ (1. Derece Tampon için: $K = 1.0$)</div>
+            <div>• <strong>Geri Besleme Direnci Formülü:</strong> $R_B = (K - 1) \\cdot R_A = (K - 1) \\cdot 10\\text{ k}\\Omega$</div>
+          </div>
+
+          <div class="formula-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kat</th>
+                  <th>Devre Topolojisi</th>
+                  <th>Kat Kazancı (K)</th>
+                  <th>Filtre Elemanları (R & C)</th>
+                  <th>Geri Besleme Dirençleri (RA & RB)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${stagesCircuitRows}
+              </tbody>
+            </table>
+          </div>
+
+          ${divHtml}
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // COMBINED HTML COMPOSITION
+    // =========================================================================
+    const fullHtml = `
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- STAGE 1: Chapter 2 Normalized Prototype -->
+        <div class="formula-step-card stage-ch2">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="stage-badge" style="background: #3d5afe; color: #fff; font-weight: 700;">AŞAMA 1</span>
+              <strong style="font-size: 15px; color: var(--text-h);">Normalize Filtre Prototipi & Yaklaşım Fonksiyonu Hesabı (Les Thede Bölüm 2)</strong>
+            </div>
+            <span class="stage-badge" style="background: rgba(61,90,254,0.1); color: #3d5afe;">Ω_p = 1.0 rad/s Prototip</span>
+          </div>
+
+          <!-- Top Parameter Cards -->
+          <div class="formula-param-grid">
+            <div class="formula-param-item">
+              <div class="formula-param-label">Geçiş Oranı (r = Ω_s / Ω_p)</div>
+              <div class="formula-param-val" style="color: #3d5afe;">r = ${r_val.toFixed(4)}</div>
+            </div>
+            <div class="formula-param-item">
+              <div class="formula-param-label">Dalgalanma Faktörü (ε)</div>
+              <div class="formula-param-val">$$\\epsilon = \\sqrt{10^{0.1 \\cdot ${state.passDb}} - 1} = ${eps.toFixed(5)}$$</div>
+            </div>
+            <div class="formula-param-item">
+              <div class="formula-param-label">Durdurma Faktörü (ε_s)</div>
+              <div class="formula-param-val">$$\\epsilon_s = \\sqrt{10^{0.1 \\cdot ${state.stopDb}} - 1} = ${eps_s.toFixed(5)}$$</div>
+            </div>
+            <div class="formula-param-item">
+              <div class="formula-param-label">Filtre Derecesi (n)</div>
+              <div class="formula-param-val" style="color: var(--accent);">n = ${effectiveN} ${state.manualOrder ? '(Manuel)' : '(Otomatik)'}</div>
+            </div>
+          </div>
+
+          <!-- Equations Box -->
+          <div class="formula-math-box">
+            ${orderDerivationHtml}
+            ${geomParamHtml}
+          </div>
+
+          <!-- Prototype Table -->
+          <div class="formula-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kat</th>
+                  <th>Kutup Açısı</th>
+                  <th>Reel (σ)</th>
+                  <th>İmajiner (±jω)</th>
+                  ${(d.approx === 'inv_chebyshev' || d.approx === 'elliptic') ? '<th>Sıfır (±jω_z)</th>' : ''}
+                  <th>B₁ Katsayısı</th>
+                  <th>B₂ Katsayısı</th>
+                  <th>Normalize Biquad Katı H_m(S)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${mRowsHtml}
+                ${realPoleRowHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- STAGE 2: Chapter 3 Frequency Transformations -->
+        ${section2Html}
+
+        <!-- STAGE 3: Chapter 4 Active Circuits -->
+        ${section3Html}
+      </div>
+    `;
+
+    // Render into inline accordion container
+    inlineContainer.innerHTML = fullHtml;
+
+    // Render into expanded modal container
+    if (modalContainer) {
+      modalContainer.innerHTML = fullHtml;
+    }
+
+    // Trigger KaTeX rendering
     if (window.renderMathInElement) {
-      window.renderMathInElement(container, {
+      window.renderMathInElement(inlineContainer, {
         delimiters: [
           { left: '$$', right: '$$', display: true },
           { left: '$', right: '$', display: false }
         ],
         throwOnError: false
       });
+      if (modalContainer) {
+        window.renderMathInElement(modalContainer, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      }
     }
   }
 
   function setupAnalyticalStepsToggle() {
-    const toggleBtn = document.getElementById('toggleAnalyticalStepsBtn');
-    const bodyEl = document.getElementById('analyticalStepsBody');
-    if (toggleBtn && bodyEl) {
-      toggleBtn.addEventListener('click', () => {
-        const isHidden = bodyEl.style.display === 'none';
-        bodyEl.style.display = isHidden ? 'block' : 'none';
-        const textEl = document.getElementById('analyticalStepsToggleText');
-        if (textEl) textEl.textContent = isHidden ? '▾ Detayları Gizle' : '▸ Detayları Göster';
+    const toggleBtn = els.toggleAnalyticalStepsBtn;
+    const bodyEl = els.analyticalStepsBody;
+    const accordionBtn = els.btnToggleAnalyticalStepsAccordion;
+    const textEl = els.analyticalStepsToggleText;
+
+    const doToggle = () => {
+      if (!bodyEl) return;
+      const isHidden = bodyEl.style.display === 'none';
+      bodyEl.style.display = isHidden ? 'block' : 'none';
+      if (textEl) textEl.textContent = isHidden ? '▾ Detayları Gizle' : '▸ Detayları Göster';
+    };
+
+    if (accordionBtn) {
+      accordionBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        doToggle();
+      });
+    }
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', (e) => {
+        if (e.target.closest('#btnOpenFormulaModal') || e.target.closest('#btnToggleAnalyticalStepsAccordion')) return;
+        doToggle();
+      });
+    }
+
+    // Setup Fullscreen Formula Modal
+    if (els.btnOpenFormulaModal && els.formulaModalOverlay) {
+      els.btnOpenFormulaModal.addEventListener('click', (e) => {
+        e.stopPropagation();
+        els.formulaModalOverlay.style.display = 'flex';
+        if (window.renderMathInElement && els.formulaModalBody) {
+          window.renderMathInElement(els.formulaModalBody, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      });
+    }
+
+    if (els.closeFormulaModalBtn && els.formulaModalOverlay) {
+      els.closeFormulaModalBtn.addEventListener('click', () => {
+        els.formulaModalOverlay.style.display = 'none';
+      });
+    }
+
+    if (els.formulaModalOverlay) {
+      els.formulaModalOverlay.addEventListener('click', (e) => {
+        if (e.target === els.formulaModalOverlay) {
+          els.formulaModalOverlay.style.display = 'none';
+        }
+      });
+    }
+
+    if (els.btnPrintFormulaReportBtn) {
+      els.btnPrintFormulaReportBtn.addEventListener('click', () => {
+        window.print();
       });
     }
   }
