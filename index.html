@@ -648,16 +648,58 @@
     </div>
   </div>
 
+  <!-- Op-Amp Active Circuit Realizations Modal Overlay (Chapter 4) -->
+  <div class="modal-overlay" id="circuitModalOverlay" style="display: none;">
+    <div class="modal-card modal-card-wide">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 24px;">⚡</span>
+          <div>
+            <h2 style="font-size: 18px; font-weight: 700; color: var(--text-h); margin: 0 0 2px;">Op-Amp Aktif Filtre Gerçekleştirmeleri & Devre Sentezi</h2>
+            <div style="font-size: 12px; color: var(--muted);">Les Thede - Practical Analog and Digital Filter Design (Bölüm 4: Sallen-Key, Twin-Tee & Component Scaling)</div>
+          </div>
+        </div>
+        <button class="btn btn-sm" id="closeCircuitModalBtn">✕ Kapat</button>
+      </div>
+
+      <!-- Circuit Topology Tabs in Modal -->
+      <div class="modal-filter-tabs" style="gap: 10px; background: #fafaf9;">
+        <button class="type-detail-tab-btn active" data-circuit-tab="sk_lp">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #3d5afe;"></span>
+          Sallen-Key Alçak Geçiren (LP)
+        </button>
+        <button class="type-detail-tab-btn" data-circuit-tab="sk_hp">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></span>
+          Sallen-Key Yüksek Geçiren (HP)
+        </button>
+        <button class="type-detail-tab-btn" data-circuit-tab="sk_bp">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+          Sallen-Key & MFB Bant Geçiren (BP)
+        </button>
+        <button class="type-detail-tab-btn" data-circuit-tab="twin_tee_bs">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #8b5cf6;"></span>
+          Twin-Tee Çentik Devresi (BS)
+        </button>
+      </div>
+
+      <!-- Scrollable content area filled dynamically by JS -->
+      <div class="modal-scroll-area" id="circuitModalBody" style="padding: 20px 24px;">
+        <!-- Filled by FilterCircuitModal.renderContent() -->
+      </div>
+    </div>
+  </div>
+
   <!-- Application Logic Scripts -->
-  <script src="filter-engine.js"></script>
-  <script src="circuit-engine.js"></script>
-  <script src="matlab-engine.js"></script>
-  <script src="book-examples.js"></script>
-  <script src="book-content.js"></script>
-  <script src="filter-types-modal.js"></script>
-  <script src="approx-modal.js"></script>
-  <script src="transform-modal.js?v=3"></script>
-  <script src="plotter.js"></script>
-  <script src="app.js?v=3"></script>
+  <script src="filter-engine.js?v=2"></script>
+  <script src="circuit-engine.js?v=2"></script>
+  <script src="matlab-engine.js?v=2"></script>
+  <script src="book-examples.js?v=2"></script>
+  <script src="book-content.js?v=2"></script>
+  <script src="filter-types-modal.js?v=2"></script>
+  <script src="approx-modal.js?v=2"></script>
+  <script src="transform-modal.js?v=4"></script>
+  <script src="circuit-modal.js?v=2"></script>
+  <script src="plotter.js?v=2"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

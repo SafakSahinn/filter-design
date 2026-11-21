@@ -412,6 +412,11 @@ document.addEventListener('DOMContentLoaded', () => {
       FilterTransformModal.init();
     }
 
+    // Initialize Active Circuit Realizations Modal (Chapter 4)
+    if (window.FilterCircuitModal) {
+      FilterCircuitModal.init();
+    }
+
     // Expose Global FilterStudio API for modals
     window.FilterStudio = {
       setFilterType: (type) => {

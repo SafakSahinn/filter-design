@@ -1057,6 +1057,78 @@ const BookContent = (() => {
             <div class="math-block">
               $$H_c(s) = H_a(s) = \\frac{b_2}{s^2 + b_1 s + b_2}$$
             </div>
+
+            <p style="margin-top: 14px;">Dört temel aktif filtre devresi ve devre topolojisi aşağıda özetlenmiştir. Her bir devre mimarisinin detaylı KCL analizini, eşit elemanlı hesaplama formüllerini ve kitaptaki adım adım sayısal çözümlerini incelemek için ilgili karta tıklayabilirsiniz:</p>
+
+            <div class="theory-grid-2" style="margin-top: 14px;">
+              <!-- 1. Sallen-Key LP Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #3d5afe;">Sallen-Key Alçak Geçiren (LP)</h4>
+                  <span class="stage-badge" style="background: rgba(61,90,254,0.1); color: #3d5afe;">Equal-Component</span>
+                </div>
+                <p>Eşit kondansatör ($C_1=C_2=C$) ve eşit direnç ($R_1=R_2=R$) seçimiyle katsayı eşleme yöntemi uygulanır. Tek dereceli filtrelerde 1. derece RC tampon katı ($K=1$) eklenir.</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Direnç Bağıntısı:</strong> $R = \\frac{1}{C\\sqrt{b_2}}, \\quad \\text{RC Katı: } R = \\frac{1}{b_2 C}$.</li>
+                  <li><strong>Op-Amp Kazancı:</strong> $K = 3 - \\frac{b_1}{\\sqrt{b_2}}, \\quad R_B = (K-1)R_A$.</li>
+                  <li><strong>Kazanç Dengeleme:</strong> Çıkış gerilim bölücüsü ($R_x, R_y$) ile $0\\text{ dB}$ DC kazanç.</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-circuit-modal="sk_lp" style="width: 100%; margin-top: auto; font-weight: 600; color: #3d5afe; border-color: rgba(61,90,254,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Sallen-Key Alçak Geçiren Devresini İncele →
+                </button>
+              </div>
+
+              <!-- 2. Sallen-Key HP Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #ef4444;">Sallen-Key Yüksek Geçiren (HP)</h4>
+                  <span class="stage-badge" style="background: rgba(239,68,68,0.1); color: #ef4444;">DC Bloklama</span>
+                </div>
+                <p>Alçak geçiren devredeki R ve C elemanlarının topolojik yer değişimi ($R \\leftrightarrow C$) ile elde edilir. Orijindeki çift sıfırlar sayesinde DC ofset voltajlarını bloke eder.</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Direnç Bağıntısı:</strong> $R = \\frac{1}{C\\sqrt{b_2}}, \\quad R_B = (K-1)R_A$.</li>
+                  <li><strong>Op-Amp Kazancı:</strong> $K = 3 - \\frac{b_1}{\\sqrt{b_2}}$.</li>
+                  <li><strong>Giriş Seri Kapasitörleri:</strong> $C_1, C_2$ ile yüksek geçiren kutup sentezi.</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-circuit-modal="sk_hp" style="width: 100%; margin-top: auto; font-weight: 600; color: #ef4444; border-color: rgba(239,68,68,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Sallen-Key Yüksek Geçiren Devresini İncele →
+                </button>
+              </div>
+
+              <!-- 3. Sallen-Key / MFB BP Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #10b981;">Sallen-Key & MFB Bant Geçiren (BP)</h4>
+                  <span class="stage-badge" style="background: rgba(16,185,129,0.1); color: #10b981;">Rezonans Biquad</span>
+                </div>
+                <p>Merkez frekansta ($\\omega_0$) rezonans piki oluşturan ve her biri bağımsız $\\omega_{0,m}$ ve $Q_m$ değerlerine sahip biquad katlarının kaskad bağlanmasıyla $2n$ dereceli bant yanıtı sağlanır.</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Biquad Katları:</strong> $H_k(s) = \\frac{a_1 s}{s^2 + b_1 s + b_2}$.</li>
+                  <li><strong>Rezonans Parametreleri:</strong> $\\omega_0 = \\sqrt{b_2}, \\quad Q = \\frac{\\sqrt{b_2}}{b_1}, \\quad BW = b_1$.</li>
+                  <li><strong>Devre Mimarisi:</strong> Sallen-Key veya Multiple-Feedback (MFB).</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-circuit-modal="sk_bp" style="width: 100%; margin-top: auto; font-weight: 600; color: #10b981; border-color: rgba(16,185,129,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Sallen-Key Bant Geçiren Devresini İncele →
+                </button>
+              </div>
+
+              <!-- 4. Twin-Tee BS Card -->
+              <div class="theory-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <h4 style="margin: 0; color: #8b5cf6;">Twin-Tee Çentik Devresi (BS)</h4>
+                  <span class="stage-badge" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">-∞ dB Çentik</span>
+                </div>
+                <p>İki paralel T köprüsünün (R-C-R ve C-R-C) rezonans frekansında $180^\\circ$ faz farkıyla birbirini söndürmesi esasına dayanır. Şebeke parazitlerini yok etmek için idealdir.</p>
+                <ul style="font-size: 12.5px; line-height: 1.45; margin-bottom: 12px;">
+                  <li><strong>Simetrik Köprü:</strong> $R_1 = R_2 = R, \\quad R_3 = R/2, \\quad C_1 = C_2 = C, \\quad C_3 = 2C$.</li>
+                  <li><strong>Çentik Frekansı:</strong> $f_0 = \\frac{1}{2\\pi R C} \\implies R = \\frac{1}{2\\pi f_0 C}$.</li>
+                  <li><strong>Aktif Q Ayarı:</strong> Op-amp geri beslemesi $K = 2 - \\frac{1}{2Q}$ ile dar bant çentik.</li>
+                </ul>
+                <button type="button" class="btn btn-sm btn-outline" data-open-circuit-modal="twin_tee_bs" style="width: 100%; margin-top: auto; font-weight: 600; color: #8b5cf6; border-color: rgba(139,92,246,0.3); background: #fbfbfa; cursor: pointer;">
+                  📖 Twin-Tee Çentik Devresini İncele →
+                </button>
+              </div>
+            </div>
           `
         },
         {
