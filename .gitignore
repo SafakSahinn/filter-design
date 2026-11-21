@@ -13,3 +13,7 @@ desktop.ini
 __pycache__/
 *.pyc
 *.log
+
+# Books & PDFs (Local only / Copyright)
+*.pdf
+Analog & Digital Filter Design.pdf
