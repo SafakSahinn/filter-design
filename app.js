@@ -519,6 +519,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     });
+
+    // Guard against programmatic scroll leaking to outer containers
+    const mw = document.querySelector('.main-wrapper');
+    if (mw) {
+      mw.addEventListener('scroll', () => {
+        if (mw.scrollTop !== 0) mw.scrollTop = 0;
+        if (mw.scrollLeft !== 0) mw.scrollLeft = 0;
+      }, { passive: false });
+    }
+    const ac = document.querySelector('.app-container');
+    if (ac) {
+      ac.addEventListener('scroll', () => {
+        if (ac.scrollTop !== 0) ac.scrollTop = 0;
+        if (ac.scrollLeft !== 0) ac.scrollLeft = 0;
+      }, { passive: false });
+    }
+    window.addEventListener('scroll', () => {
+      if (window.scrollY !== 0 || window.scrollX !== 0) {
+        window.scrollTo(0, 0);
+      }
+    }, { passive: false });
   }
 
   function applyHashRoute() {
