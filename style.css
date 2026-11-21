@@ -38,7 +38,24 @@
   padding: 0;
 }
 
+html {
+  height: 100%;
+  height: 100dvh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body {
+  height: 100%;
+  height: 100dvh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
   font-family: var(--font-sans);
   background: var(--bg);
   color: var(--text);
@@ -46,14 +63,22 @@ body {
   font-size: 14.5px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
 }
 
 /* App Container Layout */
 .app-container {
   display: flex;
+  height: 100%;
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
+  width: 100%;
+  position: fixed;
+  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   overflow: hidden;
   background: var(--bg);
 }
@@ -62,6 +87,8 @@ body {
 .sidebar {
   width: var(--sidebar-w);
   min-width: var(--sidebar-w);
+  max-width: var(--sidebar-w);
+  flex-shrink: 0;
   background: var(--side);
   border-right: 1px solid var(--border);
   display: flex;
@@ -108,9 +135,12 @@ body {
 .sidebar-scroll {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   padding: 14px 10px;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
+  min-height: 0;
 }
 
 .nav-section-title {
@@ -190,13 +220,17 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 0;
   overflow: hidden;
   background: var(--bg);
+  position: relative;
 }
 
 /* Top Navigation / Breadcrumb Bar */
 .top-bar {
   height: var(--header-h);
+  min-height: var(--header-h);
+  flex-shrink: 0;
   border-bottom: 1px solid var(--border);
   padding: 0 20px;
   display: flex;
@@ -288,9 +322,12 @@ body {
 .content-area {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   padding: 28px 32px 60px;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
+  min-height: 0;
 }
 
 /* View Sections */
@@ -1032,6 +1069,8 @@ body {
 .modal-scroll-area {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   padding: 16px 22px;
   display: flex;
   flex-direction: column;

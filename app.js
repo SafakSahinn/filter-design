@@ -588,6 +588,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (els.sidebar) els.sidebar.classList.remove('open');
 
+    const contentArea = document.querySelector('.content-area');
+    if (contentArea) contentArea.scrollTop = 0;
+
     // Redraw plots if switching into a view with canvases
     setTimeout(() => {
       drawAllPlots();
