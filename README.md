@@ -5,8 +5,6 @@
 
 🌐 **Canlı Web Sürümü (GitHub Pages):** [https://safaksahinn.github.io/filter-design/](https://safaksahinn.github.io/filter-design/)
 
-Arayüz stili ve kullanıcı deneyimi, minimalist ve ferah yapısıyla [Thalamus](https://safaksahinn.github.io/thalamus/) tasarım sisteminden esinlenerek geliştirilmiştir.
-
 ---
 
 ## 📖 Kitap Kapsamı ve Matematiksel Temeller (Bölüm 1 - 4)
@@ -111,7 +109,7 @@ Her bölümün konusu için bağımsız, ayrıntılı matematiksel türetimler, 
 ```
 Filter Design/
 ├── index.html              # Ana tek sayfa web uygulaması (SPA)
-├── style.css               # Thalamus aydınlık minimalist tasarım sistemi & KaTeX tipografisi
+├── style.css               # Aydınlık, ferah minimalist tasarım sistemi & KaTeX tipografisi
 ├── app.js                  # Ana uygulama denetleyicisi, durum yönetimi, yönlendirme & canlı formül motoru
 ├── filter-engine.js        # Matematiksel filtre analiz, derece, kutup-sıfır, SOS ve dönüşüm motoru
 ├── circuit-engine.js       # Bölüm 4 aktif filtre sentezi ve vektörel SVG devre şematik çizici
@@ -150,7 +148,6 @@ Ardından tarayıcınızda `http://localhost:4173` adresine gidiniz.
 ## 📚 Kaynakça
 
 * **Les Thede**, *Practical Analog and Digital Filter Design*, Artech House Publishers.
-* Tasarım ve Arayüz İlhamı: [Thalamus Knowledge System](https://safaksahinn.github.io/thalamus/)
 * Matematik Dizgisi: [KaTeX](https://katex.org/)
 
 ---

@@ -1,10 +1,10 @@
 /**
  * FilterDesign Studio - High-Precision Canvas Plotter
- * Clean, lightweight, interactive charts matching the Thalamus light design system
+ * Clean, lightweight, interactive charts
  */
 
 const FilterPlotter = (() => {
-  // Theme colors matching Thalamus
+  // Theme colors
   const THEME = {
     bg: '#ffffff',
     panelBg: '#fbfbfa',

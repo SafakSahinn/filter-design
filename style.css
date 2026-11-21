@@ -1,6 +1,5 @@
 /* =========================================================================
-   FilterDesign Studio - Thalamus Light Minimalist Design System
-   Based on https://safaksahinn.github.io/thalamus/
+   FilterDesign Studio - Light Minimalist Design System
    ========================================================================= */
 
 :root {
@@ -59,7 +58,7 @@ body {
   background: var(--bg);
 }
 
-/* Sidebar Navigation (Thalamus style) */
+/* Sidebar Navigation */
 .sidebar {
   width: var(--sidebar-w);
   min-width: var(--sidebar-w);
@@ -330,7 +329,7 @@ body {
   max-width: 800px;
 }
 
-/* Panels & Cards (Thalamus style) */
+/* Panels & Cards */
 .card {
   background: var(--card-bg);
   border: 1px solid var(--border);
