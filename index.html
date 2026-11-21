@@ -16,7 +16,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
   <!-- Application Stylesheet (Thalamus Light System) -->
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=6" />
 </head>
 <body>
   <div class="app-container">
@@ -80,9 +80,9 @@
           <span>Bölüm 4: Aktif Devreler</span>
         </div>
 
-        <div class="nav-section-title" style="margin-top: 16px; display: flex; align-items: center; justify-content: space-between;">
-          <span>Kitap Örnekleri (1-4)</span>
-          <span style="font-size: 10px; cursor: pointer; color: var(--accent);" id="sidebarAllExamplesBtn">Tümünü Gör (25)</span>
+        <div class="nav-section-title" style="margin-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+          <span style="white-space: nowrap;">Kitap Örnekleri</span>
+          <span style="font-size: 10.5px; cursor: pointer; color: var(--accent); white-space: nowrap; font-weight: 600;" id="sidebarAllExamplesBtn">Tümü (25) →</span>
         </div>
         <div style="display: flex; flex-direction: column; gap: 4px; padding: 0 4px;" id="sidebarQuickExamples">
           <!-- Will be populated dynamically with key examples -->
@@ -691,7 +691,7 @@
 
   <!-- Application Logic Scripts -->
   <script src="filter-engine.js?v=2"></script>
-  <script src="circuit-engine.js?v=2"></script>
+  <script src="circuit-engine.js?v=3"></script>
   <script src="matlab-engine.js?v=2"></script>
   <script src="book-examples.js?v=2"></script>
   <script src="book-content.js?v=2"></script>
@@ -700,6 +700,6 @@
   <script src="transform-modal.js?v=4"></script>
   <script src="circuit-modal.js?v=2"></script>
   <script src="plotter.js?v=2"></script>
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

@@ -759,29 +759,29 @@ const CircuitEngine = (() => {
           <div class="stage-params">Zayıflatma G_A: ${divider.GA.toFixed(3)} | Hedef Çıkış Direnci: 10 kΩ</div>
         </div>
         <div class="stage-svg-wrap">
-          <svg viewBox="0 0 500 180" xmlns="http://www.w3.org/2000/svg" class="stage-svg">
-            <line x1="30" y1="80" x2="120" y2="80" stroke="#2f2e2b" stroke-width="2.5"/>
+          <svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" class="stage-svg">
+            <line x1="30" y1="80" x2="135" y2="80" stroke="#2f2e2b" stroke-width="2.5"/>
             <circle cx="30" cy="80" r="4.5" fill="#3d5afe"/>
-            <text x="25" y="65" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#2f2e2b">Son Kat Çıkışı</text>
+            <text x="25" y="62" font-family="Inter, sans-serif" font-size="11.5" font-weight="600" fill="#2f2e2b">Son Kat Çıkışı</text>
 
             <!-- Rx (Series) -->
-            <rect x="120" y="68" width="65" height="24" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5"/>
-            <text x="152" y="60" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_x = ${divider.labelRx}</text>
+            <rect x="135" y="68" width="70" height="24" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5"/>
+            <text x="170" y="60" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_x = ${divider.labelRx}</text>
 
-            <line x1="185" y1="80" x2="260" y2="80" stroke="#2f2e2b" stroke-width="2.5"/>
-            <circle cx="260" cy="80" r="4" fill="#2f2e2b"/>
+            <line x1="205" y1="80" x2="275" y2="80" stroke="#2f2e2b" stroke-width="2.5"/>
+            <circle cx="275" cy="80" r="4" fill="#2f2e2b"/>
 
             <!-- Ry to GND -->
-            <line x1="260" y1="80" x2="260" y2="105" stroke="#2f2e2b" stroke-width="2.5"/>
-            <rect x="248" y="105" width="24" height="45" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5"/>
-            <line x1="260" y1="150" x2="260" y2="165" stroke="#2f2e2b" stroke-width="2.5"/>
-            <line x1="250" y1="165" x2="270" y2="165" stroke="#2f2e2b" stroke-width="2"/>
-            <text x="282" y="130" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_y = ${divider.labelRy}</text>
+            <line x1="275" y1="80" x2="275" y2="105" stroke="#2f2e2b" stroke-width="2.5"/>
+            <rect x="263" y="105" width="24" height="45" rx="3" fill="#ffffff" stroke="#2f2e2b" stroke-width="2.5"/>
+            <line x1="275" y1="150" x2="275" y2="165" stroke="#2f2e2b" stroke-width="2.5"/>
+            <line x1="265" y1="165" x2="285" y2="165" stroke="#2f2e2b" stroke-width="2"/>
+            <text x="295" y="130" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3d5afe">R_y = ${divider.labelRy}</text>
 
             <!-- Filter Vout -->
-            <line x1="260" y1="80" x2="380" y2="80" stroke="#2f2e2b" stroke-width="2.5"/>
-            <circle cx="380" cy="80" r="4.5" fill="#10b981"/>
-            <text x="390" y="85" font-family="Inter, sans-serif" font-size="14" font-weight="bold" fill="#10b981">Filtre Çıkışı (V_out)</text>
+            <line x1="275" y1="80" x2="390" y2="80" stroke="#2f2e2b" stroke-width="2.5"/>
+            <circle cx="390" cy="80" r="4.5" fill="#10b981"/>
+            <text x="400" y="85" font-family="Inter, sans-serif" font-size="13.5" font-weight="bold" fill="#10b981">Filtre Çıkışı (V_out)</text>
           </svg>
         </div>
       </div>

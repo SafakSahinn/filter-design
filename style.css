@@ -729,7 +729,8 @@ body {
 .theory-card .btn,
 .theory-card [data-open-filter-modal],
 .theory-card [data-open-approx-modal],
-.theory-card [data-open-transform-modal] {
+.theory-card [data-open-transform-modal],
+.theory-card [data-open-circuit-modal] {
   margin-top: auto !important;
   white-space: nowrap !important;
   font-size: 11.5px !important;

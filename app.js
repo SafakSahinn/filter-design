@@ -233,6 +233,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openExamplesModal() {
     if (!els.examplesModalOverlay) return;
+    if (els.exampleSearchInput) els.exampleSearchInput.value = '';
+    document.querySelectorAll('[data-modal-filter]').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-modal-filter') === 'all');
+    });
     els.examplesModalOverlay.style.display = 'flex';
     renderModalExamples('all', '');
   }
@@ -482,12 +486,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let hash = window.location.hash.replace('#/', '').trim();
     if (!hash) hash = 'designer';
 
+    // Aliases & Fallbacks
+    if (hash === 'analysis') hash = 'designer';
+
     // Check if it's a chapter route (e.g. #/ch1, #/ch2, #/ch3, #/ch4)
     if (hash.startsWith('ch')) {
-      state.currentChapter = hash;
-      switchTab('theory', hash);
-      renderChapterContent(hash);
+      const validCh = ['ch1', 'ch2', 'ch3', 'ch4'];
+      const targetCh = validCh.includes(hash) ? hash : 'ch1';
+      state.currentChapter = targetCh;
+      switchTab('theory', targetCh);
+      renderChapterContent(targetCh);
       return;
+    }
+
+    const validTabs = ['designer', 'circuit', 'matlab', 'compare', 'theory'];
+    if (!validTabs.includes(hash)) {
+      hash = 'designer';
     }
 
     switchTab(hash);
