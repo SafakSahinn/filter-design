@@ -44,6 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
     fstopLabel: document.getElementById('fstopLabel'),
     fpassUnit: document.getElementById('fpassUnit'),
     fstopUnit: document.getElementById('fstopUnit'),
+    fpass2Unit: document.getElementById('fpass2Unit'),
+    fstop2Unit: document.getElementById('fstop2Unit'),
+    fpass2Label: document.getElementById('fpass2Label'),
+    fstop2Label: document.getElementById('fstop2Label'),
     fpassHint: document.getElementById('fpassHint'),
     fstopHint: document.getElementById('fstopHint'),
     fpass2Hint: document.getElementById('fpass2Hint'),
@@ -115,14 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function setFrequencyUnit(newUnit) {
-    const oldUnit = state.unit;
-    state.unit = newUnit;
-
-    els.unitHzBtn.classList.toggle('active', newUnit === 'Hz');
-    els.unitRadBtn.classList.toggle('active', newUnit === 'rad/s');
-
-    const isRadS = newUnit === 'rad/s';
+  function updateFrequencyLabelsAndUnits() {
+    const isRadS = state.unit === 'rad/s';
+    const isBand = state.type === 'bandpass' || state.type === 'bandstop';
     const unitText = isRadS ? 'rad/s' : 'Hz';
 
     if (els.fpassUnit) els.fpassUnit.textContent = unitText;
@@ -130,8 +129,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (els.fpass2Unit) els.fpass2Unit.textContent = unitText;
     if (els.fstop2Unit) els.fstop2Unit.textContent = unitText;
 
-    if (els.fpassLabel) els.fpassLabel.textContent = isRadS ? 'Açısal Frekans (ω_pass)' : 'Geçirme Frekansı (f_pass)';
-    if (els.fstopLabel) els.fstopLabel.textContent = isRadS ? 'Açısal Frekans (ω_stop)' : 'Durdurma Frekansı (f_stop)';
+    if (isBand) {
+      if (els.fpassLabel) els.fpassLabel.textContent = isRadS ? 'Alt Açısal Frekans (ω_p1)' : 'Alt Geçirme Frekansı (f_p1)';
+      if (els.fstopLabel) els.fstopLabel.textContent = isRadS ? 'Alt Açısal Frekans (ω_s1)' : 'Alt Durdurma Frekansı (f_s1)';
+      if (els.fpass2Label) els.fpass2Label.textContent = isRadS ? 'Üst Açısal Frekans (ω_p2)' : 'Üst Geçirme Frekansı (f_p2)';
+      if (els.fstop2Label) els.fstop2Label.textContent = isRadS ? 'Üst Açısal Frekans (ω_s2)' : 'Üst Durdurma Frekansı (f_s2)';
+    } else {
+      if (els.fpassLabel) els.fpassLabel.textContent = isRadS ? 'Açısal Frekans (ω_pass)' : 'Geçirme Frekansı (f_pass)';
+      if (els.fstopLabel) els.fstopLabel.textContent = isRadS ? 'Açısal Frekans (ω_stop)' : 'Durdurma Frekansı (f_stop)';
+      if (els.fpass2Label) els.fpass2Label.textContent = isRadS ? 'Üst Açısal Frekans (ω_p2)' : 'Üst Geçirme Frekansı (f_pass2)';
+      if (els.fstop2Label) els.fstop2Label.textContent = isRadS ? 'Üst Açısal Frekans (ω_s2)' : 'Üst Durdurma Frekansı (f_stop2)';
+    }
+
+    updateFrequencyHints();
+  }
+
+  function setFrequencyUnit(newUnit) {
+    const oldUnit = state.unit;
+    state.unit = newUnit;
+
+    els.unitHzBtn.classList.toggle('active', newUnit === 'Hz');
+    els.unitRadBtn.classList.toggle('active', newUnit === 'rad/s');
+
+    updateFrequencyLabelsAndUnits();
 
     // Convert existing numeric values with 2*pi
     if (oldUnit === 'Hz' && newUnit === 'rad/s') {
@@ -337,15 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
       els.unitRadBtn.classList.toggle('active', state.unit === 'rad/s');
     }
 
-    const isRadS = state.unit === 'rad/s';
-    const unitText = isRadS ? 'rad/s' : 'Hz';
-    if (els.fpassUnit) els.fpassUnit.textContent = unitText;
-    if (els.fstopUnit) els.fstopUnit.textContent = unitText;
-    if (els.fpass2Unit) els.fpass2Unit.textContent = unitText;
-    if (els.fstop2Unit) els.fstop2Unit.textContent = unitText;
-
-    if (els.fpassLabel) els.fpassLabel.textContent = isRadS ? 'Açısal Frekans (ω_pass)' : 'Geçirme Frekansı (f_pass)';
-    if (els.fstopLabel) els.fstopLabel.textContent = isRadS ? 'Açısal Frekans (ω_stop)' : 'Durdurma Frekansı (f_stop)';
+    updateFrequencyLabelsAndUnits();
 
     els.fpassInput.value = state.fpass;
     els.fstopInput.value = state.fstop;
@@ -373,6 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupNavigation();
     setupFormEvents();
     setupUnitControls();
+    updateFrequencyLabelsAndUnits();
     setupExamplesModal();
     setupAnalyticalStepsToggle();
     renderSidebarQuickExamples();
@@ -409,6 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const isBand = type === 'bandpass' || type === 'bandstop';
         if (els.fpass2Group) els.fpass2Group.style.display = isBand ? 'flex' : 'none';
         if (els.fstop2Group) els.fstop2Group.style.display = isBand ? 'flex' : 'none';
+        updateFrequencyLabelsAndUnits();
         window.location.hash = '#/designer';
         recalculateAll();
       },
@@ -550,6 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isBand = state.type === 'bandpass' || state.type === 'bandstop';
       els.fpass2Group.style.display = isBand ? 'flex' : 'none';
       els.fstop2Group.style.display = isBand ? 'flex' : 'none';
+      updateFrequencyLabelsAndUnits();
       recalculateAll();
     });
 
