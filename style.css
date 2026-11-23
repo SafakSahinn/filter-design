@@ -1343,23 +1343,26 @@ body {
   body * {
     visibility: hidden;
   }
-  #formulaModalOverlay, #formulaModalOverlay * {
+  #formulaModalOverlay, #formulaModalOverlay *,
+  #labReportModalOverlay, #labReportModalOverlay * {
     visibility: visible;
   }
-  #formulaModalOverlay {
+  #formulaModalOverlay, #labReportModalOverlay {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
     background: none;
   }
-  .modal-card {
-    box-shadow: none;
-    border: none;
+  .modal-container, .modal-card {
+    box-shadow: none !important;
+    border: none !important;
     max-width: 100% !important;
     width: 100% !important;
+    max-height: none !important;
   }
-  #closeFormulaModalBtn, #btnPrintFormulaReportBtn {
+  #closeFormulaModalBtn, #btnPrintFormulaReportBtn,
+  #closeLabReportModalBtn, #btnPrintReportBtn {
     display: none !important;
   }
 }

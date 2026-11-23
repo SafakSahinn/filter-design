@@ -735,12 +735,44 @@ const CircuitEngine = (() => {
             ${svgInner}
           </svg>
         </div>
-        <div class="stage-components-table">
-          <div class="comp-col"><strong>Bileşen Değerleri:</strong></div>
-          <div class="comp-grid">
-            ${Object.entries(stage.labels).map(([key, val]) => `
-              <div class="comp-item"><span class="comp-name">${key}:</span> <span class="comp-val">${val}</span></div>
-            `).join('')}
+        <div class="stage-components-table" style="background: #fafaf9; border-top: 1px solid var(--border); padding: 12px 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="font-weight: 700; font-size: 13px; color: var(--text-h);">📦 Bileşen Listesi & E24/E12 Standart Seçimi (BOM):</div>
+            <div style="font-size: 11px; color: var(--muted);">Standart %1 Metal Film & C0G/NP0 Kılıf Karşılıkları</div>
+          </div>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+              <thead>
+                <tr style="border-bottom: 1.5px solid var(--border); color: var(--muted); font-size: 11.5px;">
+                  <th style="padding: 4px 8px;">Bileşen</th>
+                  <th style="padding: 4px 8px;">Teorik Hesaplanan</th>
+                  <th style="padding: 4px 8px;">Standart Karşılık (E24/E12)</th>
+                  <th style="padding: 4px 8px;">Sapma / Hata (%)</th>
+                  <th style="padding: 4px 8px;">Önerilen Tolerans & Tip</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${Object.entries(stage.components || {}).map(([key, val]) => {
+                  if (typeof val !== 'number' || !isFinite(val) || val <= 0) return '';
+                  const isCap = key.startsWith('C');
+                  const std = findNearestStandard(val, isCap ? E12 : E24);
+                  const err = ((std - val) / val) * 100;
+                  const errColor = Math.abs(err) <= 2 ? '#10b981' : Math.abs(err) <= 5 ? '#f59e0b' : '#ef4444';
+                  const formattedExact = isCap ? formatCapacitor(val) : formatResistor(val);
+                  const formattedStd = isCap ? formatCapacitor(std) : formatResistor(std);
+                  const recType = isCap ? '%5 C0G/NP0 Seramik / Film' : '%1 Metal Film 1/4W';
+                  return `
+                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                      <td style="padding: 5px 8px; font-weight: 600; color: #3d5afe;">${key}</td>
+                      <td style="padding: 5px 8px; font-family: var(--font-mono);">${formattedExact}</td>
+                      <td style="padding: 5px 8px; font-weight: 600; font-family: var(--font-mono);">${formattedStd}</td>
+                      <td style="padding: 5px 8px; font-weight: 600; color: ${errColor}; font-family: var(--font-mono);">${err >= 0 ? '+' : ''}${err.toFixed(2)}%</td>
+                      <td style="padding: 5px 8px; color: var(--muted); font-size: 11px;">${recType}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

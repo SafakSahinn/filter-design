@@ -103,6 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
     copyMatlabBtn: document.getElementById('copyMatlabBtn'),
     downloadMatlabBtn: document.getElementById('downloadMatlabBtn'),
     copySpiceBtn: document.getElementById('copySpiceBtn'),
+    downloadSpiceBtn: document.getElementById('downloadSpiceBtn'),
+    downloadLtspiceBtn: document.getElementById('downloadLtspiceBtn'),
 
     // Mode Selector (Normalize vs. Normalize Olmayan)
     btnModeUnnormalized: document.getElementById('btnModeUnnormalized'),
@@ -510,6 +512,31 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // Advanced Tools: Quiz, Monte Carlo, Report, SC Calc
+    const bindClick = (id, handler) => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', handler);
+    };
+
+    bindClick('navQuizBtn', () => window.QuizModal && QuizModal.open());
+    bindClick('topQuizBtn', () => window.QuizModal && QuizModal.open());
+
+    bindClick('navMonteCarloBtn', () => {
+      if (!state.filterModel || !state.circuitModel) recalculateAll();
+      if (window.MonteCarloModal) MonteCarloModal.open(state, state.filterModel, state.circuitModel);
+    });
+
+    bindClick('navReportBtn', () => {
+      if (!state.filterModel || !state.circuitModel) recalculateAll();
+      if (window.LabReportModal) LabReportModal.open(state, state.filterModel, state.circuitModel);
+    });
+    bindClick('topReportBtn', () => {
+      if (!state.filterModel || !state.circuitModel) recalculateAll();
+      if (window.LabReportModal) LabReportModal.open(state, state.filterModel, state.circuitModel);
+    });
+
+    bindClick('navScCalcBtn', () => window.ScModal && ScModal.open());
+
     // Quick preset buttons
     document.querySelectorAll('[data-preset]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -723,6 +750,20 @@ document.addEventListener('DOMContentLoaded', () => {
     els.copySpiceBtn.addEventListener('click', () => {
       copyToClipboard(els.spiceCodePre.textContent, els.copySpiceBtn, 'SPICE Kopyalandı!');
     });
+
+    if (els.downloadSpiceBtn) {
+      els.downloadSpiceBtn.addEventListener('click', () => {
+        downloadFile('filter_circuit.cir', els.spiceCodePre.textContent);
+      });
+    }
+
+    if (els.downloadLtspiceBtn) {
+      els.downloadLtspiceBtn.addEventListener('click', () => {
+        if (!state.circuit) calculate();
+        const asc = MatlabEngine.generateLtspiceAsc(state, state.circuit);
+        downloadFile('filter_circuit.asc', asc);
+      });
+    }
   }
 
   function applyPreset(p) {
@@ -1077,6 +1118,15 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       geomParamHtml = `
         <div>• <strong>Eliptik Rasyonel Fonksiyonlar:</strong> Hem geçirme hem durdurma bandında Chebyshev polinomları yerine Jacobi $cd(u, k)$ eliptik fonksiyonları kullanılır.</div>
+      `;
+    } else if (d.approx === 'bessel') {
+      orderDerivationHtml = `
+        <div>• <strong>Bessel (Thomson) Yaklaşımı:</strong> Maksimum düz grup gecikmesi (linear phase).
+          $$n = ${effectiveN}$$
+        </div>
+      `;
+      geomParamHtml = `
+        <div>• <strong>Ters Bessel Polinomu ($\\theta_n(s)$):</strong> Faz distorsiyonu oluşturmayan sabit grup gecikmeli normalize kutuplar.</div>
       `;
     }
 

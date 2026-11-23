@@ -76,6 +76,11 @@ const FilterMath = (() => {
       const num = Math.acosh(Math.sqrt(ratio_val));
       const den = Math.acosh(omega_ratio);
       n = Math.ceil(num / den);
+    } else if (approx === 'bessel') {
+      // Bessel approximation: maximally flat group delay
+      const num = Math.log10((Math.pow(10, A_stop / 10) - 1) / (Math.pow(10, A_pass / 10) - 1));
+      const den = 2 * Math.log10(omega_ratio);
+      n = Math.ceil(1.3 * (num / den));
     } else if (approx === 'elliptic') {
       // Elliptic approximation of order using elliptic modular functions (Eq. 2.37)
       const k = 1 / omega_ratio;
@@ -306,6 +311,41 @@ const FilterMath = (() => {
         };
       }
       gain = (n % 2 === 0) ? Math.pow(10, -A_pass / 20) : 1.0;
+    } else if (approx === 'bessel') {
+      // Bessel-Thomson: Maximally Flat Group Delay (Normalized tables for n = 1 to 10)
+      const besselTable = {
+        1: [{ re: -1.0, im: 0 }],
+        2: [{ re: -1.5, im: 0.8660 }],
+        3: [{ re: -2.3222, im: 0 }, { re: -1.8389, im: 1.7544 }],
+        4: [{ re: -2.1038, im: 2.6574 }, { re: -2.8962, im: 0.8672 }],
+        5: [{ re: -3.6467, im: 0 }, { re: -3.3520, im: 1.7427 }, { re: -2.3247, im: 3.5710 }],
+        6: [{ re: -2.5159, im: 4.4927 }, { re: -3.7357, im: 2.6263 }, { re: -4.2484, im: 0.8675 }],
+        7: [{ re: -4.9717, im: 0 }, { re: -4.7083, im: 1.7402 }, { re: -3.9175, im: 3.5154 }, { re: -2.6857, im: 5.4207 }],
+        8: [{ re: -2.8389, im: 6.3539 }, { re: -4.0701, im: 4.4073 }, { re: -5.0390, im: 2.6140 }, { re: -5.6044, im: 0.8687 }],
+        9: [{ re: -6.2970, im: 0 }, { re: -6.0799, im: 1.7407 }, { re: -5.4410, im: 3.4984 }, { re: -4.3644, im: 5.3056 }, { re: -2.9789, im: 7.2915 }],
+        10: [{ re: -3.1077, im: 8.2328 }, { re: -4.5126, im: 6.2087 }, { re: -5.6791, im: 4.3904 }, { re: -6.5414, im: 2.6074 }, { re: -7.0094, im: 0.8690 }]
+      };
+      const tablePoles = besselTable[n] || besselTable[4];
+      let mIdx = 0;
+      tablePoles.forEach(p => {
+        if (p.im === 0) {
+          poles.push(new Complex(p.re, 0));
+          details.realPole = { sigma_R: p.re, B2: Math.abs(p.re) };
+        } else {
+          poles.push(new Complex(p.re, p.im));
+          poles.push(new Complex(p.re, -p.im));
+          const B1 = -2 * p.re;
+          const B2 = p.re * p.re + p.im * p.im;
+          details.m_factors.push({
+            m: mIdx++,
+            sigma: p.re,
+            omega: p.im,
+            B1,
+            B2
+          });
+        }
+      });
+      gain = 1.0;
     }
 
     return { poles, zeros, gain, n, approx, details };

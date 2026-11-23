@@ -17,7 +17,8 @@ const MatlabEngine = (() => {
       butterworth: 'Butterworth (Maksimum Düz)',
       chebyshev: 'Chebyshev Tip I (Geçirme Bandı Dalgalı)',
       inv_chebyshev: 'Ters Chebyshev / Tip II (Durdurma Bandı Dalgalı)',
-      elliptic: 'Eliptik / Cauer (Eşit Dalgalı)'
+      elliptic: 'Eliptik / Cauer (Eşit Dalgalı)',
+      bessel: 'Bessel-Thomson (Maksimum Düz Grup Gecikmesi)'
     }[approx] || approx;
 
     let typeName = {
@@ -102,6 +103,10 @@ A_stop = ${stopDb};       % Durdurma bandı minimum zayıflaması (dB)
         code += `N = ${order}; % Kullanıcı tanımlı derece\n`;
       }
       code += `[num, den] = ellip(N, A_pass, A_stop, Wn, '${type === 'lowpass' ? 'low' : type === 'highpass' ? 'high' : type === 'bandpass' ? 'bandpass' : 'stop'}', 's');\n`;
+    } else if (approx === 'bessel') {
+      code += `% Bessel (Thomson) analog filtre tasarımı (Maksimum Düz Grup Gecikmesi)\n`;
+      code += `N = ${order || 4}; % Filtre derecesi\n`;
+      code += `[num, den] = besself(N, w_pass);\n`;
     }
 
     code += `
@@ -240,9 +245,107 @@ ylabel('Genlik');
     return spice;
   }
 
+  // Generate LTspice Schematic (.asc) file
+  function generateLtspiceAsc(filterConfig, circuitModel) {
+    const { type, approx, fpass } = filterConfig;
+    const fp = Array.isArray(fpass) ? fpass[0] : fpass;
+    const fStopSim = Math.max(1e5, fp * 20);
+
+    let asc = `Version 4\n`;
+    asc += `SHEET 1 1280 880\n`;
+
+    // Input AC voltage source
+    asc += `WIRE 96 160 32 160\n`;
+    asc += `WIRE 32 160 32 208\n`;
+    asc += `WIRE 32 288 32 320\n`;
+    asc += `FLAG 32 320 0\n`;
+    asc += `SYMBOL voltage 32 192 R0\n`;
+    asc += `WINDOW 123 0 0 Left 2\n`;
+    asc += `WINDOW 39 0 0 Left 2\n`;
+    asc += `SYMATTR InstName V1\n`;
+    asc += `SYMATTR Value SINE(0 1 ${fp})\n`;
+    asc += `SYMATTR Value2 AC 1.0\n`;
+
+    let curX = 96;
+    let prevOutNode = 'IN';
+    asc += `FLAG 96 160 IN\n`;
+
+    circuitModel.stages.forEach((st, idx) => {
+      const num = idx + 1;
+      const xBase = 160 + (idx * 320);
+
+      asc += `TEXT ${xBase} 64 Left 2 ; Stage ${num}: ${st.topology}\n`;
+
+      if (st.type === 'lowpass_1st') {
+        const rVal = st.components.R1.toExponential(3);
+        const cVal = st.components.C1.toExponential(3);
+        asc += `WIRE ${xBase + 64} 160 ${xBase} 160\n`;
+        asc += `SYMBOL res ${xBase} 144 R90\n`;
+        asc += `SYMATTR InstName R${num}_1\n`;
+        asc += `SYMATTR Value ${rVal}\n`;
+        asc += `WIRE ${xBase + 64} 160 ${xBase + 64} 224\n`;
+        asc += `SYMBOL cap ${xBase + 64} 224 R0\n`;
+        asc += `SYMATTR InstName C${num}_1\n`;
+        asc += `SYMATTR Value ${cVal}\n`;
+        asc += `FLAG ${xBase + 64} 288 0\n`;
+        asc += `WIRE ${xBase + 128} 160 ${xBase + 64} 160\n`;
+        asc += `FLAG ${xBase + 128} 160 OUT_${num}\n`;
+      } else if (st.type === 'lowpass_2nd') {
+        const r1Val = st.components.R1.toExponential(3);
+        const r2Val = st.components.R2.toExponential(3);
+        const c1Val = st.components.C1.toExponential(3);
+        const c2Val = st.components.C2.toExponential(3);
+        asc += `WIRE ${xBase + 64} 160 ${xBase} 160\n`;
+        asc += `SYMBOL res ${xBase} 144 R90\n`;
+        asc += `SYMATTR InstName R${num}_1\n`;
+        asc += `SYMATTR Value ${r1Val}\n`;
+        asc += `WIRE ${xBase + 144} 160 ${xBase + 64} 160\n`;
+        asc += `SYMBOL res ${xBase + 80} 144 R90\n`;
+        asc += `SYMATTR InstName R${num}_2\n`;
+        asc += `SYMATTR Value ${r2Val}\n`;
+        asc += `WIRE ${xBase + 144} 160 ${xBase + 144} 224\n`;
+        asc += `SYMBOL cap ${xBase + 144} 224 R0\n`;
+        asc += `SYMATTR InstName C${num}_2\n`;
+        asc += `SYMATTR Value ${c2Val}\n`;
+        asc += `FLAG ${xBase + 144} 288 0\n`;
+        asc += `WIRE ${xBase + 64} 160 ${xBase + 64} 96\n`;
+        asc += `WIRE ${xBase + 64} 96 ${xBase + 176} 96\n`;
+        asc += `SYMBOL cap ${xBase + 176} 80 R90\n`;
+        asc += `SYMATTR InstName C${num}_1\n`;
+        asc += `SYMATTR Value ${c1Val}\n`;
+        asc += `WIRE ${xBase + 240} 96 ${xBase + 240} 160\n`;
+        asc += `WIRE ${xBase + 240} 160 ${xBase + 208} 160\n`;
+        asc += `FLAG ${xBase + 240} 160 OUT_${num}\n`;
+      } else {
+        asc += `WIRE ${xBase + 128} 160 ${xBase} 160\n`;
+        asc += `FLAG ${xBase + 128} 160 OUT_${num}\n`;
+      }
+    });
+
+    const finalOut = `OUT_${circuitModel.stages.length}`;
+    asc += `TEXT 32 400 Left 2 !.ac dec 100 1 ${fStopSim}\n`;
+    asc += `TEXT 32 440 Left 2 ; FilterDesign Studio - ${approx} ${type}\n`;
+    return asc;
+  }
+
+  // Helper to trigger browser file download
+  function downloadTextFile(filename, content, mime = 'text/plain;charset=utf-8') {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   return {
     generateMatlabCode,
-    generateSpiceNetlist
+    generateSpiceNetlist,
+    generateLtspiceAsc,
+    downloadTextFile
   };
 })();
 
