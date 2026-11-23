@@ -429,14 +429,19 @@ document.addEventListener('DOMContentLoaded', () => {
   function init() {
     // Ensure favicon is applied in browser tab
     try {
-      const b64Favicon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABRklEQVR4nO3bAWrCMBjF8ff98Vp6kO188yD1XnM4KISircmSaPP2AwWliXnJ11SohjIcP76v2oHLmXj22BgldOlkMHL4ZzJESaORqgGX8I+ysXXAaJYZkTmcVv9eVpZvuJgzI3PIXDiWfwqZQ+aQOWQOmUPmkDlkDplD5pA5ZA6ZQ+aQOWQOmUPmkDlkDplD5pA5ZI5WHU9f8fuo1deuJmBKBvzXwc/tW01C1L41tjbQ0+e1ez9bDupoDrUWoGW5d7s5OjUMUXP1m+wBrVewdv/IHD0+pLRsa5f7SzfBUxKm1w7/dleBV4WsOgFT58tUyRhyJhiZQ+YO736uz320OvWQufj/naA5cv5gNJrLmbDfA5A5bk+Op8GcmeUbDtKsyBzpC4cqWGZk64CR3MsWaw1G+Za4tqiUNtyLrQyR09leKiJn4X4AZEl2GnSt3BQAAAAASUVORK5CYII=';
-      let fav = document.querySelector("link[rel*='icon']");
-      if (!fav) {
-        fav = document.createElement('link');
-        fav.rel = 'icon';
-        document.head.appendChild(fav);
-      }
+      const b64Favicon = 'data:image/png;base64,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';
+      document.querySelectorAll("link[rel*='icon']").forEach(el => el.remove());
+      const fav = document.createElement('link');
+      fav.rel = 'icon';
+      fav.type = 'image/png';
       fav.href = b64Favicon;
+      document.head.appendChild(fav);
+
+      const shortcut = document.createElement('link');
+      shortcut.rel = 'shortcut icon';
+      shortcut.type = 'image/x-icon';
+      shortcut.href = 'favicon.ico?v=20261123_v8';
+      document.head.appendChild(shortcut);
     } catch (e) {}
 
     setupNavigation();
