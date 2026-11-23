@@ -1067,6 +1067,17 @@ const BookContent = (() => {
               <div class="math-block">
                 $$H_c(s) = \\frac{V_{\\text{out}}(s)}{V_{\\text{in}}(s)} = \\frac{\\displaystyle \\frac{K}{R_1 R_2 C_1 C_2}}{\\displaystyle s^2 + s\\left[ \\frac{1}{R_1 C_1} + \\frac{1}{R_2 C_1} + \\frac{1-K}{R_2 C_2} \\right] + \\frac{1}{R_1 R_2 C_1 C_2}}$$
               </div>
+
+              <div class="tip-box" style="background: rgba(61,90,254,0.04); border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 4px; margin-top: 12px; font-size: 13px; line-height: 1.6;">
+                <strong style="color: var(--accent);">🔍 Denklemdeki Terimlerin Anlamı, Birimleri ve Gerekçesi:</strong>
+                <ul style="margin: 6px 0 0 16px;">
+                  <li><strong>$V_{\\text{in}}, V_{\\text{out}}$:</strong> Filtre giriş ve çıkış AC gerilim genlikleridir ($V$).</li>
+                  <li><strong>$R_1, R_2$:</strong> Filtrenin kesim frekansını belirleyen iç dirençleridir ($\\Omega$).</li>
+                  <li><strong>$C_1, C_2$:</strong> Giriş ve geri besleme kondansatörleridir ($\\text{F}$).</li>
+                  <li><strong>$K = 1 + R_B/R_A$:</strong> Evirmeyen op-amp'ın kapalı çevrim DC gerilim kazancıdır.</li>
+                  <li><strong>Paydadaki $s$ Katsayısı ($\\frac{1}{R_1 C_1} + \\frac{1}{R_2 C_1} + \\frac{1-K}{R_2 C_2}$):</strong> Katın sönüm oranını ve seçiciliğini ($Q$) tayin eder. $1-K$ çarpanı sayesinde op-amp geribeslemesiyle $Q$ hassas biçimde ayarlanabilir.</li>
+                </ul>
+              </div>
             </div>
 
             <p style="margin-top: 14px;">Aşağıdaki 4 interaktif kartta Bölüm 4'ün ana devre topolojileri özetlenmiştir. Her kartın KCL türetimini, formüllerini ve kitaptaki adım adım sayısal çözümlerini incelemek için pop-up butonlarına tıklayabilirsiniz:</p>
@@ -1168,6 +1179,17 @@ const BookContent = (() => {
               $$\\text{s Katsayısı Eşlemesi: } \\frac{3 - K}{RC} = b_1 \\implies 3 - K = b_1 (RC) = \\frac{b_1}{\\sqrt{b_2}} \\implies K = 3 - \\frac{b_1}{\\sqrt{b_2}}$$
             </div>
 
+            <div class="tip-box" style="background: rgba(61,90,254,0.04); border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 4px; margin: 12px 0; font-size: 13px; line-height: 1.6;">
+              <strong style="color: var(--accent);">🔍 Equal-Component Formüllerindeki Değişkenler ve Sınav İpuçları:</strong>
+              <ul style="margin: 6px 0 0 16px;">
+                <li><strong>$C$ (Baz Kondansatör - $\\text{F}$):</strong> Tasarıma daima standart bir $C$ değeriyle ($10\\text{ nF}$ gibi) başlanır; dirençler $C$'ye göre hesaplanır.</li>
+                <li><strong>$b_2 = \\omega_0^2$ (Sabit Katsayı - $\\text{rad}^2/\\text{s}^2$):</strong> Kesim açısal frekansının karesidir; $\\sqrt{b_2} = \\omega_0 = 2\\pi f_0$.</li>
+                <li><strong>$b_1 = \\omega_0 / Q$ (Bant Genişliği - $\\text{rad/s}$):</strong> Paydadaki birinci derece katsayısıdır.</li>
+                <li><strong>$K = 3 - 1/Q$:</strong> Kararlılık sınırıdır; $K < 3$ kalmalıdır. Sınavda $K \\ge 3$ çıkarsa hesap hatası yapılmıştır!</li>
+                <li><strong>$R_B = (K-1)R_A$:</strong> Referans $R_A = 10\\text{ k}\\Omega$ alındığında op-amp geri besleme direncidir. Sınavda asla $K \\cdot R_A$ yazmayınız!</li>
+              </ul>
+            </div>
+
             <div class="note-box" style="background: rgba(239,68,68,0.06); border-left: 4px solid #ef4444; padding: 14px 16px; border-radius: 6px; margin: 16px 0;">
               <strong style="color: #ef4444; font-size: 14px;">⚠️ Sınavlarda En Çok Sorulan Kritik Konu: Kalite Faktörü $Q$ ve Kararlılık Sınırı ($K < 3$)</strong>
               <p style="font-size: 13.5px; margin: 6px 0 0; line-height: 1.55;">
@@ -1255,6 +1277,19 @@ const BookContent = (() => {
               $$R_2 = \\frac{Q}{(2 Q^2 - G_0) \\cdot \\omega_0 \\cdot C}$$
               $$R_3 = \\frac{2 Q}{\\omega_0 \\cdot C}$$
             </div>
+
+            <div class="tip-box" style="background: rgba(16,185,129,0.04); border-left: 3px solid #10b981; padding: 12px 16px; border-radius: 4px; margin: 12px 0; font-size: 13px; line-height: 1.6;">
+              <strong style="color: #10b981;">🔍 MFB Formüllerindeki Değişkenler ve Birimleri:</strong>
+              <ul style="margin: 6px 0 0 16px;">
+                <li><strong>$Q = \\sqrt{b_2}/b_1$:</strong> Rezonans kalite faktörü (seçicilik, birimsiz).</li>
+                <li><strong>$G_0 = a_1/b_1$:</strong> Katın merkez frekanstaki tepe kazancı (birimsiz).</li>
+                <li><strong>$\\omega_0 = \\sqrt{b_2}$:</strong> Katın merkez rezonans açısal frekansı ($\\text{rad/s}$).</li>
+                <li><strong>$R_1$:</strong> Giriş empedansını ve kat kazancını belirleyen seri direnç ($\\Omega$).</li>
+                <li><strong>$R_2$:</strong> $2Q^2 > G_0$ şartı aranan pozitif geri besleme direnci ($\\Omega$).</li>
+                <li><strong>$R_3$:</strong> Rezonans frekansı ve seçiciliği sabitleyen topraklama direnci ($\\Omega$).</li>
+              </ul>
+            </div>
+
             <div class="warning-box" style="background: rgba(245,158,11,0.06); border-left: 4px solid #f59e0b; padding: 14px 16px; border-radius: 6px; margin: 14px 0;">
               <strong style="color: #b45309; font-size: 14px;">⚠️ Tasarım Kısıtı: $R_2$ Direncinin Pozitif Olma Şartı</strong>
               <p style="font-size: 13.5px; margin: 6px 0 0; line-height: 1.55;">
@@ -1280,6 +1315,15 @@ const BookContent = (() => {
             <p>Merkez rezonans frekansı $\\omega_0 = 1/(RC)$'de bu iki yol arasındaki faz farkı tam $180^\\circ$ olur ve iki sinyal birbirini kusursuz şekilde yok ederek teorik olarak $-\\infty\\text{ dB}$ derinliğinde bir çentik oluşturur:</p>
             <div class="math-block">
               $$f_0 = \\frac{1}{2\\pi R C} \\implies R = \\frac{1}{2\\pi f_0 C}, \\quad R_3 = \\frac{R}{2}, \\quad C_3 = 2 C$$
+            </div>
+
+            <div class="tip-box" style="background: rgba(139,92,246,0.04); border-left: 3px solid #8b5cf6; padding: 12px 16px; border-radius: 4px; margin: 12px 0; font-size: 13px; line-height: 1.6;">
+              <strong style="color: #8b5cf6;">🔍 Twin-Tee Çentik Formüllerinin Açıklaması:</strong>
+              <ul style="margin: 6px 0 0 16px;">
+                <li><strong>$f_0 = \\frac{1}{2\\pi RC}$:</strong> Çentik sıfırının oluştuğu rezonans frekansı ($\\text{Hz}$).</li>
+                <li><strong>$R, R/2, C, 2C$:</strong> Simetri kuralıdır. $2C$ için iki adet $C$ paralel bağlanarak kusursuz denge sağlanır.</li>
+                <li><strong>$K = 1 - \\frac{1}{4Q}$:</strong> Pasif devrenin yayvan $Q=0.25$ değerini daraltan aktif bootstrapping geribesleme katsayısıdır ($0 \\le K < 1.0$).</li>
+              </ul>
             </div>
 
             <h4 style="color: var(--text-h); font-size: 15px;">2. Aktif Geribesleme (Bootstrapping) ile Seçicilik ($Q$) Ayarı</h4>
@@ -1321,6 +1365,17 @@ const BookContent = (() => {
               <div class="math-block">
                 $$R_{\\text{out}} = \\frac{(G_A - 1) R_y \\cdot R_y}{G_A \\cdot R_y} = \\frac{G_A - 1}{G_A} \\cdot R_y \\implies R_y = \\frac{G_A}{G_A - 1} \\cdot R_{\\text{out}}$$
                 $$R_x = (G_A - 1) R_y = (G_A - 1) \\left( \\frac{G_A}{G_A - 1} R_{\\text{out}} \\right) \\implies R_x = G_A \\cdot R_{\\text{out}}$$
+              </div>
+
+              <div class="tip-box" style="background: rgba(61,90,254,0.04); border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 4px; margin-top: 12px; font-size: 13px; line-height: 1.6;">
+                <strong style="color: var(--accent);">🔍 Gerilim Bölücüsü Değişkenleri ve Bağlantı Mantığı:</strong>
+                <ul style="margin: 6px 0 0 16px;">
+                  <li><strong>$G_A = K_{\\text{tot}} / G_{\\text{hedef}}$:</strong> Toplam kaskad kazancını hedef kazanca (genellikle $0\\text{ dB} \\implies 1.0$) bölerek bulunan zayıflatma oranıdır ($G_A \\ge 1.0$).</li>
+                  <li><strong>$R_{\\text{out}} = 10\\text{ k}\\Omega$:</strong> İstenen standart Thevenin çıkış empedansıdır.</li>
+                  <li><strong>$R_x$:</strong> Son kat op-amp çıkışından filtre çıkışına seri bağlanan üst dirençtir ($\\Omega$).</li>
+                  <li><strong>$R_y$:</strong> Filtre çıkışından toprağa şönt bağlanan alt dirençtir ($\\Omega$).</li>
+                  <li><strong>Empedans Doğrulaması:</strong> $R_x \\parallel R_y = \\frac{R_x \\cdot R_y}{R_x + R_y} = R_{\\text{out}} = 10\\text{ k}\\Omega$ her zaman tam sağlanır.</li>
+                </ul>
               </div>
             </div>
 
