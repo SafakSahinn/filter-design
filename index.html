@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FilterDesign Studio | Analog Filtre Tasarımı & Analiz Portalı</title>
   
+  <!-- Favicon / Brand Logo -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+
   <!-- Font Inter & Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,8 +29,8 @@
     <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <div class="brand-title">
-          <div class="brand-icon">Ω</div>
+        <div class="brand-title" style="display: flex; align-items: center; gap: 10px;">
+          <img src="favicon.svg" alt="FilterDesign Logo" style="width: 28px; height: 28px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.12);" />
           <span>FilterDesign</span>
         </div>
       </div>
@@ -123,8 +128,9 @@
       
       <!-- Top Bar (Breadcrumbs & Global Controls) -->
       <header class="top-bar">
-        <div class="breadcrumb-trail">
+        <div class="breadcrumb-trail" style="display: flex; align-items: center; gap: 8px;">
           <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+          <img src="favicon.svg" alt="FilterDesign Logo" style="width: 22px; height: 22px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" />
           <span class="breadcrumb-crumb">FilterDesign</span>
           <span style="color: var(--muted);">/</span>
           <span class="breadcrumb-crumb active" id="breadcrumbCurrent">İnteraktif Filtre Tasarımcısı</span>
