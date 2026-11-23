@@ -427,6 +427,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize
   function init() {
+    // Ensure favicon is applied in browser tab
+    try {
+      const b64Favicon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACGElEQVR4nO2bwUrDMBjH//3TgeDFow/gZe6207wJvsVgePIdFHYc6DvsJMLeQvGmp922XvYAHr0Iyi5SMaMta5d2a/ol6Q/KaEqTfD+SNQkJ0NLiNUHVFwfP37cQxPvV0UPtAgbCgj6EjKBq8NGwfw9BdGfzuyoSgjKBSwtaR8YuEXQt+Gxdd3VbuhZ8WQksk5Ft6NSd2xKVMZuDV6gY8loBXQ5eRwLhOYTn0PXmv6sbEJ5DeA7hOYTnEJ5DeE5Y9oXubL41PRr24YUAHTHryegGDbJaLqbGBSTpjJ+mtrSIsOwL2cDyuoRKly6C+2YQB6iubeQJcvIrEBVIkCqCh87QttbAujLOEyFNAusuQEfC58diczk5EowKJMRBf11eby7TEmiqoG0SVPBJTEugsZKEjgloukBpEthEoUrCxcsPjl8fU8/i+5PTnrG6hGiIjYTZHG8JCbEUk4RomFhELCH7hTDVVQgBNDlgIoTQlARCEHkS6hRBCMP0RIoQiEkJhFBMzSYJ4dT9v0BYQJ0rTYQlFA2M9hFBWETRcltVEYSF6IiobS5wdt5LT98aZD0Z/f12xk+pVZUy84iwbKGr5SK9hCOB/4CrTKKCbIKr+4TU/uHs3mHCcwjPYTZBNZHs/nsXm39uC3BJQlHwWl3AZgk6dWfeg6QxGyXonhphUSa2SihzZCbQzdTbQ1NJvD425+rByZYW+M0vookZex+Mu/8AAAAASUVORK5CYII=';
+      let fav = document.querySelector("link[rel*='icon']");
+      if (!fav) {
+        fav = document.createElement('link');
+        fav.rel = 'icon';
+        document.head.appendChild(fav);
+      }
+      fav.href = b64Favicon;
+    } catch (e) {}
+
     setupNavigation();
     setupFormEvents();
     setupUnitControls();
