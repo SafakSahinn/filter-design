@@ -1024,41 +1024,52 @@ const BookContent = (() => {
       sections: [
         {
           id: 'ch4-1',
-          title: '4.1 Aktif Filtre Tasarım Prosedürü ve Sallen-Key Düğüm Denklemlerinin Türetimi',
+          title: '4.1 Aktif Filtre Tasarım Prosedürü, Katsayı Eşleme Metodolojisi ve Sallen-Key KCL Türetimi',
           content: `
-            <p>Bölüm 4'te benimsenen temel mühendislik yaklaşımı <strong>Katsayı Eşleme Yöntemi (Coefficient Matching)</strong>'dir. Bölüm 3'te elde edilen hedef matematiksel transfer fonksiyonu $H_a(s)$ ile op-amp devresinin Kirchhoff Akım Kanunu (KCL) düğüm denklemlerinden çıkarılan devre transfer fonksiyonu $H_c(s)$ birbirine eşitlenir.</p>
+            <p>Bölüm 4'te analog aktif filtre tasarımında benimsenen temel mühendislik yaklaşımı <strong>Katsayı Eşleme Yöntemi (Coefficient Matching Method)</strong>'dir. Bu yöntem, Bölüm 3'te elde edilen hedef analitik transfer fonksiyonu $H_a(s)$ ile operasyonel yükselteçli (Op-Amp) devrenin Kirchhoff Akım Kanunu (KCL) düğüm denklemlerinden çıkarılan devre transfer fonksiyonu $H_c(s)$'nin terim terim birbirine eşitlenmesine dayanır.</p>
 
-            <p><strong>Sallen-Key Alçak Geçiren Devresinin Adım Adım KCL Analizi:</strong></p>
-            <p>Devrede iki temel iç düğüm tanımlanır: $R_1, R_2$ ve $C_1$ arasındaki düğüm $V_A$, op-amp'ın evirmeyen ($+$) girişi ise $V_B$ olsun.</p>
-            <ul>
-              <li><strong>1. Düğüm ($V_A$) KCL Denklemi:</strong>
-                <div class="math-block">
-                  $$\\frac{V_{\\text{in}} - V_A}{R_1} = \\frac{V_A - V_B}{R_2} + \\frac{V_A - V_{\\text{out}}}{1/(sC_1)}$$
-                  $$\\frac{V_{\\text{in}}}{R_1} = V_A \\left( \\frac{1}{R_1} + \\frac{1}{R_2} + sC_1 \\right) - \\frac{V_B}{R_2} - sC_1 V_{\\text{out}}$$
-                </div>
-              </li>
-              <li><strong>2. Düğüm ($V_B$) KCL Denklemi (Op-amp giriş akımı sıfırdır):</strong>
-                <div class="math-block">
-                  $$\\frac{V_A - V_B}{R_2} = \\frac{V_B}{1/(sC_2)} = s C_2 V_B \\implies V_A = V_B (1 + s R_2 C_2)$$
-                </div>
-              </li>
-              <li><strong>Op-amp Kazanç Bağıntısı:</strong>
-                <div class="math-block">
-                  $$V_{\\text{out}} = K \\cdot V_B \\implies V_B = \\frac{V_{\\text{out}}}{K}, \\quad K = 1 + \\frac{R_B}{R_A}$$
-                </div>
-              </li>
-              <li><strong>Birleştirme ve Çözüm:</strong> $V_A = \\frac{V_{\\text{out}}}{K}(1 + s R_2 C_2)$ ifadesi 1. düğüm denklemine yerleştirilip $V_{\\text{out}} / V_{\\text{in}}$ oranı çekildiğinde Sallen-Key transfer fonksiyonu elde edilir:
-                <div class="math-block">
-                  $$H_c(s) = \\frac{V_{\\text{out}}(s)}{V_{\\text{in}}(s)} = \\frac{\\frac{K}{R_1 R_2 C_1 C_2}}{s^2 + s\\left[ \\frac{1}{R_1 C_1} + \\frac{1}{R_2 C_1} + \\frac{1-K}{R_2 C_2} \\right] + \\frac{1}{R_1 R_2 C_1 C_2}}$$
-                </div>
-              </li>
-            </ul>
-            <p>Bu devre transfer fonksiyonu, Bölüm 3'teki kuadratik yaklaşım fonksiyonu ile eşleştirilir:</p>
-            <div class="math-block">
-              $$H_c(s) = H_a(s) = \\frac{b_2}{s^2 + b_1 s + b_2}$$
+            <div class="tip-box" style="background: rgba(61,90,254,0.06); border-left: 4px solid var(--accent); padding: 14px 16px; border-radius: 6px; margin: 14px 0;">
+              <strong style="color: var(--accent); font-size: 14px;">💡 Sınav Püf Noktası: Neden Aktif RC Filtreler ve Kaskad Biquad Mimarisi Kullanılır?</strong>
+              <ul style="margin: 8px 0 0 18px; font-size: 13.5px; line-height: 1.6;">
+                <li><strong>Bobinsiz (Inductorless) Tasarım:</strong> Pasif RLC filtrelerde kullanılan endüktanslar (bobinler); özellikle ses ve biyomedikal gibi düşük frekanslarda devasa boyut, ağırlık, yüksek iç direnç ve komşu devrelere manyetik parazit (EMI) yayma gibi büyük dezavantajlara sahiptir. Aktif filtrelerde bobin yerine Op-Amp ve kondansatör kullanılır.</li>
+                <li><strong>Empedans İzolasyonu:</strong> Op-Amp'ların giriş empedansı son derece yüksek ($R_{\\text{in}} \\to \\infty$), çıkış empedansı ise çok düşüktür ($R_{\\text{out}} \\approx 0$). Bu sayede filtre katları (biquad'lar) art arda bağlandığında birbirlerini elektriksel olarak yüklemezler (No loading effect).</li>
+                <li><strong>Kaskad Biquad Kararlılığı:</strong> Yüksek dereceli bir filtreyi ($n=5$ veya $n=6$) tek bir devrede gerçekleştirmeye çalışmak, bileşen toleranslarına karşı aşırı hassasiyet yaratır. Filtreyi 2. derece (ve varsa 1. derece) bağımsız alt bloklara (biquad) ayırmak, her kutup çiftinin bağımsız ayarlanabilmesini ve kararlılığın korunmasını sağlar.</li>
+              </ul>
             </div>
 
-            <p style="margin-top: 14px;">Dört temel aktif filtre devresi ve devre topolojisi aşağıda özetlenmiştir. Her bir devre mimarisinin detaylı KCL analizini, eşit elemanlı hesaplama formüllerini ve kitaptaki adım adım sayısal çözümlerini incelemek için ilgili karta tıklayabilirsiniz:</p>
+            <h4 style="color: var(--text-h); margin-top: 20px; font-size: 16px;">Sallen-Key Alçak Geçiren Devresinin Adım Adım KCL Analizi & İspatı (Klasik Sınav Sorusu)</h4>
+            <p>Sallen-Key alçak geçiren katında iki temel iç düğüm tanımlanır: $R_1, R_2$ ve pozitif geribesleme kondansatörü $C_1$ arasındaki düğüm gerilimi $V_A$; op-amp'ın evirmeyen ($+$) giriş düğümü ise $V_B$ olsun.</p>
+            
+            <div style="background: #fafaf9; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0;">
+              <h5 style="margin: 0 0 8px; color: var(--accent); font-size: 14.5px;">Adım 1: Düğüm $V_B$ İçin KCL Denklemi</h5>
+              <p style="font-size: 13.5px; margin-bottom: 6px;">İdeal op-amp kabulü gereği evirmeyen girişe hiç akım girmez ($I_+ = 0$). Bu nedenle $R_2$ direnci üzerinden akan akımın tamamı $C_2$ kondansatörü üzerinden toprağa akar:</p>
+              <div class="math-block">
+                $$\\frac{V_A - V_B}{R_2} = \\frac{V_B}{1/(sC_2)} = s C_2 V_B$$
+                $$V_A - V_B = s R_2 C_2 V_B \\implies V_A = V_B (1 + s R_2 C_2)$$
+              </div>
+
+              <h5 style="margin: 16px 0 8px; color: var(--accent); font-size: 14.5px;">Adım 2: Op-Amp Kazanç Bağıntısı ($V_{\\text{out}}$ ile $V_B$ İlişkisi)</h5>
+              <p style="font-size: 13.5px; margin-bottom: 6px;">Op-amp evirmeyen yükselteç (non-inverting amplifier) olarak bağlanmıştır. Geri besleme dirençleri $R_A$ ve $R_B$ olduğundan DC gerilim kazancı $K$ şöyledir:</p>
+              <div class="math-block">
+                $$V_{\\text{out}} = K \\cdot V_B, \\quad K = 1 + \\frac{R_B}{R_A} \\implies V_B = \\frac{V_{\\text{out}}}{K}$$
+                $$V_A = \\frac{V_{\\text{out}}}{K} (1 + s R_2 C_2)$$
+              </div>
+
+              <h5 style="margin: 16px 0 8px; color: var(--accent); font-size: 14.5px;">Adım 3: Düğüm $V_A$ İçin KCL Denklemi</h5>
+              <p style="font-size: 13.5px; margin-bottom: 6px;">Girişten $R_1$ ile gelen akım, $R_2$ ve geri besleme kondansatörü $C_1$'e ayrılır:</p>
+              <div class="math-block">
+                $$\\frac{V_{\\text{in}} - V_A}{R_1} = \\frac{V_A - V_B}{R_2} + \\frac{V_A - V_{\\text{out}}}{1/(sC_1)}$$
+                $$\\frac{V_{\\text{in}}}{R_1} = V_A \\left( \\frac{1}{R_1} + \\frac{1}{R_2} + sC_1 \\right) - \\frac{V_B}{R_2} - sC_1 V_{\\text{out}}$$
+              </div>
+
+              <h5 style="margin: 16px 0 8px; color: var(--accent); font-size: 14.5px;">Adım 4: Değişkenlerin Yerine Konması ve $H_c(s)$'nin Çekilmesi</h5>
+              <p style="font-size: 13.5px; margin-bottom: 6px;">$V_A = \\frac{V_{\\text{out}}}{K}(1 + s R_2 C_2)$ ve $V_B = \\frac{V_{\\text{out}}}{K}$ ifadeleri $V_A$ denklemine yerleştirilip $V_{\\text{out}} / V_{\\text{in}}$ oranı çekildiğinde Sallen-Key genel devre transfer fonksiyonu çıkar:</p>
+              <div class="math-block">
+                $$H_c(s) = \\frac{V_{\\text{out}}(s)}{V_{\\text{in}}(s)} = \\frac{\\displaystyle \\frac{K}{R_1 R_2 C_1 C_2}}{\\displaystyle s^2 + s\\left[ \\frac{1}{R_1 C_1} + \\frac{1}{R_2 C_1} + \\frac{1-K}{R_2 C_2} \\right] + \\frac{1}{R_1 R_2 C_1 C_2}}$$
+              </div>
+            </div>
+
+            <p style="margin-top: 14px;">Aşağıdaki 4 interaktif kartta Bölüm 4'ün ana devre topolojileri özetlenmiştir. Her kartın KCL türetimini, formüllerini ve kitaptaki adım adım sayısal çözümlerini incelemek için pop-up butonlarına tıklayabilirsiniz:</p>
 
             <div class="theory-grid-2" style="margin-top: 14px;">
               <!-- 1. Sallen-Key LP Card -->
@@ -1133,107 +1144,235 @@ const BookContent = (() => {
         },
         {
           id: 'ch4-2',
-          title: '4.2 Sallen-Key Alçak Geçiren Devre Tasarımı (Equal-Component Yöntemi)',
+          title: '4.2 Sallen-Key Alçak Geçiren Devre Tasarımı: Equal-Component Yöntemi ve Kararlılık Analizi',
           content: `
-            <p>Kitapta sunulan en popüler ve pratik yöntem <strong>Eşit Elemanlı Sallen-Key (Equal-Component Sallen-Key)</strong> yaklaşımıdır. Bu yöntemde piyasada toleransı düşük ve standart değerlerde kolayca bulunan kondansatörler eşit seçilir:</p>
+            <p>Kitapta sunulan ve endüstri standardı olan en popüler yöntem <strong>Eşit Elemanlı Sallen-Key (Equal-Component Sallen-Key)</strong> yaklaşımıdır.</p>
+
+            <h4 style="color: var(--text-h); font-size: 15px;">1. Neden Eşit Elemanlı (Equal-Component) Yöntem Seçilir?</h4>
+            <p>Piyasada kondansatörler sınırlı standart serilerde (örneğin 1 nF, 10 nF, 100 nF) ve yüksek toleransla (%10–%20) üretilir. Özel değerli kondansatör üretmek son derece pahalıdır. Dirençler ise %1 hassasiyetle (E96 serisi) istenen her değerde kolayca bulunabilir. Bu nedenle mühendisler devredeki tüm kondansatörleri eşit seçer:</p>
             <div class="math-block">
-              $$C_1 = C_2 = C \\quad (\\text{Örn: } 10\\text{ nF veya } 0.01\\ \\mu\\text{F})$$
+              $$C_1 = C_2 = C \\quad (\\text{Örn: } 10\\text{ nF} = 10^{-8}\\text{ F veya } 100\\text{ nF})$$
               $$R_1 = R_2 = R$$
             </div>
-            <p>Bu eşitlikler devre transfer fonksiyonuna uygulandığında:</p>
-            <div class="math-block">
-              $$\\frac{1}{R^2 C^2} = b_2 \\implies R = \\frac{1}{C \\sqrt{b_2}}$$
-              $$\\frac{3 - K}{R C} = b_1 \\implies 3 - K = b_1 R C = \\frac{b_1}{\\sqrt{b_2}} \\implies K = 3 - \\frac{b_1}{\\sqrt{b_2}}$$
-            </div>
-            <p><strong>Op-Amp Kazanç Dirençleri ($R_A, R_B$):</strong></p>
-            <p>Op-amp evirmeyen yükselteç (non-inverting amplifier) olarak yapılandırılır. Kazancı $K = 1 + \\frac{R_B}{R_A}$ olduğundan:</p>
-            <div class="math-block">
-              $$R_B = (K - 1) R_A, \\quad (R_A = 10\\text{ k}\\Omega \\text{ seçilir})$$
-            </div>
-            <p>Eğer $K = 1.0$ ise, $R_B$ kısa devre yapılır (jumper tel) ve $R_A$ devre dışı bırakılır (gerilim takipçi - voltage follower).</p>
 
-            <p><strong>Birinci Derece Alçak Geçiren Katı (Tek Dereceli Filtreler İçin):</strong></p>
-            <p>Filtre derecesi tek sayı olduğunda ($N=1, 3, 5, \\dots$), bir adet birinci derece kat gereklidir. Bu kat basit bir pasif RC alçak geçiren ve ardından tampon (buffer) op-amp ile gerçekleştirilir:</p>
+            <h4 style="color: var(--text-h); font-size: 15px;">2. Eşit Eleman Kabulleriyle Devre Transfer Fonksiyonu</h4>
+            <p>$C_1 = C_2 = C$ ve $R_1 = R_2 = R$ eşitlikleri genel Sallen-Key denklemine uygulandığında:</p>
             <div class="math-block">
-              $$H_c(s) = \\frac{1 / (RC)}{s + 1/(RC)} = \\frac{b_2}{s + b_2} \\implies R = \\frac{1}{b_2 C}, \\quad K = 1.0$$
+              $$H_c(s) = \\frac{\\displaystyle \\frac{K}{R^2 C^2}}{\\displaystyle s^2 + s\\left[ \\frac{1}{RC} + \\frac{1}{RC} + \\frac{1-K}{RC} \\right] + \\frac{1}{R^2 C^2}} = \\frac{\\displaystyle \\frac{K}{R^2 C^2}}{\\displaystyle s^2 + s\\left[ \\frac{3 - K}{RC} \\right] + \\frac{1}{R^2 C^2}}$$
             </div>
+
+            <h4 style="color: var(--text-h); font-size: 15px;">3. Katsayı Eşleme ile Tasarım Formüllerinin Çıkarılışı</h4>
+            <p>Hedef kuadratik faktörümüz $H_a(s) = \\frac{b_2}{s^2 + b_1 s + b_2}$ olduğuna göre, paydadaki katsayılar birebir eşleştirilir:</p>
+            <div class="math-block">
+              $$\\text{Sabit Terim Eşlemesi: } \\frac{1}{R^2 C^2} = b_2 \\implies R^2 = \\frac{1}{b_2 C^2} \\implies R = \\frac{1}{C \\sqrt{b_2}}$$
+              $$\\text{s Katsayısı Eşlemesi: } \\frac{3 - K}{RC} = b_1 \\implies 3 - K = b_1 (RC) = \\frac{b_1}{\\sqrt{b_2}} \\implies K = 3 - \\frac{b_1}{\\sqrt{b_2}}$$
+            </div>
+
+            <div class="note-box" style="background: rgba(239,68,68,0.06); border-left: 4px solid #ef4444; padding: 14px 16px; border-radius: 6px; margin: 16px 0;">
+              <strong style="color: #ef4444; font-size: 14px;">⚠️ Sınavlarda En Çok Sorulan Kritik Konu: Kalite Faktörü $Q$ ve Kararlılık Sınırı ($K < 3$)</strong>
+              <p style="font-size: 13.5px; margin: 6px 0 0; line-height: 1.55;">
+                Kuadratik bir biquad için kalite faktörü $Q = \\frac{\\omega_0}{BW} = \\frac{\\sqrt{b_2}}{b_1}$ olarak tanımlanır. Bu ifadeyi $K$ formülünde yerine koyarsak:
+                $$K = 3 - \\frac{1}{Q}$$
+                <strong>Fiziksel ve Matematiksel Sonuçlar:</strong>
+                <br>• Eğer katın $Q$ faktörü yükselirse ($Q \\to \\infty$), Op-Amp kazancı $K \\to 3$ değerine yaklaşır.
+                <br>• Eğer $K \\ge 3$ olursa, paydadaki $s$ katsayısı $\\frac{3-K}{RC} \\le 0$ haline gelir! Bu durumda kutuplar sağ yarı karmaşık düzleme ($s$-plane right-half) geçer ve devre bir filtre olmaktan çıkıp <strong>kontrolsüz bir osilatöre</strong> dönüşür.
+                <br>• <strong>Kural:</strong> Equal-Component Sallen-Key devresi $Q < 10$ için mükemmeldir. Çok yüksek $Q$ gerektiren dar bant filtrelerde op-amp kazancı $K$ kritik sınıra dayanacağından MFB veya State-Variable mimarisi tercih edilir.
+              </p>
+            </div>
+
+            <h4 style="color: var(--text-h); font-size: 15px;">4. Op-Amp Geri Besleme Dirençlerinin Hesabı ($R_A, R_B$)</h4>
+            <p>Op-amp evirmeyen yükselteç kazanç formülü $K = 1 + \\frac{R_B}{R_A}$'dır. Pratikte $R_A = 10\\text{ k}\\Omega$ referans seçilir ve $R_B$ hesaplanır:</p>
+            <div class="math-block">
+              $$R_B = (K - 1) R_A \\quad (R_A = 10\\text{ k}\\Omega)$$
+            </div>
+            <p>Örneğin $K = 2.482$ ise $R_B = (2.482 - 1) \\times 10\\text{ k}\\Omega = 14.82\\text{ k}\\Omega$ bulunur.</p>
+
+            <h4 style="color: var(--text-h); font-size: 15px;">5. Birinci Derece Alçak Geçiren Katı (Tek Dereceli Filtreler İçin $N = 1, 3, 5\\dots$)</h4>
+            <p>Filtre derecesi tek sayı olduğunda ($N=1, 3, 5, 7$), kutuplardan biri reel eksendedir ve transfer fonksiyonunda tekil bir $(s + b_2)$ çarpanı bulunur. Bu kat pasif bir seri $R$, toprağa paralel $C$ ve ardından <strong>kazancı 1 olan gerilim izleyici tampon (voltage follower) op-amp</strong> ile gerçekleştirilir:</p>
+            <div class="math-block">
+              $$H_1(s) = \\frac{b_2}{s + b_2} = \\frac{\\displaystyle \\frac{1}{RC}}{s + \\displaystyle \\frac{1}{RC}} \\implies R = \\frac{1}{b_2 C}$$
+              $$\\text{Op-Amp Kazancı: } K = 1.0 \\implies R_B = 0\\ \\Omega \\text{ (kısa devre köprü teli)}, \\quad R_A = \\infty \\text{ (takılmaz)}$$
+            </div>
+            <p><strong>Neden Tampon Op-Amp Şarttır?</strong> Pasif RC devresinin arkasına tampon konmazsa, sonraki Sallen-Key katının giriş empedansı bu RC filtresini yükler (loading effect) ve kesim frekansını tamamen kaydırır. Tampon op-amp giriş empedansını sonsuza, çıkış empedansını sıfıra çekerek mükemmel kaskad izolasyonu sağlar.</p>
           `
         },
         {
           id: 'ch4-3',
-          title: '4.3 Sallen-Key Yüksek Geçiren Devre Tasarımı',
+          title: '4.3 Sallen-Key Yüksek Geçiren Devre Tasarımı ve DC Bloklama',
           content: `
-            <p>Sallen-Key yüksek geçiren topolojisinde, alçak geçiren devredeki direnç ve kondansatörlerin yerleri karşılıklı olarak değiştirilir. $R_A$ ve $R_B$ op-amp geri besleme dirençleri aynı konumda kalır:</p>
+            <p>Sallen-Key yüksek geçiren (Highpass) biquad devresi, alçak geçiren devredeki direnç ve kondansatörlerin topolojik olarak yer değiştirmesi ($R \\leftrightarrow C$) ile elde edilir. Op-amp evirmeyen kazanç ağı ($R_A, R_B$) aynı kalır.</p>
+
+            <h4 style="color: var(--text-h); font-size: 15px;">1. Devre Transfer Fonksiyonunun Çıkarılışı</h4>
+            <p>Girişte iki seri kondansatör ($C_1, C_2$) ve pozitif geri besleme direnci $R_1$ bulunur. Düğüm denklemleri çözüldüğünde:</p>
             <div class="math-block">
-              $$H_c(s) = \\frac{K s^2}{s^2 + s\\left[ \\frac{1}{R_2 C_2} + \\frac{1}{R_2 C_1} + \\frac{1-K}{R_1 C_1} \\right] + \\frac{1}{R_1 R_2 C_1 C_2}}$$
+              $$H_c(s) = \\frac{V_{\\text{out}}(s)}{V_{\\text{in}}(s)} = \\frac{\\displaystyle K s^2}{\\displaystyle s^2 + s\\left[ \\frac{1}{R_2 C_2} + \\frac{1}{R_2 C_1} + \\frac{1-K}{R_1 C_1} \\right] + \\frac{1}{R_1 R_2 C_1 C_2}}$$
             </div>
-            <p>Eşit kondansatör ($C_1 = C_2 = C$) ve eşit direnç ($R_1 = R_2 = R$) seçimi ile hesaplama formülleri alçak geçiren ile aynı simetriye kavuşur:</p>
+
+            <h4 style="color: var(--text-h); font-size: 15px;">2. Eşit Elemanlı (Equal-Component) Sallen-Key HP Formülleri</h4>
+            <p>$C_1 = C_2 = C$ ve $R_1 = R_2 = R$ kabulleri yapıldığında payda denklemi alçak geçiren ile tamamen aynı simetrik forma girer:</p>
             <div class="math-block">
-              $$R = \\frac{1}{C \\sqrt{b_2}}, \\quad K = 3 - \\frac{b_1}{\\sqrt{b_2}}, \\quad R_B = (K - 1) R_A$$
+              $$H_c(s) = \\frac{\\displaystyle K s^2}{\\displaystyle s^2 + s\\left[ \\frac{3 - K}{RC} \\right] + \\frac{1}{R^2 C^2}}$$
             </div>
-            <p>Birinci derece yüksek geçiren katı için seri kondansatör ve toprağa bağlı direnç ile tampon op-amp kullanılır: $R = \\frac{1}{b_2 C}$.</p>
+            <p>Bölüm 3'teki yüksek geçiren hedef transfer fonksiyonu $H_a(s) = \\frac{K s^2}{s^2 + b_1 s + b_2}$ ile eşleştirildiğinde:</p>
+            <div class="math-block">
+              $$R_1 = R_2 = R = \\frac{1}{C \\sqrt{b_2}}$$
+              $$K = 3 - \\frac{b_1}{\\sqrt{b_2}} = 3 - \\frac{1}{Q}, \\quad R_B = (K - 1) R_A \\quad (R_A = 10\\text{ k}\\Omega)$$
+            </div>
+
+            <div class="tip-box" style="background: rgba(16,185,129,0.06); border-left: 4px solid #10b981; padding: 14px 16px; border-radius: 6px; margin: 16px 0;">
+              <strong style="color: #10b981; font-size: 14px;">💡 Sınav Notu: Paydaki $s^2$ Teriminin Fiziksel Anlamı</strong>
+              <p style="font-size: 13.5px; margin: 6px 0 0; line-height: 1.55;">
+                • $s = 0$ (DC frekansta) $|H(0)| = 0$'dır. Devre girişindeki seri kondansatörler DC akımı tamamen bloke eder. Sensör ve ses devrelerinde oluşabilecek DC ofset voltajları böylece sıfırlanır.
+                <br>• $s \\to \\infty$ (Çok yüksek frekanslarda) kondansatörler kısa devre gibi davranır; $s^2 / s^2 \\to 1$ olur ve transfer fonksiyonu doğrudan op-amp'ın evirmeyen kazancı olan $K$'ya eşitlenir ($H(\\infty) = K$).
+              </p>
+            </div>
+
+            <h4 style="color: var(--text-h); font-size: 15px;">3. Birinci Derece Yüksek Geçiren Katı ($N$ Tek Sayı İken)</h4>
+            <p>Filtre derecesi tek sayı olduğunda ($N=1, 3, 5$), birinci derece yüksek geçiren katı seri bir $C$ kondansatörü, toprağa bağlı $R$ direnci ve kazancı 1 olan gerilim izleyici tampon op-amp ile kurulur:</p>
+            <div class="math-block">
+              $$H_1(s) = \\frac{s}{s + 1/(RC)} = \\frac{s}{s + b_2} \\implies R = \\frac{1}{b_2 C}, \\quad K = 1.0$$
+            </div>
           `
         },
         {
           id: 'ch4-4',
-          title: '4.4 ve 4.5 Twin-Tee Çentik Devresi ve Kompleks Sıfırların Gerçekleştirilmesi',
+          title: '4.4 Sallen-Key ve Çoklu Geribesleme (MFB) Bant Geçiren Devreleri',
           content: `
-            <p>Ters Chebyshev ve Eliptik filtrelerin transfer fonksiyonlarının payında $s^2 + a_0$ şeklinde sonlu iletim sıfırları bulunur. Standart tüm-kutuplu Sallen-Key devresi bu sıfırları gerçekleştiremez. Bu amaçla <strong>Twin-Tee (İkiz-T) Aktif Çentik Filtresi</strong> kullanılır.</p>
-            <p>Devre simetrik iki paralel T köprüsünden oluşur:</p>
-            <ul>
-              <li><strong>R-C-R Köprüsü:</strong> İki adet seri $R$ direnci ve orta noktadan toprağa bağlı $2C$ kondansatörü (Alçak geçiren yol).</li>
-              <li><strong>C-R-C Köprüsü:</strong> İki adet seri $C$ kondansatörü ve orta noktadan toprağa bağlı $R/2$ direnci (Yüksek geçiren yol).</li>
-            </ul>
-            <p>Merkez frekansta iki yol arasındaki sinyaller tam $180^\\circ$ faz farkı ile birbirini yok eder ve derin bir çentik oluşturur. Çentik derinliği ve seçiciliği op-amp geri besleme kazancı $K$ ile kontrol edilir:</p>
+            <p>Bant geçiren (Bandpass) filtrelerde Bölüm 3'teki frekans dönüşümü derecenin iki katına ($2n$) çıkmasına neden olur. Her bir kuadratik kat bağımsız bir merkez frekansı $\\omega_{0,m}$ ve kalite faktörüne $Q_m$ sahip bir rezonans biquad'ıdır:</p>
             <div class="math-block">
-              $$f_0 = \\frac{1}{2\\pi R C}, \\quad K = 2 - \\frac{1}{2Q}$$
+              $$H_k(s) = \\frac{a_1 s}{s^2 + b_1 s + b_2} = \\frac{G_0 \\left(\\frac{\\omega_0}{Q}\\right) s}{s^2 + \\left(\\frac{\\omega_0}{Q}\\right) s + \\omega_0^2}$$
+            </div>
+            <p>Burada $\\omega_0 = \\sqrt{b_2}$, $BW = b_1$, $Q = \\frac{\\omega_0}{b_1} = \\frac{\\sqrt{b_2}}{b_1}$ ve merkez frekanstaki tepe kazancı $G_0 = \\frac{a_1}{b_1}$'dir.</p>
+
+            <h4 style="color: var(--text-h); font-size: 15px;">Çoklu Geribesleme (Multiple-Feedback - MFB) Bant Geçiren Mimarisi</h4>
+            <p>Sallen-Key bant geçiren devresi orta ve yüksek $Q$ değerlerinde aşırı hassas hale gelir. Bu nedenle endüstride ve Les Thede kitabında bant geçiren filtreler için genellikle <strong>Multiple-Feedback (MFB)</strong> topolojisi tercih edilir:</p>
+            <ul style="font-size: 13.5px; line-height: 1.6;">
+              <li>Op-amp eviren (inverting) modda çalışır. Giriş sinyali doğrudan op-amp'a bağlanmaz, sanal toprak üzerinden geribeslenir.</li>
+              <li>İki eşit kondansatör $C_1 = C_2 = C$ seçildiğinde, 3 adet direnç şu bağıntılarla hesaplanır:</li>
+            </ul>
+            <div class="math-block">
+              $$R_1 = \\frac{Q}{G_0 \\cdot \\omega_0 \\cdot C}$$
+              $$R_2 = \\frac{Q}{(2 Q^2 - G_0) \\cdot \\omega_0 \\cdot C}$$
+              $$R_3 = \\frac{2 Q}{\\omega_0 \\cdot C}$$
+            </div>
+            <div class="warning-box" style="background: rgba(245,158,11,0.06); border-left: 4px solid #f59e0b; padding: 14px 16px; border-radius: 6px; margin: 14px 0;">
+              <strong style="color: #b45309; font-size: 14px;">⚠️ Tasarım Kısıtı: $R_2$ Direncinin Pozitif Olma Şartı</strong>
+              <p style="font-size: 13.5px; margin: 6px 0 0; line-height: 1.55;">
+                $R_2$ formülünün paydasındaki $(2Q^2 - G_0)$ teriminin pozitif kalması zorunludur:
+                $$2 Q^2 > G_0 \\implies G_0 < 2 Q^2$$
+                Eğer hedeflenen kat kazancı $G_0$ çok yüksek seçilirse $R_2$ negatif çıkar (fiziksel olarak üretilemez). Bu nedenle kat başına makul bir kazanç ($G_0 = 1 \\dots 2$) seçilir ve kalan kazanç çıkışta ayarlanır.
+              </p>
             </div>
           `
         },
         {
           id: 'ch4-5',
-          title: '4.6 Kazanç Dengeleme Gerilim Bölücüsü (Gain Adjustment Divider)',
+          title: '4.5 Twin-Tee Çentik Devresi (Bandstop) ve Sonlu Sıfırların Gerçekleştirilmesi',
           content: `
-            <p>Her Sallen-Key katı stabilite ve $Q$ gereksinimleri nedeniyle $K_m > 1$ kazancına sahip olduğundan, kaskad bağlı tüm katların toplam kazancı yükselir:</p>
+            <p>Ters Chebyshev ve Eliptik filtrelerin transfer fonksiyonlarının payında $(s^2 + \\omega_z^2)$ şeklinde <strong>sonlu karmaşık iletim sıfırları (finite transmission zeros)</strong> yer alır. Standart tüm-kutuplu Sallen-Key devresi payında $s^2 + \\omega_z^2$ üretemez. Bu sıfırları gerçekleştirmek ve durdurma bandında derin çentikler oluşturmak için <strong>Twin-Tee (İkiz-T) Aktif Çentik Devresi</strong> kullanılır.</p>
+
+            <h4 style="color: var(--text-h); font-size: 15px;">1. Simetrik Twin-Tee Köprüsünün Çalışma İlkesi</h4>
+            <p>Devre birbirine paralel bağlanmış iki ayrı T ağından oluşur:</p>
+            <ul style="font-size: 13.5px; line-height: 1.6;">
+              <li><strong>R-C-R Ağı (Alçak Geçiren Yol):</strong> Seri iki adet $R$ direnci ve orta noktadan toprağa/geribeslemeye bağlı $2C$ kondansatörü. Alçak frekansları geçirir, yüksek frekansta $-90^\\circ$ faz gecikmesi üretir.</li>
+              <li><strong>C-R-C Ağı (Yüksek Geçiren Yol):</strong> Seri iki adet $C$ kondansatörü ve orta noktadan toprağa/geribeslemeye bağlı $R/2$ direnci. Yüksek frekansları geçirir, alçak frekansta $+90^\\circ$ faz ilerlemesi üretir.</li>
+            </ul>
+            <p>Merkez rezonans frekansı $\\omega_0 = 1/(RC)$'de bu iki yol arasındaki faz farkı tam $180^\\circ$ olur ve iki sinyal birbirini kusursuz şekilde yok ederek teorik olarak $-\\infty\\text{ dB}$ derinliğinde bir çentik oluşturur:</p>
             <div class="math-block">
-              $$K_{\\text{tot}} = \\prod_{m=1}^{M} K_m$$
+              $$f_0 = \\frac{1}{2\\pi R C} \\implies R = \\frac{1}{2\\pi f_0 C}, \\quad R_3 = \\frac{R}{2}, \\quad C_3 = 2 C$$
             </div>
-            <p>Örneğin 5. derece bir filtrede $K_{\\text{tot}} \\approx 3.29$ olabilir. Filtrenin toplam DC veya tepe kazancını tam olarak $0\\text{ dB}$ ($G_{\\text{hedef}} = 1.0$) seviyesine eşitlemek için en son aşamanın çıkışına pasif bir direnç gerilim bölücüsü ($R_x, R_y$) eklenir:</p>
+
+            <h4 style="color: var(--text-h); font-size: 15px;">2. Aktif Geribesleme (Bootstrapping) ile Seçicilik ($Q$) Ayarı</h4>
+            <p>Eğer Twin-Tee köprüsünün orta bacakları doğrudan toprağa bağlanırsa (pasif Twin-Tee), filtrenin seçiciliği $Q = 0.25$ gibi çok düşüktür; çentik çok geniş olur ve etraftaki faydalı sinyalleri de zayıflatır. Op-Amp çıkışından köprünün orta bacaklarına bir geribesleme voltajı uygulandığında (bootstrapping):</p>
             <div class="math-block">
-              $$G_A = \\frac{K_{\\text{tot}}}{G_{\\text{hedef}}}$$
+              $$Q = \\frac{1}{4(1 - K)} \\implies K = 1 - \\frac{1}{4 Q}$$
             </div>
-            <p>Filtrenin çıkış empedansının belirli bir standart değerde (genellikle $R_{\\text{out}} = 10\\text{ k}\\Omega$) olması istenir. Bu durumda $R_x \\parallel R_y = R_{\\text{out}}$ olmalıdır:</p>
-            <div class="math-block">
-              $$R_x = G_A \\cdot R_{\\text{out}}$$
-              $$R_y = \\frac{G_A}{G_A - 1} \\cdot R_{\\text{out}}$$
-            </div>
-            <p>Bu sayede filtrenin genel kazancı kusursuz şekilde $1.0$'a kalibre edilirken çıkış empedansı $10\\text{ k}\\Omega$ sabitinde tutulur.</p>
+            <p>Burada $K < 1$ olduğundan op-amp çıkışına basit bir direnç bölücü bağlanarak orta bacak gerilimi sürülür. Böylece $Q$ değeri $5 \\dots 50$ seviyesine çıkarılır; yalnızca hedeflenen parazit (örneğin 50 Hz şebeke vızıltısı) yok edilir.</p>
           `
         },
         {
           id: 'ch4-6',
-          title: '4.7 Pratik Mühendislik Konuları: Standart Bileşenler ve Hassasiyet Analizi',
+          title: '4.6 Kazanç Dengeleme Gerilim Bölücüsü (Gain Adjustment Divider)',
           content: `
-            <p><strong>Standart E-Serisi Toleransları:</strong> Teorik hesaplamalar sonucunda $13.924\\text{ k}\\Omega$ gibi standart dışı direnç değerleri çıkar. Endüstride en yakın standart nominal değere yuvarlama yapılır:</p>
-            <ul>
-              <li><strong>E12 Serisi (%10 Tolerans):</strong> 1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2 (Genellikle kondansatörlerde).</li>
-              <li><strong>E24 Serisi (%5 Tolerans):</strong> 24 standart basamak (Genel amaçlı metal film dirençlerde).</li>
-              <li><strong>E96 Serisi (%1 Hassas Tolerans):</strong> 96 basamak (Yüksek hassasiyetli filtre devrelerinde).</li>
-            </ul>
-
-            <p><strong>Bileşen Hassasiyeti (Bode Sensitivity Analysis):</strong></p>
-            <p>Bir devre parametresinin ($P$, örneğin $\\omega_0$ veya $Q$), bir pasif bileşendeki ($x$, örneğin $R_1$ veya $C_1$) tolerans değişimine karşı bağıl duyarlılığı şu türevle tanımlanır:</p>
+            <p>Sallen-Key ve diğer aktif katların stabilite ve $Q$ parametreleri gereği op-amp kazançları $K_m > 1$ olmak zorundadır. Bu katlar art arda kaskad bağlandığında toplam kazanç katlanarak artar:</p>
             <div class="math-block">
-              $$S_x^P = \\frac{\\partial P / P}{\\partial x / x} = \\frac{x}{P} \\frac{\\partial P}{\\partial x}$$
+              $$K_{\\text{tot}} = \\prod_{m=1}^{M} K_m = K_1 \\cdot K_2 \\cdot \\dots \\cdot K_M$$
             </div>
-            <p>Equal-Component Sallen-Key mimarisinde kesim frekansı $\\omega_0$'ın direnç ve kondansatörlere göre hassasiyeti $S_R^{\\omega_0} = -0.5$ ve $S_C^{\\omega_0} = -0.5$'tir (oldukça düşüktür). Ancak $Q$ faktörünün op-amp kazancı $K$'ya göre hassasiyeti $Q$ yükseldikçe artar; bu nedenle çok yüksek $Q$ değerlerinde ($Q > 10$) state-variable veya Tow-Thomas biquad gibi daha karmaşık topolojiler tercih edilir.</p>
+            <p>Örneğin 5. derece bir Butterworth filtrede $K_1 = 1.0$ (tampon), $K_2 = 2.382$ ve $K_3 = 1.382$ olduğunda toplam devre kazancı $K_{\\text{tot}} = 3.292$ (yaklaşık $10.35\\text{ dB}$) olur. Ancak tasarım spesifikasyonlarında filtrenin DC veya geçirme bandı tepe kazancının $0\\text{ dB}$ ($G_{\\text{hedef}} = 1.0$) olması istenir.</p>
+
+            <h4 style="color: var(--text-h); font-size: 15px;">Pasif Gerilim Bölücüsü ($R_x, R_y$) Formüllerinin Adım Adım İspatı</h4>
+            <p>Son katın çıkışına bağlanan gerilim bölücüsünün aynı anda iki hayati mühendislik şartını sağlaması gerekir:</p>
+            
+            <div style="background: #fafaf9; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 14px 0;">
+              <h5 style="margin: 0 0 6px; color: var(--accent); font-size: 14px;">Şart 1: Kazancı Hedef Seviyeye Zayıflatma Oranı</h5>
+              <div class="math-block">
+                $$\\text{Zayıflatma Oranı: } G_A = \\frac{K_{\\text{tot}}}{G_{\\text{hedef}}}$$
+                $$\\frac{V_{\\text{final}}}{V_{\\text{out}}} = \\frac{R_y}{R_x + R_y} = \\frac{1}{G_A} \\implies R_x + R_y = G_A \\cdot R_y \\implies R_x = (G_A - 1) R_y$$
+              </div>
+
+              <h5 style="margin: 14px 0 6px; color: var(--accent); font-size: 14px;">Şart 2: Standart Çıkış Empedansı ($R_{\\text{out}} = 10\\text{ k}\\Omega$)</h5>
+              <p style="font-size: 13.5px; margin-bottom: 6px;">Filtrenin çıkış empedansı Thevenin eşdeğeri olarak $R_x \\parallel R_y$ paralel eşdeğerine eşittir:</p>
+              <div class="math-block">
+                $$R_{\\text{out}} = R_x \\parallel R_y = \\frac{R_x \\cdot R_y}{R_x + R_y}$$
+              </div>
+
+              <h5 style="margin: 14px 0 6px; color: var(--accent); font-size: 14px;">Şart 1 ve Şart 2'nin Birleştirilmesi:</h5>
+              <p style="font-size: 13.5px; margin-bottom: 6px;">$R_x = (G_A - 1) R_y$ ifadesini paralel eşdeğerde yerine koyalım:</p>
+              <div class="math-block">
+                $$R_{\\text{out}} = \\frac{(G_A - 1) R_y \\cdot R_y}{G_A \\cdot R_y} = \\frac{G_A - 1}{G_A} \\cdot R_y \\implies R_y = \\frac{G_A}{G_A - 1} \\cdot R_{\\text{out}}$$
+                $$R_x = (G_A - 1) R_y = (G_A - 1) \\left( \\frac{G_A}{G_A - 1} R_{\\text{out}} \\right) \\implies R_x = G_A \\cdot R_{\\text{out}}$$
+              </div>
+            </div>
+
+            <p style="font-size: 13.5px;">Bu iki zarif formül sayesinde hem filtrenin kazancı tam $1.0$'a (0 dB) kalibre edilir hem de filtrenin Thevenin çıkış empedansı $10\\text{ k}\\Omega$ sabitine oturtulur.</p>
+          `
+        },
+        {
+          id: 'ch4-7',
+          title: '4.7 Sınav İpuçları, Sık Yapılan Hatalar ve Standart E-Serisi Seçimi',
+          content: `
+            <div class="tip-box" style="background: rgba(61,90,254,0.06); border-left: 4px solid var(--accent); padding: 16px 18px; border-radius: 6px; margin: 16px 0;">
+              <h4 style="color: var(--accent); margin: 0 0 10px; font-size: 15.5px;">🎓 Analog Filtre Tasarımı Sınavında En Sık Yapılan 6 Hata ve Çözüm Taktikleri</h4>
+              <ol style="margin: 0 0 0 18px; font-size: 13.5px; line-height: 1.7;">
+                <li><strong>1. Hata (Tampon Katına Kazanç Eklemek):</strong> Filtre derecesi $N$ tek olduğunda kullanılan 1. derece RC katında op-amp yalnızca gerilim izleyicidir ($K = 1.0$). Öğrenciler sıklıkla bu kata da $K$ kazancı hesaplamaya çalışır. Unutmayın: 1. derece tamponda $R_B = 0$ (kısa devre tel), $R_A$ ise takılmaz!</li>
+                <li><strong>2. Hata ($R_B$ Formülünde Yanlışlık):</strong> Evirmeyen op-amp kazancı $K = 1 + R_B / R_A$ olduğundan $R_B = (K - 1) R_A$'dır. Sınav heyecanıyla $R_B = K \\cdot R_A$ yazmak en yaygın hatadır.</li>
+                <li><strong>3. Hata (Açısal Frekans $\\omega$ ile Frekans $f$ Karışıklığı):</strong> Bölüm 4 formüllerindeki $b_1$ ve $b_2$ değerleri $\\text{rad/s}$ cinsindendir. Formüle girmeden önce mutlaka $\\omega_0 = 2\\pi f_0$ dönüşümünü yapın!</li>
+                <li><strong>4. Hata (Gerilim Bölücüsünde $R_x$ ve $R_y$'yi Ters Bağlamak):</strong> $R_x$ son kat op-amp çıkışından seri olarak filtre çıkışına gider. $R_y$ ise filtre çıkışından toprağa paralel bağlanır. Ters bağlanırsa çıkış empedansı ve kazanç tamamen bozulur.</li>
+                <li><strong>5. Hata (Bileşen Seçim Sırası):</strong> Tasarıma daima standart bir kondansatör ($C$) seçerek başlanır (örn: 10 nF). Dirençler $C$'ye göre hesaplanır. Çünkü piyasada dirençlerin nominal basamak sayısı (E24/E96) kondansatörlerden (E12) kat kat fazladır.</li>
+                <li><strong>6. Hata (Kararlılık Sınırı):</strong> Equal-component Sallen-Key devresinde $K = 3 - b_1/\\sqrt{b_2} = 3 - 1/Q$ formülünde $K < 3$ olmak zorundadır. Eğer hesapladığınız $K \\ge 3$ çıkıyorsa katsayılarınızda veya işaretlerinizde mutlaka bir hata vardır.</li>
+              </ol>
+            </div>
+
+            <h4 style="color: var(--text-h); font-size: 15px; margin-top: 20px;">Standart E-Serisi Tolerans Serileri (E12 & E24)</h4>
+            <p>Laboratuvar ve endüstriyel üretimde hesaplanan teorik değerlere en yakın standart ticari bileşenler seçilir:</p>
+            <table class="table" style="width: 100%; font-size: 13px; border-collapse: collapse; margin-top: 10px;">
+              <thead>
+                <tr style="background: #fafaf9; text-align: left;">
+                  <th style="padding: 8px 12px; border: 1px solid var(--border);">Seri</th>
+                  <th style="padding: 8px 12px; border: 1px solid var(--border);">Tolerans</th>
+                  <th style="padding: 8px 12px; border: 1px solid var(--border);">Standart Nominal Çarpanlar (1–10 arası)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 8px 12px; border: 1px solid var(--border); font-weight: 700; color: #3d5afe;">E12</td>
+                  <td style="padding: 8px 12px; border: 1px solid var(--border);">%10</td>
+                  <td style="padding: 8px 12px; border: 1px solid var(--border); font-family: var(--font-mono);">1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 12px; border: 1px solid var(--border); font-weight: 700; color: #10b981;">E24</td>
+                  <td style="padding: 8px 12px; border: 1px solid var(--border);">%5</td>
+                  <td style="padding: 8px 12px; border: 1px solid var(--border); font-family: var(--font-mono);">1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1</td>
+                </tr>
+              </tbody>
+            </table>
           `
         },
         {
           id: 'ch4-examples',
-          title: 'Bölüm 4: Kitaptaki Tüm Aktif Devre Tasarımı Örnekleri (Örnek 4.1 - 4.6)',
+          title: '4.8 Kitaptaki Tüm Aktif Devre Tasarımı Örnekleri (Örnek 4.1 - 4.6) - Adım Adım Sınav Çözümleri',
           content: `
-            <p>Bölüm 4'teki tüm op-amp Sallen-Key, Twin-Tee ve gerilim bölücü aktif devre tasarımı örnekleri:</p>
+            <p>Aşağıda Les Thede kitabındaki 6 aktif devre tasarım probleminin her birinin adım adım, gerekçeleriyle ve tam sayısal ikameleriyle hazırlanmış sınav tipi çözümleri yer almaktadır:</p>
             <div class="theory-examples-grid" id="ch4ExamplesContainer"></div>
           `
         }

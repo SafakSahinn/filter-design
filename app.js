@@ -1799,6 +1799,33 @@ document.addEventListener('DOMContentLoaded', () => {
             convNote = `Frekans Dönüşümü: f = ${ex.fpass} / 2π = ${f1} Hz`;
           }
 
+          let actionButtons = '';
+          if (chNum === 4) {
+            actionButtons = `
+              <button class="btn btn-sm btn-outline" data-circuit-open-ex="${ex.id}" style="width: 100%; justify-content: center; font-weight: 600; color: #3d5afe; border-color: rgba(61,90,254,0.3); background: #fafaf9; margin-bottom: 6px;">
+                🔍 Adım Adım Sınav Çözümü & Devre İspatı
+              </button>
+              <button class="btn btn-sm btn-primary" data-theory-load="${ex.id}" style="width: 100%; justify-content: center;">
+                ⚡ Bu Örneği Tasarımcıda Aç ve Hesapla
+              </button>
+            `;
+          } else if (chNum === 3) {
+            actionButtons = `
+              <button class="btn btn-sm btn-outline" data-transform-open-type="${ex.type}" style="width: 100%; justify-content: center; font-weight: 600; color: #10b981; border-color: rgba(16,185,129,0.3); background: #fafaf9; margin-bottom: 6px;">
+                📖 Dönüşüm Formülleri & Algoritma
+              </button>
+              <button class="btn btn-sm btn-primary" data-theory-load="${ex.id}" style="width: 100%; justify-content: center;">
+                ⚡ Bu Örneği Tasarımcıda Aç ve Hesapla
+              </button>
+            `;
+          } else {
+            actionButtons = `
+              <button class="btn btn-sm btn-primary" data-theory-load="${ex.id}" style="width: 100%; justify-content: center;">
+                ⚡ Bu Örneği Tasarımcıda Aç ve Hesapla
+              </button>
+            `;
+          }
+
           exHtml += `
             <div class="theory-card" style="display: flex; flex-direction: column; justify-content: space-between;">
               <div>
@@ -1814,9 +1841,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <p style="font-size: 12px; color: var(--text); line-height: 1.4; margin-bottom: 12px;">${ex.description}</p>
               </div>
-              <button class="btn btn-sm btn-primary" data-theory-load="${ex.id}" style="width: 100%; justify-content: center;">
-                ⚡ Bu Örneği Tasarımcıda Aç ve Hesapla
-              </button>
+              <div style="display: flex; flex-direction: column;">
+                ${actionButtons}
+              </div>
             </div>
           `;
         });
@@ -1827,6 +1854,42 @@ document.addEventListener('DOMContentLoaded', () => {
             const exId = btn.getAttribute('data-theory-load');
             const targetEx = BookExamples.find(e => e.id === exId);
             if (targetEx) loadBookExample(targetEx);
+          });
+        });
+
+        // Wire up Chapter 4 Circuit Modal direct open
+        container.querySelectorAll('[data-circuit-open-ex]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const exId = btn.getAttribute('data-circuit-open-ex');
+            const map = {
+              ex4_1: 'sk_lp',
+              ex4_2: 'sk_hp',
+              ex4_3: 'sk_bp',
+              ex4_4: 'twin_tee_bs',
+              ex4_5: 'sk_lp',
+              ex4_6: 'sk_bp'
+            };
+            const tabKey = map[exId] || 'sk_lp';
+            if (window.FilterCircuitModal && typeof window.FilterCircuitModal.open === 'function') {
+              window.FilterCircuitModal.open(tabKey);
+            }
+          });
+        });
+
+        // Wire up Chapter 3 Transform Modal direct open
+        container.querySelectorAll('[data-transform-open-type]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const typeKey = btn.getAttribute('data-transform-open-type');
+            const map = {
+              lowpass: 'lp_to_lp',
+              highpass: 'lp_to_hp',
+              bandpass: 'lp_to_bp',
+              bandstop: 'lp_to_bs'
+            };
+            const transformKey = map[typeKey] || 'lp_to_lp';
+            if (window.FilterTransformModal && typeof window.FilterTransformModal.open === 'function') {
+              window.FilterTransformModal.open(transformKey);
+            }
           });
         });
       }

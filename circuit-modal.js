@@ -119,27 +119,27 @@ const FilterCircuitModal = (() => {
       steps: [
         {
           stepNum: 'Adım 1',
-          title: 'KCL Düğüm Denklemlerinin Türetimi (Denklem 4.1 - 4.9)',
-          desc: 'Devrede $V_A$ ve $V_B$ iç düğümlerine Kirchhoff Akım Kanunu (KCL) uygulanır. Op-amp giriş akımı sıfır ve evirmeyen kazanç $V_{\\text{out}} = K \\cdot V_B$ olduğundan devre transfer fonksiyonu elde edilir:',
-          math: '$$V_A \\text{ Düğümü: } \\frac{V_{\\text{in}} - V_A}{R_1} = \\frac{V_A - V_B}{R_2} + \\frac{V_A - V_{\\text{out}}}{1/(sC_1)}$$\n$$V_B \\text{ Düğümü: } \\frac{V_A - V_B}{R_2} = \\frac{V_B}{1/(sC_2)} = s C_2 V_B \\implies V_A = V_B (1 + s R_2 C_2)$$\n$$H_c(s) = \\frac{V_{\\text{out}}(s)}{V_{\\text{in}}(s)} = \\frac{\\frac{K}{R_1 R_2 C_1 C_2}}{s^2 + s\\left[ \\frac{1}{R_1 C_1} + \\frac{1}{R_2 C_1} + \\frac{1-K}{R_2 C_2} \\right] + \\frac{1}{R_1 R_2 C_1 C_2}}$$'
+          title: 'KCL Düğüm Denklemlerinin Türetimi ve Transfer Fonksiyonu (Denklem 4.1 - 4.9)',
+          desc: 'Devrede $V_A$ (ara düğüm) ve $V_B$ (op-amp evirmeyen girişi) düğümlerine Kirchhoff Akım Kanunu (KCL) uygulanır. İdeal op-amp kabulleri ($I_{\\text{in}} = 0$) ve evirmeyen kazanç $V_{\\text{out}} = K \\cdot V_B$ kullanılarak devre transfer fonksiyonu terim terim çıkarılır:',
+          math: '$$\\text{Düğüm } V_B \\text{ KCL: } \\frac{V_A - V_B}{R_2} = \\frac{V_B}{1/(sC_2)} = s C_2 V_B \\implies V_A = V_B (1 + s R_2 C_2)$$\n$$\\text{Op-Amp Kazancı: } V_{\\text{out}} = K \\cdot V_B \\implies V_B = \\frac{V_{\\text{out}}}{K}, \\quad V_A = \\frac{V_{\\text{out}}}{K}(1 + s R_2 C_2)$$\n$$\\text{Düğüm } V_A \\text{ KCL: } \\frac{V_{\\text{in}} - V_A}{R_1} = \\frac{V_A - V_B}{R_2} + \\frac{V_A - V_{\\text{out}}}{1/(sC_1)}$$\n$$H_c(s) = \\frac{V_{\\text{out}}(s)}{V_{\\text{in}}(s)} = \\frac{\\displaystyle \\frac{K}{R_1 R_2 C_1 C_2}}{\\displaystyle s^2 + s\\left[ \\frac{1}{R_1 C_1} + \\frac{1}{R_2 C_1} + \\frac{1-K}{R_2 C_2} \\right] + \\frac{1}{R_1 R_2 C_1 C_2}}$$'
         },
         {
           stepNum: 'Adım 2',
           title: 'Eşit Elemanlı (Equal-Component) Sallen-Key Katsayı Eşleme Bağıntıları (Denklem 4.10 - 4.13)',
-          desc: 'Standart üretim kolaylığı için $C_1 = C_2 = C$ ve $R_1 = R_2 = R$ seçilir. Hedef fonksiyon $H_a(s) = \\frac{b_2}{s^2 + b_1 s + b_2}$ ile katsayı eşlemesi yapılır:',
-          math: '$$\\frac{1}{R^2 C^2} = b_2 \\implies R = \\frac{1}{C \\sqrt{b_2}}$$\n$$\\frac{3 - K}{RC} = b_1 \\implies K = 3 - \\frac{b_1}{\\sqrt{b_2}}, \\quad Q = \\frac{\\sqrt{b_2}}{b_1} = \\frac{1}{3 - K}$$\n$$K = 1 + \\frac{R_B}{R_A} \\implies R_B = (K - 1) R_A \\quad (R_A = 10\\text{ k}\\Omega \\text{ standart alınır})$$'
+          desc: 'Neden Equal-Component? Kondansatörlerin standart seri kısıtları nedeniyle $C_1 = C_2 = C$ (örneğin 10 nF) ve dirençler $R_1 = R_2 = R$ eşit seçilir. Hedef kuadratik faktör $H_a(s) = \\frac{b_2}{s^2 + b_1 s + b_2}$ ile katsayılar birebir eşleştirilir:',
+          math: '$$\\text{Sabit Terim: } \\frac{1}{R^2 C^2} = b_2 \\implies R = \\frac{1}{C \\sqrt{b_2}}$$\n$$\\text{s Katsayısı: } \\frac{3 - K}{RC} = b_1 \\implies 3 - K = b_1 (RC) = \\frac{b_1}{\\sqrt{b_2}} = \\frac{1}{Q} \\implies K = 3 - \\frac{b_1}{\\sqrt{b_2}} = 3 - \\frac{1}{Q}$$\n$$\\text{Op-Amp Geri Beslemesi: } K = 1 + \\frac{R_B}{R_A} \\implies R_B = (K - 1) R_A \\quad (R_A = 10\\text{ k}\\Omega \\text{ standart referans)}$$'
         },
         {
           stepNum: 'Adım 3',
           title: '1. Derece Pasif RC ve Tampon (Buffer) Katı (Denklem 4.19 - 4.21)',
-          desc: 'Tek dereceli filtrelerde ($n=1, 3, 5, \\dots$) gerçel kutup $s + b_2$ için 1. derece RC alçak geçiren katı ve ardından gerilim takipçi tampon op-amp ($K=1$) kullanılır:',
-          math: '$$H_c(s) = \\frac{1/(RC)}{s + 1/(RC)} = \\frac{b_2}{s + b_2} \\implies R = \\frac{1}{b_2 C}, \\quad K = 1.0$$\n$$R_B = 0\\ \\Omega \\text{ (Jumper Tel)}, \\quad R_A = \\infty \\text{ (Bağlanmaz, Gerilim Takipçi)}$$'
+          desc: 'Tek dereceli filtrelerde ($N=1, 3, 5, \\dots$) reel kutup $(s + b_2)$ için pasif RC devresi ve ardından empedans izolasyonu sağlayan kazancı 1 tampon op-amp kullanılır. Tampon op-amp sonraki katların yükleme yapmasını (loading effect) tamamen engeller:',
+          math: '$$H_1(s) = \\frac{1/(RC)}{s + 1/(RC)} = \\frac{b_2}{s + b_2} \\implies R = \\frac{1}{b_2 C}$$\n$$\\text{Tampon Kazancı: } K = 1.0 \\implies R_B = 0\\ \\Omega \\text{ (Kısa Devre Tel)}, \\quad R_A = \\infty \\text{ (Açık Devre / Takılmaz)}$$'
         },
         {
           stepNum: 'Adım 4',
           title: 'Kaskad Toplam Kazanç (K_tot) ve Çıkış Gerilim Bölücüsü (Rx, Ry) (Denklem 4.36 - 4.40)',
-          desc: 'Tüm katların toplam kazancı $K_{\\text{tot}} = \\prod K_m$ yükselir. Filtrenin toplam DC kazancını tam $1.0$\'a eşitlemek ve çıkış empedansını $R_{\\text{out}} = 10\\text{ k}\\Omega$ sabitinde tutmak için çıkışa pasif gerilim bölücü eklenir:',
-          math: '$$K_{\\text{tot}} = \\prod_{m=1}^{M} K_m, \\quad G_A = \\frac{K_{\\text{tot}}}{G_{\\text{hedef}}}$$\n$$R_x = G_A \\cdot R_{\\text{out}}, \\quad R_y = \\frac{G_A}{G_A - 1} \\cdot R_{\\text{out}}, \\quad (R_x \\parallel R_y = R_{\\text{out}} = 10\\text{ k}\\Omega)$$'
+          desc: 'Katların kazançları çarpılarak toplam filtre kazancı $K_{\\text{tot}} = \\prod K_m$ oluşur. Hedef $0\\text{ dB}$ ($G_{\\text{hedef}} = 1.0$) kazancı sağlamak ve çıkış empedansını $R_{\\text{out}} = 10\\text{ k}\\Omega$ sabitine oturtmak için çıkışa iki dirençli pasif bölücü bağlanır:',
+          math: '$$\\text{Zayıflatma Faktörü: } G_A = \\frac{K_{\\text{tot}}}{G_{\\text{hedef}}} \\ge 1.0$$\n$$R_x = G_A \\cdot R_{\\text{out}}, \\quad R_y = \\frac{G_A}{G_A - 1} \\cdot R_{\\text{out}} \\implies R_x \\parallel R_y = R_{\\text{out}} = 10\\text{ k}\\Omega$$'
         }
       ],
       examples: [
@@ -147,40 +147,50 @@ const FilterCircuitModal = (() => {
           id: 'ex4_1',
           badge: 'Örnek 4.1 (Kitap Sayfa 101-104) - Butterworth 5. Derece LP Aktif Devre',
           title: 'Butterworth 5. Derece Alçak Geçiren Sallen-Key Devre Tasarımı',
-          specs: 'Spesifikasyonlar: $f_{\\text{pass}} = 1000\\text{ Hz}, f_{\\text{stop}} = 4000\\text{ Hz}, a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -50.0\\text{ dB}, C = 10\\text{ nF}, R_A = 10\\text{ k}\\Omega$',
+          specs: 'Spesifikasyonlar: $f_{\\text{pass}} = 1000\\text{ Hz}, f_{\\text{stop}} = 4000\\text{ Hz}, a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -50.0\\text{ dB}, C = 10\\text{ nF}, R_A = 10\\text{ k}\\Omega, R_{\\text{out}} = 10\\text{ k}\\Omega$',
           solutionSteps: [
             {
-              stepTitle: 'Adım 1: Derece ve Transfer Fonksiyonu Katsayıları (Bölüm 2 & 3)',
-              desc: '$\\Omega_r = 4.0$ için minimum derece $n=5$ bulunur. $\\omega_0 = 2\\pi(1000) = 6283.185\\text{ rad/s}$ ile ölçeklenen katsayılar:',
-              math: '$$\\text{Kat 1 (1. Derece): } b_2 = 6283.19 \\implies H_1(s) = \\frac{6283.19}{s + 6283.19}$$\n$$\\text{Kat 2 (2. Derece): } b_{1,2} = 3883.22, \\quad b_{2,2} = 3.94784 \\times 10^7 \\implies \\sqrt{b_{2,2}} = 6283.19$$\n$$\\text{Kat 3 (2. Derece): } b_{1,3} = 10166.42, \\quad b_{2,3} = 3.94784 \\times 10^7 \\implies \\sqrt{b_{2,3}} = 6283.19$$'
+              stepTitle: 'Adım 1: Derece ($n=5$), Açısal Frekans Dönüşümü ve Bölüm 2-3 Katsayıları',
+              desc: 'Geçiş oranı $\\Omega_r = f_{\\text{stop}} / f_{\\text{pass}} = 4000 / 1000 = 4.0$. $a_{\\text{pass}} = -1.0\\text{ dB} \\implies \\epsilon = \\sqrt{10^{0.1}-1} = 0.50885$, $a_{\\text{stop}} = -50.0\\text{ dB} \\implies \\epsilon_s = \\sqrt{10^5-1} = 316.228$. Les Thede Denklem 2.6 ile minimum derece $n \\ge \\frac{\\log(316.228/0.50885)}{\\log(4.0)} = 4.64 \\implies n = 5$ bulunur. Açısal frekans $\\omega_0 = 2\\pi(1000) = 6283.185\\text{ rad/s}$. Derece 5 (tek) olduğundan 1 adet 1. derece RC tampon katı ve 2 adet 2. derece Sallen-Key biquad katı gerekir:',
+              math: '$$\\text{Kat 1 (1. Derece Reel Kutup): } B_2 = 1.0 \\implies b_2 = B_2 \\cdot \\omega_0 = 6283.19\\text{ rad/s} \\implies H_1(s) = \\frac{6283.19}{s + 6283.19}$$\n$$\\text{Kat 2 (2. Derece Biquad): } B_1 = 0.61803, \\; B_2 = 1.0 \\implies b_{1,2} = B_1 \\omega_0 = 3883.22\\text{ rad/s}, \\; b_{2,2} = B_2 \\omega_0^2 = 3.94784 \\times 10^7$$\n$$\\sqrt{b_{2,2}} = 6283.19\\text{ rad/s}, \\quad Q_2 = \\frac{\\sqrt{b_{2,2}}}{b_{1,2}} = \\frac{6283.19}{3883.22} = 1.618$$\n$$\\text{Kat 3 (2. Derece Biquad): } B_1 = 1.61803, \\; B_2 = 1.0 \\implies b_{1,3} = B_1 \\omega_0 = 10166.42\\text{ rad/s}, \\; b_{2,3} = B_2 \\omega_0^2 = 3.94784 \\times 10^7$$\n$$\\sqrt{b_{2,3}} = 6283.19\\text{ rad/s}, \\quad Q_3 = \\frac{\\sqrt{b_{2,3}}}{b_{1,3}} = \\frac{6283.19}{10166.42} = 0.618$$'
             },
             {
-              stepTitle: 'Adım 2: Kat Kat Bileşen Değerleri Hesabı (Denklem 4.10 - 4.21)',
-              desc: 'Baz kondansatör $C = 10\\text{ nF} = 10^{-8}\\text{ F}$ ve $R_A = 10\\text{ k}\\Omega$ seçimi ile:',
-              math: '$$\\text{Kat 1 (RC Tampon): } R_1 = \\frac{1}{b_2 C} = \\frac{1}{6283.19 \\times 10^{-8}} = 15.915\\text{ k}\\Omega, \\quad K_1 = 1.0$$\n$$\\text{Kat 2 (Sallen-Key LP): } R_{1,2} = R_{2,2} = \\frac{1}{C\\sqrt{b_{2,2}}} = 15.915\\text{ k}\\Omega$$\n$$K_2 = 3 - \\frac{b_{1,2}}{\\sqrt{b_{2,2}}} = 3 - \\frac{3883.22}{6283.19} = 2.382 \\implies R_{B,2} = (2.382 - 1) \\times 10\\text{ k}\\Omega = 13.820\\text{ k}\\Omega$$\n$$\\text{Kat 3 (Sallen-Key LP): } R_{1,3} = R_{2,3} = 15.915\\text{ k}\\Omega$$\n$$K_3 = 3 - \\frac{b_{1,3}}{\\sqrt{b_{2,3}}} = 3 - \\frac{10166.42}{6283.19} = 1.382 \\implies R_{B,3} = (1.382 - 1) \\times 10\\text{ k}\\Omega = 3.820\\text{ k}\\Omega$$'
+              stepTitle: 'Adım 2: Kat Kat Devre Elemanı Değerlerinin Hesaplanması ($C = 10\\text{ nF}, R_A = 10\\text{ k}\\Omega$)',
+              desc: 'Tasarım kolaylığı için tüm katlarda baz kondansatör $C = 10\\text{ nF} = 10^{-8}\\text{ F}$ ve op-amp referans direnci $R_A = 10\\text{ k}\\Omega$ seçilir:',
+              math: '$$\\mathbf{Kat\\ 1\\ (1.\\ Derece\\ Pasif\\ RC\\ +\\ Tampon):}$$\n$$R_1 = \\frac{1}{b_2 \\cdot C} = \\frac{1}{6283.19 \\times 10^{-8}} = 15915.5\\ \\Omega = 15.915\\text{ k}\\Omega$$\n$$K_1 = 1.0 \\implies R_B = 0\\ \\Omega \\text{ (kısa devre köprü teli)}, \\quad R_A = \\infty \\text{ (bağlanmaz)}$$\n\n$$\\mathbf{Kat\\ 2\\ (2.\\ Derece\\ Sallen-Key\\ LP\\ Katı):}$$\n$$R_{1,2} = R_{2,2} = R = \\frac{1}{C \\sqrt{b_{2,2}}} = \\frac{1}{10^{-8} \\times 6283.19} = 15.915\\text{ k}\\Omega$$\n$$K_2 = 3 - \\frac{b_{1,2}}{\\sqrt{b_{2,2}}} = 3 - \\frac{3883.22}{6283.19} = 3 - 0.61803 = 2.3820$$\n$$R_{B,2} = (K_2 - 1) R_A = (2.3820 - 1) \\times 10\\text{ k}\\Omega = 1.3820 \\times 10\\text{ k}\\Omega = 13.820\\text{ k}\\Omega$$\n\n$$\\mathbf{Kat\\ 3\\ (2.\\ Derece\\ Sallen-Key\\ LP\\ Katı):}$$\n$$R_{1,3} = R_{2,3} = R = \\frac{1}{C \\sqrt{b_{2,3}}} = \\frac{1}{10^{-8} \\times 6283.19} = 15.915\\text{ k}\\Omega$$\n$$K_3 = 3 - \\frac{b_{1,3}}{\\sqrt{b_{2,3}}} = 3 - \\frac{10166.42}{6283.19} = 3 - 1.61803 = 1.3820$$\n$$R_{B,3} = (K_3 - 1) R_A = (1.3820 - 1) \\times 10\\text{ k}\\Omega = 0.3820 \\times 10\\text{ k}\\Omega = 3.820\\text{ k}\\Omega$$'
             },
             {
-              stepTitle: 'Adım 3: Kaskad Toplam Kazanç ve Gerilim Bölücüsü (Denklem 4.36 - 4.40)',
-              desc: 'Toplam kazanç $K_{\\text{tot}} = 1.0 \\times 2.382 \\times 1.382 = 3.292$. Çıkış empedansı $R_{\\text{out}} = 10\\text{ k}\\Omega$ için gerilim bölücü:',
-              math: '$$G_A = \\frac{K_{\\text{tot}}}{1.0} = 3.292$$\n$$R_x = G_A \\cdot R_{\\text{out}} = 3.292 \\times 10\\text{ k}\\Omega = 32.92\\text{ k}\\Omega$$\n$$R_y = \\frac{G_A}{G_A - 1} \\cdot R_{\\text{out}} = \\frac{3.292}{2.292} \\times 10\\text{ k}\\Omega = 14.36\\text{ k}\\Omega$$\n$$\\text{Standart E24 Değerleri: } R = 16\\text{ k}\\Omega, \\quad R_{B,2} = 13\\text{ k}\\Omega, \\quad R_{B,3} = 3.9\\text{ k}\\Omega, \\quad R_x = 33\\text{ k}\\Omega, \\quad R_y = 15\\text{ k}\\Omega$$'
+              stepTitle: 'Adım 3: Kaskad Toplam Kazanç ($K_{\\text{tot}}$) ve Çıkış Gerilim Bölücüsü ($R_x, R_y$)',
+              desc: 'Neden gerilim bölücü gereklidir? Üç kat art arda bağlandığında filtrenin toplam DC kazancı katlanarak artar: $K_{\\text{tot}} = K_1 \\cdot K_2 \\cdot K_3 = 1.0 \\times 2.38197 \\times 1.38197 = 3.2918$ ($+10.35\\text{ dB}$). Spesifikasyonlarda filtrenin DC kazancının tam $0\\text{ dB}$ ($G_{\\text{hedef}} = 1.0$) olması ve çıkış empedansının $R_{\\text{out}} = 10\\text{ k}\\Omega$ sabitine oturması istendiğinden son katın çıkışına $R_x, R_y$ gerilim bölücüsü eklenir:',
+              math: '$$G_A = \\frac{K_{\\text{tot}}}{G_{\\text{hedef}}} = \\frac{3.2918}{1.0} = 3.2918$$\n$$R_x = G_A \\cdot R_{\\text{out}} = 3.2918 \\times 10\\text{ k}\\Omega = 32.918\\text{ k}\\Omega$$\n$$R_y = \\frac{G_A}{G_A - 1} \\cdot R_{\\text{out}} = \\frac{3.2918}{3.2918 - 1} \\times 10\\text{ k}\\Omega = \\frac{3.2918}{2.2918} \\times 10\\text{ k}\\Omega = 14.363\\text{ k}\\Omega$$\n$$\\text{Thevenin Sağlaması: } R_x \\parallel R_y = \\frac{32.918 \\times 14.363}{32.918 + 14.363} = 10.00\\text{ k}\\Omega \\; \\checkmark$$'
+            },
+            {
+              stepTitle: 'Adım 4: Standart E24 (%5) Serisine Eşleme ve Sınav Doğrulaması',
+              desc: 'Endüstriyel üretim ve laboratuvarda hesaplanan teorik değerlere en yakın standart E24 (%5) bileşenleri seçilir:',
+              math: '$$\\text{Filtre Dirençleri: } R_1 = R_2 = R_3 = 16\\text{ k}\\Omega \\quad (\\text{Teorik: } 15.92\\text{ k}\\Omega, \\; \\text{Hata: } +0.5\\%)$$\n$$\\text{Geri Besleme Dirençleri: } R_{B,2} = 13\\text{ k}\\Omega \\text{ veya } 15\\text{ k}\\Omega, \\quad R_{B,3} = 3.9\\text{ k}\\Omega \\quad (\\text{Teorik: } 3.82\\text{ k}\\Omega)$$\n$$\\text{Çıkış Bölücü Dirençleri: } R_x = 33\\text{ k}\\Omega, \\quad R_y = 15\\text{ k}\\Omega \\quad (\\text{Teorik: } 32.92\\text{ k}\\Omega, \\; 14.36\\text{ k}\\Omega)$$\n$$\\text{Standart Değerlerle Gerçek Frekans: } f_{0,\\text{gerçek}} = \\frac{1}{2\\pi \\times 16\\text{ k}\\Omega \\times 10\\text{ nF}} = 994.7\\text{ Hz} \\; (\\text{Hedef: } 1000\\text{ Hz})$$'
             }
           ]
         },
         {
           id: 'ex4_5',
           badge: 'Örnek 4.5 (Kitap Sayfa 114-115) - Ters Chebyshev 5. Derece LP Aktif Devre',
-          title: 'Ters Chebyshev 5. Derece Alçak Geçiren Devre Tasarımı (Sıfırlı Devre)',
+          title: 'Ters Chebyshev 5. Derece Alçak Geçiren Devre Tasarımı (Sonlu Sıfırlı Devre)',
           specs: 'Spesifikasyonlar: $f_{\\text{pass}} = 100\\text{ Hz}, f_{\\text{stop}} = 300\\text{ Hz}, a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -60.0\\text{ dB}, C = 100\\text{ nF}, R_A = 10\\text{ k}\\Omega$',
           solutionSteps: [
             {
-              stepTitle: 'Adım 1: Normalize Olmayan Katsayılar ve İletim Sıfırları',
-              desc: 'Ters Chebyshev durdurma bandında iki adet sonlu iletim sıfırı barındırır. 1 adet RC tampon katı ve 2 adet çentikli biquad katı gerektirir:',
-              math: '$$\\text{Kat 1 (RC): } b_2 = 188.50 \\implies R_1 = \\frac{1}{b_2 C} = \\frac{1}{188.50 \\times 10^{-7}} = 53.05\\text{ k}\\Omega, \\quad K_1 = 1.0$$\n$$\\text{Kat 2: } \\omega_{z1} = 1916.3\\text{ rad/s} \\implies \\text{Pay: } s^2 + 3.672 \\times 10^6, \\quad b_{1,2} = 154.2, \\quad b_{2,2} = 3.125 \\times 10^5$$\n$$\\text{Kat 3: } \\omega_{z2} = 3122.8\\text{ rad/s} \\implies \\text{Pay: } s^2 + 9.752 \\times 10^6, \\quad b_{1,3} = 389.1, \\quad b_{2,3} = 6.421 \\times 10^5$$'
+              stepTitle: 'Adım 1: Normalize Olmayan Katsayılar ve İletim Sıfırları (Denklem 2.37 - 2.45)',
+              desc: 'Ters Chebyshev (Tip II) yaklaşımında geçirme bandı Butterworth gibi maksimum düzdür, durdurma bandında ise dik kesim sağlamak için sanal eksende ($j\\omega$) sonlu iletim sıfırları $\\omega_{z,m}$ bulunur. $n=5$ dereceli filtrede 1 adet 1. derece RC tampon katı ve 2 adet sonlu sıfır içeren kuadratik çentikli kat gereklidir:',
+              math: '$$\\omega_0 = 2\\pi(100) = 628.318\\text{ rad/s}, \\quad \\omega_s = 2\\pi(300) = 1884.956\\text{ rad/s}$$\n$$\\text{Kat 1 (1. Derece RC): } b_2 = 188.50\\text{ rad/s} \\implies H_1(s) = \\frac{188.50}{s + 188.50}$$\n$$\\text{Kat 2 (Sonlu Sıfırlı Biquad): } \\omega_{z1} = 1916.3\\text{ rad/s} \\implies \\text{Pay: } s^2 + 3.672 \\times 10^6$$\n$$\\text{Payda: } s^2 + 154.2 s + 3.125 \\times 10^5, \\quad \\sqrt{b_{2,2}} = 559.0\\text{ rad/s}, \\; Q_2 = 3.62$$\n$$\\text{Kat 3 (Sonlu Sıfırlı Biquad): } \\omega_{z2} = 3122.8\\text{ rad/s} \\implies \\text{Pay: } s^2 + 9.752 \\times 10^6$$\n$$\\text{Payda: } s^2 + 389.1 s + 6.421 \\times 10^5, \\quad \\sqrt{b_{2,3}} = 801.3\\text{ rad/s}, \\; Q_3 = 2.06$$'
             },
             {
-              stepTitle: 'Adım 2: Çentikli Aktif Biquad Sentezi ve Kazanç Dengelemesi',
-              desc: 'Standart Sallen-Key tüm-kutuplu olduğundan, sonlu sıfır içeren katlar Twin-Tee çentikli biquad topolojisi ile sentezlenir:',
-              math: '$$\\text{Kat 2 Çentik Direnci: } R_{T2} = \\frac{1}{\\omega_{z1} C} = 5.218\\text{ k}\\Omega, \\quad K_2 = 2 - \\frac{b_{1,2}}{2\\sqrt{b_{2,2}}} = 1.862$$\n$$\\text{Kat 3 Çentik Direnci: } R_{T3} = \\frac{1}{\\omega_{z2} C} = 3.202\\text{ k}\\Omega, \\quad K_3 = 2 - \\frac{b_{1,3}}{2\\sqrt{b_{2,3}}} = 1.757$$\n$$K_{\\text{tot}} = 1.0 \\times 1.862 \\times 1.757 = 3.272 \\implies R_x = 32.72\\text{ k}\\Omega, \\quad R_y = 14.40\\text{ k}\\Omega$$'
+              stepTitle: 'Adım 2: Devre Elemanları ve Çentikli Katların Sentezi ($C = 100\\text{ nF}$)',
+              desc: 'Neden standart Sallen-Key kullanılamaz? Sallen-Key tüm-kutupludur, payında $s^2 + \\omega_z^2$ üretemez. Bu nedenle sonlu iletim sıfırları Twin-Tee çentikli biquad veya Bainter biquad topolojisi ile sentezlenir:',
+              math: '$$\\text{Kat 1 (RC Tampon): } R_1 = \\frac{1}{b_2 \\cdot C} = \\frac{1}{188.50 \\times 10^{-7}} = 53.05\\text{ k}\\Omega, \\quad K_1 = 1.0$$\n$$\\text{Kat 2 (Çentik Katı): } R_{T2} = \\frac{1}{\\omega_{z1} C} = \\frac{1}{1916.3 \\times 10^{-7}} = 5.218\\text{ k}\\Omega, \\quad K_2 = 2 - \\frac{b_{1,2}}{2\\sqrt{b_{2,2}}} = 1.862$$\n$$\\text{Kat 3 (Çentik Katı): } R_{T3} = \\frac{1}{\\omega_{z2} C} = \\frac{1}{3122.8 \\times 10^{-7}} = 3.202\\text{ k}\\Omega, \\quad K_3 = 2 - \\frac{b_{1,3}}{2\\sqrt{b_{2,3}}} = 1.757$$'
+            },
+            {
+              stepTitle: 'Adım 3: Kazanç Dengeleme ve Çıkış Gerilim Bölücüsü ($R_x, R_y$)',
+              desc: 'Toplam kaskad devre kazancı $K_{\\text{tot}} = 1.0 \\times 1.862 \\times 1.757 = 3.272$. Hedef kazanç $G_{\\text{hedef}} = 1.0$ (0 dB) ve $R_{\\text{out}} = 10\\text{ k}\\Omega$ için gerilim bölücü:',
+              math: '$$G_A = 3.272 \\implies R_x = 3.272 \\times 10\\text{ k}\\Omega = 32.72\\text{ k}\\Omega$$\n$$R_y = \\frac{3.272}{2.272} \\times 10\\text{ k}\\Omega = 14.40\\text{ k}\\Omega$$\n$$\\text{Standart E24: } R_1 = 51\\text{ k}\\Omega, \\; R_{T2} = 5.1\\text{ k}\\Omega, \\; R_{T3} = 3.3\\text{ k}\\Omega, \\; R_x = 33\\text{ k}\\Omega, \\; R_y = 15\\text{ k}\\Omega$$'
             }
           ]
         }
@@ -324,22 +334,27 @@ const FilterCircuitModal = (() => {
           id: 'ex4_2',
           badge: 'Örnek 4.2 (Kitap Sayfa 104-106) - Chebyshev 4. Derece HP Aktif Devre',
           title: 'Chebyshev 4. Derece Yüksek Geçiren Sallen-Key Devre Tasarımı',
-          specs: 'Spesifikasyonlar: $f_{\\text{pass}} = 1000\\text{ Hz}, f_{\\text{stop}} = 400\\text{ Hz}, a_{\\text{pass}} = -0.5\\text{ dB}, a_{\\text{stop}} = -30.0\\text{ dB}, C = 10\\text{ nF}, R_A = 10\\text{ k}\\Omega$',
+          specs: 'Spesifikasyonlar: $f_{\\text{pass}} = 1000\\text{ Hz}, f_{\\text{stop}} = 400\\text{ Hz}, a_{\\text{pass}} = -0.5\\text{ dB}, a_{\\text{stop}} = -30.0\\text{ dB}, C = 10\\text{ nF}, R_A = 10\\text{ k}\\Omega, R_{\\text{out}} = 10\\text{ k}\\Omega$',
           solutionSteps: [
             {
-              stepTitle: 'Adım 1: HP Transfer Fonksiyonu Katsayıları (Bölüm 3 Denklem 3.17)',
-              desc: '$\\Omega_{rH} = 2.50$ için Chebyshev $n=4$ çift dereceli filtre bulunur. $f_0 = 1000\\text{ Hz}$ ile HP biquad katsayıları:',
-              math: '$$\\text{Kat 1: } b_{1,1} = 1125.7, \\quad b_{2,1} = 4.148 \\times 10^7 \\implies \\sqrt{b_{2,1}} = 6440.5\\text{ rad/s}$$\n$$\\text{Kat 2: } b_{1,2} = 4655.8, \\quad b_{2,2} = 1.258 \\times 10^8 \\implies \\sqrt{b_{2,2}} = 11216.1\\text{ rad/s}$$'
+              stepTitle: 'Adım 1: HP Dönüşümü, Derece ($n=4$) ve Biquad Katsayıları',
+              desc: 'Yüksek geçiren geçiş oranı $\\Omega_{rH} = f_{\\text{pass}} / f_{\\text{stop}} = 1000 / 400 = 2.50$. $a_{\\text{pass}} = -0.5\\text{ dB} \\implies \\epsilon = \\sqrt{10^{0.05}-1} = 0.3493$, $a_{\\text{stop}} = -30\\text{ dB} \\implies \\epsilon_s = \\sqrt{10^3-1} = 31.607$. Chebyshev derece formülü (Denklem 2.21): $n \\ge \\frac{\\cosh^{-1}(31.607/0.3493)}{\\cosh^{-1}(2.50)} = 3.32 \\implies n = 4$ (çift derece, 2 adet Sallen-Key HP biquad katı). $\\omega_0 = 2\\pi(1000) = 6283.185\\text{ rad/s}$. Bölüm 3 Denklem 3.17 yüksek geçiren dönüşüm çekirdeği ($S \\leftarrow \\omega_0 / s \\implies b_1 = \\frac{B_1 \\omega_0}{B_2}, \\; b_2 = \\frac{\\omega_0^2}{B_2}$) ile gerçek katsayılar hesaplanır:',
+              math: '$$\\mathbf{Kat\\ 1: } B_1 = 0.3507, \\; B_2 = 1.0635$$\n$$b_{1,1} = \\frac{0.3507 \\times 6283.19}{1.0635} = 2071.7\\text{ rad/s}, \\quad b_{2,1} = \\frac{6283.19^2}{1.0635} = 3.712 \\times 10^7 \\implies \\sqrt{b_{2,1}} = 6092.8\\text{ rad/s}$$\n$$Q_1 = \\frac{\\sqrt{b_{2,1}}}{b_{1,1}} = \\frac{6092.8}{2071.7} = 2.94$$\n\n$$\\mathbf{Kat\\ 2: } B_1 = 0.8467, \\; B_2 = 0.3564$$\n$$b_{1,2} = \\frac{0.8467 \\times 6283.19}{0.3564} = 14926.4\\text{ rad/s}, \\quad b_{2,2} = \\frac{6283.19^2}{0.3564} = 1.108 \\times 10^8 \\implies \\sqrt{b_{2,2}} = 10524.5\\text{ rad/s}$$\n$$Q_2 = \\frac{\\sqrt{b_{2,2}}}{b_{1,2}} = \\frac{10524.5}{14926.4} = 0.705$$'
             },
             {
-              stepTitle: 'Adım 2: Sallen-Key HP Kat Bileşen Değerleri (Denklem 4.16 - 4.18)',
-              desc: '$C = 10\\text{ nF}$ ve $R_A = 10\\text{ k}\\Omega$ seçimi ile:',
-              math: '$$\\text{Kat 1: } R_{1,1} = R_{2,1} = \\frac{1}{C\\sqrt{b_{2,1}}} = \\frac{1}{10^{-8} \\times 6440.5} = 15.527\\text{ k}\\Omega$$\n$$K_1 = 3 - \\frac{1125.7}{6440.5} = 2.825 \\implies R_{B,1} = (2.825 - 1) \\times 10\\text{ k}\\Omega = 18.252\\text{ k}\\Omega$$\n$$\\text{Kat 2: } R_{1,2} = R_{2,2} = \\frac{1}{C\\sqrt{b_{2,2}}} = \\frac{1}{10^{-8} \\times 11216.1} = 8.916\\text{ k}\\Omega$$\n$$K_2 = 3 - \\frac{4655.8}{11216.1} = 2.585 \\implies R_{B,2} = (2.585 - 1) \\times 10\\text{ k}\\Omega = 15.849\\text{ k}\\Omega$$'
+              stepTitle: 'Adım 2: Sallen-Key HP Devre Elemanlarının Hesaplanması ($C = 10\\text{ nF}, R_A = 10\\text{ k}\\Omega$)',
+              desc: 'Tüm katlarda $C_1 = C_2 = C = 10\\text{ nF} = 10^{-8}\\text{ F}$ ve $R_A = 10\\text{ k}\\Omega$ alınarak Equal-Component formülleri ($R = \\frac{1}{C\\sqrt{b_2}}, K = 3 - \\frac{b_1}{\\sqrt{b_2}}, R_B = (K-1)R_A$) uygulanır:',
+              math: '$$\\mathbf{Kat\\ 1\\ (Yüksek\\ Q\\ Katı):}$$\n$$R_{1,1} = R_{2,1} = R = \\frac{1}{C \\sqrt{b_{2,1}}} = \\frac{1}{10^{-8} \\times 6092.8} = 16412.8\\ \\Omega = 16.413\\text{ k}\\Omega$$\n$$K_1 = 3 - \\frac{b_{1,1}}{\\sqrt{b_{2,1}}} = 3 - \\frac{2071.7}{6092.8} = 3 - 0.3400 = 2.660$$\n$$R_{B,1} = (K_1 - 1) R_A = (2.660 - 1) \\times 10\\text{ k}\\Omega = 1.660 \\times 10\\text{ k}\\Omega = 16.602\\text{ k}\\Omega$$\n\n$$\\mathbf{Kat\\ 2\\ (Düşük\\ Q\\ Katı):}$$\n$$R_{1,2} = R_{2,2} = R = \\frac{1}{C \\sqrt{b_{2,2}}} = \\frac{1}{10^{-8} \\times 10524.5} = 9501.6\\ \\Omega = 9.502\\text{ k}\\Omega$$\n$$K_2 = 3 - \\frac{b_{1,2}}{\\sqrt{b_{2,2}}} = 3 - \\frac{14926.4}{10524.5} = 3 - 1.4182 = 1.5818$$\n$$R_{B,2} = (K_2 - 1) R_A = (1.5818 - 1) \\times 10\\text{ k}\\Omega = 0.5818 \\times 10\\text{ k}\\Omega = 5.818\\text{ k}\\Omega$$'
             },
             {
-              stepTitle: 'Adım 3: Kazanç Dengeleme Gerilim Bölücüsü (Denklem 4.36 - 4.40)',
-              desc: 'Toplam kazanç $K_{\\text{tot}} = 2.825 \\times 2.585 = 7.303$. Çıkış empedansı $R_{\\text{out}} = 10\\text{ k}\\Omega$ için gerilim bölücü:',
-              math: '$$G_A = \\frac{7.303}{10^{0.05(-0.5)}} = \\frac{7.303}{0.944} = 7.736 \\implies R_x = 44.57\\text{ k}\\Omega, \\quad R_y = 12.89\\text{ k}\\Omega$$\n$$\\text{Standart E24: } R_1 = 16\\text{ k}\\Omega, \\quad R_{B,1} = 18\\text{ k}\\Omega, \\quad R_2 = 9.1\\text{ k}\\Omega, \\quad R_{B,2} = 16\\text{ k}\\Omega, \\quad R_x = 43\\text{ k}\\Omega, \\quad R_y = 13\\text{ k}\\Omega$$'
+              stepTitle: 'Adım 3: Kazanç Dengeleme Gerilim Bölücüsü ($R_x, R_y$)',
+              desc: 'Kaskad toplam kazanç $K_{\\text{tot}} = K_1 \\cdot K_2 = 2.660 \\times 1.5818 = 4.208$ ($+12.48\\text{ dB}$). Hedef $0\\text{ dB}$ ($G_{\\text{hedef}} = 1.0$) ve $R_{\\text{out}} = 10\\text{ k}\\Omega$ için gerilim bölücü dirençleri:',
+              math: '$$G_A = \\frac{K_{\\text{tot}}}{G_{\\text{hedef}}} = \\frac{4.208}{1.0} = 4.208$$\n$$R_x = G_A \\cdot R_{\\text{out}} = 4.208 \\times 10\\text{ k}\\Omega = 42.08\\text{ k}\\Omega$$\n$$R_y = \\frac{G_A}{G_A - 1} \\cdot R_{\\text{out}} = \\frac{4.208}{4.208 - 1} \\times 10\\text{ k}\\Omega = \\frac{4.208}{3.208} \\times 10\\text{ k}\\Omega = 13.117\\text{ k}\\Omega$$\n$$\\text{Thevenin Sağlaması: } R_x \\parallel R_y = \\frac{42.08 \\times 13.12}{42.08 + 13.12} = 10.00\\text{ k}\\Omega \\; \\checkmark$$'
+            },
+            {
+              stepTitle: 'Adım 4: Standart E24 (%5) Seçimi ve Sınav Sağlaması',
+              desc: 'Standart E24 serisinden en yakın direnç değerleri seçilir:',
+              math: '$$\\text{Kat 1: } R = 16\\text{ k}\\Omega, \\; R_B = 16\\text{ k}\\Omega \\text{ veya } 18\\text{ k}\\Omega$$\n$$\\text{Kat 2: } R = 9.1\\text{ k}\\Omega \\text{ veya } 10\\text{ k}\\Omega, \\; R_B = 5.6\\text{ k}\\Omega \\text{ veya } 6.2\\text{ k}\\Omega$$\n$$\\text{Bölücü: } R_x = 43\\text{ k}\\Omega, \\; R_y = 13\\text{ k}\\Omega$$\n$$\\text{Standart Değerlerle Gerçek Frekans: } f_{0,\\text{gerçek,1}} = \\frac{1}{2\\pi (16\\text{ k}\\Omega)(10\\text{ nF})} = 994.7\\text{ Hz}$$'
             }
           ]
         }
@@ -488,40 +503,45 @@ const FilterCircuitModal = (() => {
           id: 'ex4_3',
           badge: 'Örnek 4.3 (Kitap Sayfa 107-111) - Butterworth 6. Derece BP Aktif Devre',
           title: 'Butterworth 6. Derece Bant Geçiren Aktif Devre Tasarımı',
-          specs: 'Spesifikasyonlar: $f_{\\text{p1}} = 1000\\text{ Hz}, f_{\\text{p2}} = 2000\\text{ Hz}, f_{\\text{s1}} = 500\\text{ Hz}, f_{\\text{s2}} = 4000\\text{ Hz}, a_{\\text{pass}} = -1.5\\text{ dB}, a_{\\text{stop}} = -28.0\\text{ dB}$',
+          specs: 'Spesifikasyonlar: $f_{\\text{p1}} = 1000\\text{ Hz}, f_{\\text{p2}} = 2000\\text{ Hz}, f_{\\text{s1}} = 500\\text{ Hz}, f_{\\text{s2}} = 4000\\text{ Hz}, a_{\\text{pass}} = -1.5\\text{ dB}, a_{\\text{stop}} = -28.0\\text{ dB}, C = 10\\text{ nF}, R_{\\text{out}} = 10\\text{ k}\\Omega$',
           solutionSteps: [
             {
-              stepTitle: 'Adım 1: Merkez Frekansı, Derece ve Biquad Katları (Denklem 3.20 - 3.39)',
-              desc: '$f_0 = \\sqrt{1000 \\times 2000} = 1414.2\\text{ Hz} \\implies \\omega_0 = 8885.8\\text{ rad/s}, BW = 6283.2\\text{ rad/s}$. $n_{\\text{LP}}=3 \\implies N_{\\text{BP}}=6$ (3 adet biquad katı):',
-              math: '$$\\text{Kat 1 (Merkez Kat): } \\omega_{0,1} = 8885.8\\text{ rad/s}, \\quad Q_1 = 1.414$$\n$$\\text{Kat 2 (Alt Frekans Katı): } \\omega_{0,2} = 6542.1\\text{ rad/s}, \\quad Q_2 = 2.828$$\n$$\\text{Kat 3 (Üst Frekans Katı): } \\omega_{0,3} = 12068.5\\text{ rad/s}, \\quad Q_3 = 2.828$$'
+              stepTitle: 'Adım 1: Geometrik Merkez Frekansı, Bant Genişliği ve Derece ($N=6$)',
+              desc: 'Geometrik simetri kuralı gereği merkez frekans $f_0 = \\sqrt{f_{p1} f_{p2}} = \\sqrt{1000 \\times 2000} = 1414.21\\text{ Hz} \\implies \\omega_0 = 2\\pi(1414.21) = 8885.77\\text{ rad/s}$. Bant genişliği $BW = 2\\pi(2000 - 1000) = 6283.19\\text{ rad/s}$. Filtre kalite faktörü $Q_F = \\frac{\\omega_0}{BW} = \\frac{8885.77}{6283.19} = 1.4142$. Durdurma frekanslarının geometrik simetri kontrolü: $\\sqrt{500 \\times 4000} = 1414.21\\text{ Hz} = f_0$ (tam simetrik). $\\Omega_r = \\frac{4000 - 500}{2000 - 1000} = 3.50$. $a_{\\text{pass}} = -1.5\\text{ dB} \\implies \\epsilon = 0.6423$, $a_{\\text{stop}} = -28\\text{ dB} \\implies \\epsilon_s = 25.099$. Minimum prototip derecesi $n_{\\text{LP}} \\ge \\frac{\\log(25.099/0.6423)}{\\log(3.50)} = 2.93 \\implies n_{\\text{LP}} = 3$. Bant geçiren derecesi $N_{\\text{BP}} = 2 \\times 3 = 6$ (3 adet bağımsız 2. derece rezonans biquad katı):',
+              math: '$$\\mathbf{Kat\\ 1\\ (Merkez\\ Rezonans\\ Katı): } \\omega_{0,1} = 8885.77\\text{ rad/s} \\; (f_{0,1} = 1414.2\\text{ Hz}), \\quad Q_1 = 1.4142$$\n$$b_{1,1} = \\frac{\\omega_{0,1}}{Q_1} = 6283.19\\text{ rad/s}, \\quad b_{2,1} = \\omega_{0,1}^2 = 7.896 \\times 10^7$$\n\n$$\\mathbf{Kat\\ 2\\ (Alt\\ Yan\\ Biquad\\ Katı): } \\omega_{0,2} = 6542.10\\text{ rad/s} \\; (f_{0,2} = 1041.2\\text{ Hz}), \\quad Q_2 = 2.8284$$\n$$b_{1,2} = \\frac{\\omega_{0,2}}{Q_2} = 2313.01\\text{ rad/s}, \\quad b_{2,2} = \\omega_{0,2}^2 = 4.280 \\times 10^7$$\n\n$$\\mathbf{Kat\\ 3\\ (Üst\\ Yan\\ Biquad\\ Katı): } \\omega_{0,3} = 12068.52\\text{ rad/s} \\; (f_{0,3} = 1920.8\\text{ Hz}), \\quad Q_3 = 2.8284$$\n$$b_{1,3} = \\frac{\\omega_{0,3}}{Q_3} = 4266.91\\text{ rad/s}, \\quad b_{2,3} = \\omega_{0,3}^2 = 1.456 \\times 10^8$$'
             },
             {
-              stepTitle: 'Adım 2: Kat Kat Direnç ve Kondansatör Değerleri',
-              desc: '$C = 10\\text{ nF}$ ve kat başına kazanç $G_0 = 2.0$ alınarak MFB/Sallen-Key bağıntıları ile:',
-              math: '$$\\text{Kat 1: } R_1 = 7.958\\text{ k}\\Omega, \\quad R_2 = 31.83\\text{ k}\\Omega, \\quad R_3 = 10.61\\text{ k}\\Omega$$\n$$\\text{Kat 2: } R_1 = 21.61\\text{ k}\\Omega, \\quad R_2 = 86.45\\text{ k}\\Omega, \\quad R_3 = 3.09\\text{ k}\\Omega$$\n$$\\text{Kat 3: } R_1 = 11.72\\text{ k}\\Omega, \\quad R_2 = 46.86\\text{ k}\\Omega, \\quad R_3 = 1.67\\text{ k}\\Omega$$'
+              stepTitle: 'Adım 2: Çoklu Geribesleme (MFB) Devre Elemanlarının Hesaplanması ($C = 10\\text{ nF}$)',
+              desc: 'Orta ve yüksek $Q$ değerlerinde kararlılık sağladığı için Multiple-Feedback (MFB) mimarisi kullanılır. Tüm katlarda $C_1 = C_2 = C = 10\\text{ nF} = 10^{-8}\\text{ F}$ ve kat başına kazanç $G_0 = 2.0$ alınarak MFB formülleri ($R_1 = \\frac{Q}{G_0 \\omega_0 C}, R_2 = \\frac{Q}{(2Q^2 - G_0)\\omega_0 C}, R_3 = \\frac{2Q}{\\omega_0 C}$) uygulanır:',
+              math: '$$\\mathbf{Kat\\ 1\\ (\\omega_{0,1} = 8885.8, \\; Q_1 = 1.4142):}$$\n$$R_{1,1} = \\frac{1.4142}{2 \\times 8885.77 \\times 10^{-8}} = 7.958\\text{ k}\\Omega$$\n$$R_{2,1} = \\frac{1.4142}{(2(1.4142)^2 - 2) \\times 8885.77 \\times 10^{-8}} = \\frac{1.4142}{(4 - 2) \\times 8.886 \\times 10^{-5}} = 7.958\\text{ k}\\Omega$$\n$$R_{3,1} = \\frac{2(1.4142)}{8885.77 \\times 10^{-8}} = 31.831\\text{ k}\\Omega$$\n\n$$\\mathbf{Kat\\ 2\\ (\\omega_{0,2} = 6542.1, \\; Q_2 = 2.8284):}$$\n$$R_{1,2} = \\frac{2.8284}{2 \\times 6542.10 \\times 10^{-8}} = 21.616\\text{ k}\\Omega$$\n$$R_{2,2} = \\frac{2.8284}{(2(2.8284)^2 - 2) \\times 6542.10 \\times 10^{-8}} = \\frac{2.8284}{14 \\times 6.542 \\times 10^{-5}} = 3.088\\text{ k}\\Omega$$\n$$R_{3,2} = \\frac{2(2.8284)}{6542.10 \\times 10^{-8}} = 86.463\\text{ k}\\Omega$$\n\n$$\\mathbf{Kat\\ 3\\ (\\omega_{0,3} = 12068.5, \\; Q_3 = 2.8284):}$$\n$$R_{1,3} = \\frac{2.8284}{2 \\times 12068.52 \\times 10^{-8}} = 11.718\\text{ k}\\Omega$$\n$$R_{2,3} = \\frac{2.8284}{14 \\times 1.2069 \\times 10^{-4}} = 1.674\\text{ k}\\Omega, \\quad R_{3,3} = \\frac{2(2.8284)}{12068.52 \\times 10^{-8}} = 46.874\\text{ k}\\Omega$$'
             },
             {
-              stepTitle: 'Adım 3: Kazanç Kalibrasyonu ve Çıkış Gerilim Bölücüsü',
-              desc: 'Üç katın kaskad kazancı tepe noktasında $G_{\\text{tot}} = 8.0$ olur. Çıkış $R_{\\text{out}} = 10\\text{ k}\\Omega$ direnç bölücüsü ile normalize edilir:',
-              math: '$$G_A = 8.0 \\implies R_x = 8.0 \\times 10\\text{ k}\\Omega = 80\\text{ k}\\Omega, \\quad R_y = \\frac{8.0}{7.0} \\times 10\\text{ k}\\Omega = 11.43\\text{ k}\\Omega$$\n$$\\text{Standart E24: } R_x = 82\\text{ k}\\Omega, \\quad R_y = 11\\text{ k}\\Omega, \\quad C = 10\\text{ nF}$$'
+              stepTitle: 'Adım 3: Kazanç Kalibrasyonu ve Çıkış Gerilim Bölücüsü ($R_x, R_y$)',
+              desc: 'Her biri $G_0 = 2.0$ tepe kazancına sahip 3 kat kaskad bağlandığında rezonansta toplam kazanç $G_{\\text{tot}} = 2.0 \\times 2.0 \\times 2.0 = 8.0$ ($+18.06\\text{ dB}$) olur. Filtrenin genel kazancını $0\\text{ dB}$ ($G_{\\text{hedef}} = 1.0$) seviyesine çekmek ve çıkış empedansını $R_{\\text{out}} = 10\\text{ k}\\Omega$ yapmak için gerilim bölücü hesaplanır:',
+              math: '$$G_A = \\frac{G_{\\text{tot}}}{G_{\\text{hedef}}} = \\frac{8.0}{1.0} = 8.0$$\n$$R_x = G_A \\cdot R_{\\text{out}} = 8.0 \\times 10\\text{ k}\\Omega = 80.0\\text{ k}\\Omega$$\n$$R_y = \\frac{G_A}{G_A - 1} \\cdot R_{\\text{out}} = \\frac{8.0}{8.0 - 1} \\times 10\\text{ k}\\Omega = \\frac{8.0}{7.0} \\times 10\\text{ k}\\Omega = 11.429\\text{ k}\\Omega$$\n$$\\text{Standart E24 Seçimi: } R_x = 82\\text{ k}\\Omega, \\quad R_y = 11\\text{ k}\\Omega \\quad (R_x \\parallel R_y \\approx 9.69\\text{ k}\\Omega)$$'
             }
           ]
         },
         {
           id: 'ex4_6',
           badge: 'Örnek 4.6 (Kitap Sayfa 115-117) - Eliptik 6. Derece BP Aktif Devre',
-          title: 'Eliptik 6. Derece Bant Geçiren Aktif Devre Tasarımı',
-          specs: 'Spesifikasyonlar: $f_{\\text{p1}} = 250\\text{ Hz}, f_{\\text{p2}} = 400\\text{ Hz}, f_{\\text{s1}} = 100\\text{ Hz}, f_{\\text{s2}} = 1000\\text{ Hz}, a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -60.0\\text{ dB}$',
+          title: 'Eliptik 6. Derece Bant Geçiren Aktif Devre Tasarımı (Sonlu Sıfırlı Devre)',
+          specs: 'Spesifikasyonlar: $f_{\\text{p1}} = 250\\text{ Hz}, f_{\\text{p2}} = 400\\text{ Hz}, f_{\\text{s1}} = 100\\text{ Hz}, f_{\\text{s2}} = 1000\\text{ Hz}, a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -60.0\\text{ dB}, C = 10\\text{ nF}$',
           solutionSteps: [
             {
-              stepTitle: 'Adım 1: Eliptik Sıfırlar ve Kutupların Ayrıştırılması',
-              desc: 'Filtre durdurma bandında çok dik geçiş için iletim sıfırları içerir. 3 adet kuadratik biquad katı oluşturulur:',
-              math: '$$f_0 = \\sqrt{250 \\times 400} = 316.23\\text{ Hz} \\implies \\omega_0 = 1986.9\\text{ rad/s}, \\quad BW = 2\\pi(150) = 942.5\\text{ rad/s}$$\n$$\\text{İletim Sıfırları: } \\omega_{z1} = 785.4\\text{ rad/s}, \\quad \\omega_{z2} = 5026.5\\text{ rad/s}$$'
+              stepTitle: 'Adım 1: Merkez Frekansı, Bant Genişliği ve İletim Sıfırları',
+              desc: 'Eliptik filtre hem geçirme hem durdurma bandında dalgalanmaya (equiripple) izin vererek en dik geçiş bandını sağlar. Durdurma bandında çok dik düşüşü yaratan sonlu karmaşık iletim sıfırları $\\omega_{z,m}$ mevcuttur:',
+              math: '$$f_0 = \\sqrt{250 \\times 400} = 316.23\\text{ Hz} \\implies \\omega_0 = 1986.92\\text{ rad/s}, \\quad BW = 2\\pi(400 - 250) = 942.48\\text{ rad/s}$$\n$$\\text{Alt Durdurma Bandı Sıfırı: } \\omega_{z1} = 785.40\\text{ rad/s} \\; (125\\text{ Hz}) \\implies \\text{Pay: } s^2 + 6.168 \\times 10^5$$\n$$\\text{Üst Durdurma Bandı Sıfırı: } \\omega_{z2} = 5026.55\\text{ rad/s} \\; (800\\text{ Hz}) \\implies \\text{Pay: } s^2 + 2.527 \\times 10^7$$'
             },
             {
-              stepTitle: 'Adım 2: Devre Gerçekleştirmesi ve Çentikli Katların Sentezi',
-              desc: '$C = 10\\text{ nF}$ ile sıfır içeren katlar için Bainter veya Twin-Tee biquad katları kullanılır:',
-              math: '$$\\text{Kat 1 (Rezonans): } \\omega_{0,1} = 1986.9\\text{ rad/s}, \\quad Q_1 = 3.52$$\n$$\\text{Kat 2 (Alt Çentikli Kat): } \\omega_{z1} = 785.4\\text{ rad/s}, \\quad \\omega_{0,2} = 1620.4\\text{ rad/s}$$\n$$\\text{Kat 3 (Üst Çentikli Kat): } \\omega_{z2} = 5026.5\\text{ rad/s}, \\quad \\omega_{0,3} = 2436.1\\text{ rad/s}$$\n$$R_x = 35.6\\text{ k}\\Omega, \\quad R_y = 13.9\\text{ k}\\Omega$$'
+              stepTitle: 'Adım 2: Çentikli Aktif Biquad Sentezi (Bainter & MFB Katları)',
+              desc: 'Tüm-kutuplu katlar için standart MFB veya Sallen-Key; iletim sıfırı barındıran katlar için Bainter çentikli biquad mimarisi kullanılır:',
+              math: '$$\\mathbf{Kat\\ 1\\ (Merkez\\ Rezonans\\ Katı): } \\omega_{0,1} = 1986.9\\text{ rad/s}, \\; Q_1 = 3.52$$\n$$\\mathbf{Kat\\ 2\\ (Alt\\ Çentikli\\ Kat): } \\omega_{z1} = 785.4\\text{ rad/s}, \\; \\omega_{0,2} = 1620.4\\text{ rad/s}, \\; Q_2 = 4.85$$\n$$\\mathbf{Kat\\ 3\\ (Üst\\ Çentikli\\ Kat): } \\omega_{z2} = 5026.5\\text{ rad/s}, \\; \\omega_{0,3} = 2436.1\\text{ rad/s}, \\; Q_3 = 4.85$$'
+            },
+            {
+              stepTitle: 'Adım 3: Kazanç Kalibrasyonu ve Çıkış Bölücüsü',
+              desc: 'Kat kazançlarının toplamı hesaplanarak hedef $0\\text{ dB}$ ($1.0$) ve $R_{\\text{out}} = 10\\text{ k}\\Omega$ için gerilim bölücü dirençleri çıkarılır:',
+              math: '$$G_A = 3.56 \\implies R_x = 3.56 \\times 10\\text{ k}\\Omega = 35.6\\text{ k}\\Omega, \\quad R_y = \\frac{3.56}{2.56} \\times 10\\text{ k}\\Omega = 13.9\\text{ k}\\Omega$$\n$$\\text{Standart E24: } R_x = 36\\text{ k}\\Omega, \\quad R_y = 15\\text{ k}\\Omega$$'
             }
           ]
         }
@@ -636,26 +656,26 @@ const FilterCircuitModal = (() => {
         {
           stepNum: 'Adım 1',
           title: 'Twin-Tee Köprü Devresi ve Çift-Yol (Dual-Path) Faz İptali (Denklem 4.30 - 4.31)',
-          desc: 'Twin-Tee devresi paralel iki T köprüsünden oluşur. Üst R-C-R köprüsü alçak frekansları, alt C-R-C köprüsü yüksek frekansları iletir. Rezonans frekansı $f_0$\'da iki yol tam $180^\\circ$ faz farkı ile birbirini yok eder:',
-          math: '$$f_0 = \\frac{1}{2\\pi R C} \\quad \\Longleftrightarrow \\quad \\omega_0 = \\frac{1}{RC}$$\n$$H_{\\text{passive}}(s) = \\frac{s^2 + \\omega_0^2}{s^2 + 4\\omega_0 s + \\omega_0^2} \\implies Q = 0.25 \\text{ (Çok geniş)}$$'
+          desc: 'Neden Twin-Tee (İkiz-T) kullanılır? Bant söndüren (çentik) yanıtta belirli bir frekansta sıfır iletim (tam sönümleme) gerekir. Twin-Tee devresi paralel iki T köprüsünden oluşur: Üstteki R-C-R köprüsü alçak frekansları geçirir (LP yolu); alttaki C-R-C köprüsü yüksek frekansları geçirir (HP yolu). Rezonans frekansı $f_0$\'da bu iki yoldan geçen sinyaller birbirine eşit büyüklükte fakat tam $180^\\circ$ zıt fazda buluşur ve vektörel toplam sıfır olur (tam faz iptali):',
+          math: '$$f_0 = \\frac{1}{2\\pi R C} \\quad \\Longleftrightarrow \\quad \\omega_0 = \\frac{1}{RC}$$\n$$H_{\\text{passive}}(s) = \\frac{s^2 + \\omega_0^2}{s^2 + 4\\omega_0 s + \\omega_0^2}$$\n$$\\text{Pasif Devre Seçiciliği: } Q = \\frac{\\omega_0}{b_1} = \\frac{\\omega_0}{4\\omega_0} = 0.25 \\quad (\\text{Çok geniş ve zayıf seçicilik})$$'
         },
         {
           stepNum: 'Adım 2',
           title: 'Simetrik Twin-Tee Bileşen Bağıntıları (Denklem 4.32)',
-          desc: 'Tam faz iptali ve derin çentik için köprü elemanları kusursuz simetrik seçilmelidir:',
-          math: '$$R_1 = R_2 = R, \\quad R_3 = \\frac{R}{2}$$\n$$C_1 = C_2 = C, \\quad C_3 = 2C$$\n$$R = \\frac{1}{2\\pi f_0 C} = \\frac{1}{\\omega_0 C}$$'
+          desc: 'Köprünün rezonansta kusursuz sıfır ($-\\infty\\text{ dB}$) üretebilmesi için bileşenler arasında kesin simetri şartı aranır. Üst kolda iki adet $R$ ve toprağa bir adet $2C$; alt kolda iki adet $C$ ve toprağa bir adet $R/2$ bağlanır. $2C$ kondansatörü için iki adet standart $C$ kondansatörünün paralel bağlanması önerilir:',
+          math: '$$R_1 = R_2 = R = \\frac{1}{2\\pi f_0 C} = \\frac{1}{\\omega_0 C}, \\quad R_3 = \\frac{R}{2}$$\n$$C_1 = C_2 = C, \\quad C_3 = 2C$$\n$$\\text{Pratik İpucu: } 2C = C \\parallel C \\text{ yapılırsa tolerans ve sıcaklık katsayıları birbirini dengeler.}$$'
         },
         {
           stepNum: 'Adım 3',
-          title: 'Aktif Geri Besleme ile Seçicilik (Q) ve Kazanç Ayarı (Denklem 4.33 - 4.35)',
-          desc: 'Pasif devrenin $Q=0.25$ olan düşük seçiciliğini artırmak için op-amp tamponunun çıkışından orta düğüme pozitif geri besleme ($K$) uygulanır:',
-          math: '$$H_c(s) = \\frac{s^2 + \\omega_0^2}{s^2 + 4(1 - K) \\omega_0 s + \\omega_0^2}$$\n$$Q = \\frac{1}{4(1 - K)} \\implies K = 1 - \\frac{1}{4Q} \\quad (\\text{veya } K = 2 - \\frac{1}{2Q})$$'
+          title: 'Aktif Bootstrapping ile Seçicilik (Q) Yükseltme (Denklem 4.33 - 4.35)',
+          desc: 'Pasif devrenin $Q=0.25$ olan düşük seçiciliği çentiği çok yayvan yapar. Op-amp çıkışından köprünün orta referans düğümüne pozitif geribesleme (bootstrapping) $K$ gerilimi uygulandığında, çentiğin genişliği daraltılır ve $Q$ istendiği kadar yükseltilir:',
+          math: '$$H_c(s) = \\frac{s^2 + \\omega_0^2}{s^2 + 4(1 - K) \\omega_0 s + \\omega_0^2}$$\n$$b_1 = 4(1 - K) \\omega_0 \\implies Q = \\frac{\\omega_0}{4(1 - K)\\omega_0} = \\frac{1}{4(1 - K)}$$\n$$K = 1 - \\frac{1}{4Q} \\quad (0 \\le K < 1.0)$$\n$$\\text{Geri Besleme Ağı: } K < 1 \\text{ olduğundan op-amp çıkışından gerilim bölücü ile } K = \\frac{R_B}{R_A + R_B} \\text{ sağlanır.}$$'
         },
         {
           stepNum: 'Adım 4',
           title: 'Bainter Biquad ile Ayrık Çentik Frekanslarının (ωz ≠ ω0) Sentezi',
-          desc: 'Eliptik veya Ters Chebyshev filtrelerde iletim sıfırı $\\omega_z$, kutup frekansı $\\omega_0$\'dan farklıdır. Bu durumda 3 op-amp\'lı Bainter biquad topolojisi kullanılır.',
-          math: '$$H_c(s) = \\frac{s^2 + \\omega_z^2}{s^2 + \\frac{\\omega_0}{Q} s + \\omega_0^2}, \\quad \\omega_z = \\sqrt{\\frac{R_6}{R_5}} \\omega_0$$'
+          desc: 'Eliptik veya Ters Chebyshev bant söndüren filtrelerde iletim sıfırı $\\omega_z$, kutup rezonans frekansı $\\omega_0$\'dan farklıdır. Simetrik Twin-Tee sadece $\\omega_z = \\omega_0$ durumunu karşılayabildiğinden, $\\omega_z \\neq \\omega_0$ katları için 3 op-amp\'lı Bainter biquad topolojisi kullanılır:',
+          math: '$$H_c(s) = \\frac{s^2 + \\omega_z^2}{s^2 + \\frac{\\omega_0}{Q} s + \\omega_0^2}$$\n$$\\omega_z = \\sqrt{\\frac{R_6}{R_5}} \\cdot \\omega_0, \\quad Q = \\frac{R_1}{R_2}$$\n$$\\text{Bainter devresi ile } \\omega_z, \\omega_0 \\text{ ve } Q \\text{ birbirini etkilemeden bağımsız ayarlanabilir.}$$'
         }
       ],
       examples: [
@@ -663,22 +683,27 @@ const FilterCircuitModal = (() => {
           id: 'ex4_4',
           badge: 'Örnek 4.4 (Kitap Sayfa 112-114) - Chebyshev 6. Derece BS Aktif Devre',
           title: 'Chebyshev 6. Derece Bant Söndüren (Notch) Devre Tasarımı',
-          specs: 'Spesifikasyonlar: $f_{\\text{p1}} = 666.67\\text{ Hz}, f_{\\text{p2}} = 1500\\text{ Hz}, f_{\\text{s1}} = 909.09\\text{ Hz}, f_{\\text{s2}} = 1100\\text{ Hz}, a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -40.0\\text{ dB}, C = 10\\text{ nF}$',
+          specs: 'Spesifikasyonlar: $f_{\\text{p1}} = 666.67\\text{ Hz}, f_{\\text{p2}} = 1500\\text{ Hz}, f_{\\text{s1}} = 909.09\\text{ Hz}, f_{\\text{s2}} = 1100\\text{ Hz}, a_{\\text{pass}} = -1.0\\text{ dB}, a_{\\text{stop}} = -40.0\\text{ dB}, C = 10\\text{ nF}, R_{\\text{out}} = 10\\text{ k}\\Omega$',
           solutionSteps: [
             {
-              stepTitle: 'Adım 1: Merkez Çentik Frekansı ve Biquad Katları (Denklem 3.40)',
-              desc: '$f_0 = \\sqrt{666.67 \\times 1500} = 1000\\text{ Hz} \\implies \\omega_0 = 6283.185\\text{ rad/s}$. $N_{\\text{BS}}=6$ için her biri $1000\\text{ Hz}$ çentik sıfırına sahip 3 adet kuadratik kat gereklidir:',
-              math: '$$\\text{Kat 1 (1. Derece Prototip): } H_0(s) = \\frac{s^2 + \\omega_0^2}{s^2 + 10563.8 s + \\omega_0^2}, \\quad Q_1 = 0.595$$\n$$\\text{Kat 2: } H_1(s) = \\frac{s^2 + \\omega_0^2}{s^2 + 1386.4 s + 2.768 \\times 10^7}, \\quad Q_2 = 3.80$$\n$$\\text{Kat 3: } H_2(s) = \\frac{s^2 + \\omega_0^2}{s^2 + 3942.1 s + 5.628 \\times 10^7}, \\quad Q_3 = 1.90$$'
+              stepTitle: 'Adım 1: Geometrik Merkez Frekansı, Bant Genişlikleri ve Derece ($N=6$)',
+              desc: 'Tasarımın ilk adımı geometrik simetrinin doğrulanmasıdır: $f_0 = \\sqrt{f_{p1} f_{p2}} = \\sqrt{666.67 \\times 1500} = 1000.0\\text{ Hz} \\implies \\omega_0 = 2\\pi(1000) = 6283.185\\text{ rad/s}$. Durdurma frekanslarının simetrisi: $\\sqrt{f_{s1} f_{s2}} = \\sqrt{909.09 \\times 1100} = 1000.0\\text{ Hz} = f_0$ (tam simetrik). Geçirme bant genişliği $BW = 2\\pi(1500 - 666.67) = 5236.0\\text{ rad/s}$. Durdurma bant genişliği $BW_s = 2\\pi(1100 - 909.09) = 1199.52\\text{ rad/s}$. Normalize durdurma frekansı $\\Omega_r = \\frac{BW}{BW_s} = \\frac{833.33}{190.91} = 4.365$. Chebyshev parametreleri: $a_{\\text{pass}} = -1.0\\text{ dB} \\implies \\epsilon = 0.50885$, $a_{\\text{stop}} = -40.0\\text{ dB} \\implies \\epsilon_s = 99.995$. Prototip derecesi $n_{\\text{LP}} \\ge \\frac{\\cosh^{-1}(99.995/0.50885)}{\\cosh^{-1}(4.365)} = 2.78 \\implies n = 3$. Bant söndüren filtre derecesi $N_{\\text{BS}} = 2 \\times 3 = 6$ (3 adet 2. derece kuadratik biquad katı):',
+              math: '$$\\mathbf{Kat\\ 1\\ (LP\\ 1.\\ Derece\\ Reel\\ Kutuptan\\ Gelen\\ Biquad):}$$\n$$H_1(s) = \\frac{s^2 + \\omega_0^2}{s^2 + 10563.8 s + \\omega_0^2} = \\frac{s^2 + 3.94784 \\times 10^7}{s^2 + 10563.8 s + 3.94784 \\times 10^7}$$\n$$\\omega_{0,1} = 6283.19\\text{ rad/s} \\; (f_{0,1} = 1000\\text{ Hz}), \\quad Q_1 = \\frac{6283.19}{10563.8} = 0.5948$$\n\n$$\\mathbf{Kat\\ 2\\ (LP\\ Karmaşık\\ Kutup\\ Çifti\\ 1):}$$\n$$H_2(s) = \\frac{s^2 + \\omega_0^2}{s^2 + 1386.4 s + 2.768 \\times 10^7}$$\n$$\\omega_{0,2} = \\sqrt{2.768 \\times 10^7} = 5261.2\\text{ rad/s} \\; (f_{0,2} = 837.3\\text{ Hz}), \\quad Q_2 = \\frac{5261.2}{1386.4} = 3.80$$\n\n$$\\mathbf{Kat\\ 3\\ (LP\\ Karmaşık\\ Kutup\\ Çifti\\ 2):}$$\n$$H_3(s) = \\frac{s^2 + \\omega_0^2}{s^2 + 3942.1 s + 5.628 \\times 10^7}$$\n$$\\omega_{0,3} = \\sqrt{5.628 \\times 10^7} = 7502.0\\text{ rad/s} \\; (f_{0,3} = 1194.0\\text{ Hz}), \\quad Q_3 = \\frac{7502.0}{3942.1} = 1.90$$'
             },
             {
-              stepTitle: 'Adım 2: Twin-Tee Köprü Elemanlarının Hesaplanması (Denklem 4.30 - 4.35)',
-              desc: 'Baz kondansatör $C = 10\\text{ nF}$ ve merkez frekans $f_0 = 1000\\text{ Hz}$ için:',
-              math: '$$R = \\frac{1}{2\\pi f_0 C} = \\frac{1}{2\\pi \\times 1000 \\times 10^{-8}} = 15.915\\text{ k}\\Omega$$\n$$R_1 = R_2 = R = 15.915\\text{ k}\\Omega, \\quad R_3 = \\frac{R}{2} = 7.958\\text{ k}\\Omega$$\n$$C_1 = C_2 = C = 10\\text{ nF}, \\quad C_3 = 2C = 20\\text{ nF}$$\n$$K_1 = 1 - \\frac{1}{4(0.595)} = 0.580 \\implies R_{B1} = (0.580 - 1) R_{A1} \\text{ (Gerilim bölücü ile)}$$'
+              stepTitle: 'Adım 2: Simetrik Twin-Tee Köprü Elemanlarının Hesaplanması ($C = 10\\text{ nF}$)',
+              desc: 'Tüm katların payındaki çentik sıfırı $f_0 = 1000\\text{ Hz}$\'dir. Baz kondansatör $C = 10\\text{ nF} = 10^{-8}\\text{ F}$ seçildiğinde simetrik Twin-Tee köprü direnç ve kapasitansları hesaplanır:',
+              math: '$$R = \\frac{1}{2\\pi f_0 C} = \\frac{1}{2\\pi \\times 1000 \\times 10^{-8}} = 15915.5\\ \\Omega = 15.915\\text{ k}\\Omega$$\n$$R_1 = R_2 = R = 15.915\\text{ k}\\Omega, \\quad R_3 = \\frac{R}{2} = \\frac{15.915\\text{ k}\\Omega}{2} = 7.958\\text{ k}\\Omega$$\n$$C_1 = C_2 = C = 10\\text{ nF}, \\quad C_3 = 2C = 20\\text{ nF}$$\n$$\\text{Köprü Simetrisi Kuralı: } R_1 = R_2 = R, \\; R_3 = R/2, \\; C_1 = C_2 = C, \\; C_3 = 2C \\text{ şartı rezonansta } -\\infty\\text{ dB sağlar.}$$'
             },
             {
-              stepTitle: 'Adım 3: Kazanç Kalibrasyonu ve Standart Değerler',
-              desc: 'Çıkış gerilim bölücüsü ve standart E24 değerleri:',
-              math: '$$R = 16\\text{ k}\\Omega, \\quad R/2 = 8.2\\text{ k}\\Omega, \\quad C = 10\\text{ nF}, \\quad 2C = 22\\text{ nF}$$\n$$R_x = 24\\text{ k}\\Omega, \\quad R_y = 18\\text{ k}\\Omega$$'
+              stepTitle: 'Adım 3: Aktif Geri Besleme (Bootstrapping) Kazançları ($K_m$)',
+              desc: 'Her katın paydasındaki $Q$ değerini oluşturmak için op-amp çıkışından Twin-Tee orta düğümüne pozitif geri besleme katsayısı $K = 1 - \\frac{1}{4Q}$ uygulanır. $K < 1.0$ olduğundan op-amp çıkışına referans direnci $R_A = 10\\text{ k}\\Omega$ olan bir gerilim bölücü ($K = \\frac{R_B}{R_A + R_B} \\implies R_B = \\frac{K}{1 - K} R_A$) bağlanır:',
+              math: '$$\\mathbf{Kat\\ 1\\ (Q_1 = 0.5948):}$$\n$$K_1 = 1 - \\frac{1}{4(0.5948)} = 1 - 0.4203 = 0.5797 \\approx 0.580$$\n$$R_{B,1} = \\frac{0.5797}{1 - 0.5797} \\times 10\\text{ k}\\Omega = \\frac{0.5797}{0.4203} \\times 10\\text{ k}\\Omega = 13.792\\text{ k}\\Omega$$\n\n$$\\mathbf{Kat\\ 2\\ (Q_2 = 3.80):}$$\n$$K_2 = 1 - \\frac{1}{4(3.80)} = 1 - 0.0658 = 0.9342$$\n$$R_{B,2} = \\frac{0.9342}{1 - 0.9342} \\times 10\\text{ k}\\Omega = \\frac{0.9342}{0.0658} \\times 10\\text{ k}\\Omega = 141.976\\text{ k}\\Omega$$\n\n$$\\mathbf{Kat\\ 3\\ (Q_3 = 1.90):}$$\n$$K_3 = 1 - \\frac{1}{4(1.90)} = 1 - 0.1316 = 0.8684$$\n$$R_{B,3} = \\frac{0.8684}{1 - 0.8684} \\times 10\\text{ k}\\Omega = \\frac{0.8684}{0.1316} \\times 10\\text{ k}\\Omega = 65.988\\text{ k}\\Omega$$'
+            },
+            {
+              stepTitle: 'Adım 4: Standart E24 Bileşen Seçimi ve Pratik İpuçları',
+              desc: 'Laboratuvar ve endüstriyel üretimde kullanılacak en yakın E24 standart değerleri seçilir:',
+              math: '$$\\text{Köprü Dirençleri: } R = 16\\text{ k}\\Omega \\; (\\text{veya } \\%1\\text{ metal film } 15.8\\text{ k}\\Omega), \\quad R/2 = 8.2\\text{ k}\\Omega \\; (\\text{veya } 7.87\\text{ k}\\Omega)$$\n$$\\text{Köprü Kondansatörleri: } C = 10\\text{ nF}, \\quad 2C = 20\\text{ nF} \\; (\\text{2 adet } 10\\text{ nF paralel}) \\; \\checkmark$$\n$$\\text{Geri Besleme Dirençleri: } R_{B,1} = 13\\text{ k}\\Omega \\text{ veya } 15\\text{ k}\\Omega, \\quad R_{B,2} = 150\\text{ k}\\Omega, \\quad R_{B,3} = 68\\text{ k}\\Omega$$\n$$\\text{Çıkış Bölücüsü: } R_x = 24\\text{ k}\\Omega, \\quad R_y = 18\\text{ k}\\Omega \\quad (R_{\\text{out}} \\approx 10.3\\text{ k}\\Omega)$$'
             }
           ]
         }
