@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function init() {
     // Ensure favicon is applied in browser tab
     try {
-      const b64Favicon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACGElEQVR4nO2bwUrDMBjH//3TgeDFow/gZe6207wJvsVgePIdFHYc6DvsJMLeQvGmp922XvYAHr0Iyi5SMaMta5d2a/ol6Q/KaEqTfD+SNQkJ0NLiNUHVFwfP37cQxPvV0UPtAgbCgj6EjKBq8NGwfw9BdGfzuyoSgjKBSwtaR8YuEXQt+Gxdd3VbuhZ8WQksk5Ft6NSd2xKVMZuDV6gY8loBXQ5eRwLhOYTn0PXmv6sbEJ5DeA7hOYTnEJ5DeE5Y9oXubL41PRr24YUAHTHryegGDbJaLqbGBSTpjJ+mtrSIsOwL2cDyuoRKly6C+2YQB6iubeQJcvIrEBVIkCqCh87QttbAujLOEyFNAusuQEfC58diczk5EowKJMRBf11eby7TEmiqoG0SVPBJTEugsZKEjgloukBpEthEoUrCxcsPjl8fU8/i+5PTnrG6hGiIjYTZHG8JCbEUk4RomFhELCH7hTDVVQgBNDlgIoTQlARCEHkS6hRBCMP0RIoQiEkJhFBMzSYJ4dT9v0BYQJ0rTYQlFA2M9hFBWETRcltVEYSF6IiobS5wdt5LT98aZD0Z/f12xk+pVZUy84iwbKGr5SK9hCOB/4CrTKKCbIKr+4TU/uHs3mHCcwjPYTZBNZHs/nsXm39uC3BJQlHwWl3AZgk6dWfeg6QxGyXonhphUSa2SihzZCbQzdTbQ1NJvD425+rByZYW+M0vookZex+Mu/8AAAAASUVORK5CYII=';
+      const b64Favicon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABRklEQVR4nO3bAWrCMBjF8ff98Vp6kO188yD1XnM4KISircmSaPP2AwWliXnJ11SohjIcP76v2oHLmXj22BgldOlkMHL4ZzJESaORqgGX8I+ysXXAaJYZkTmcVv9eVpZvuJgzI3PIXDiWfwqZQ+aQOWQOmUPmkDlkDplD5pA5ZA6ZQ+aQOWQOmUPmkDlkDplD5pA5ZI5WHU9f8fuo1deuJmBKBvzXwc/tW01C1L41tjbQ0+e1ez9bDupoDrUWoGW5d7s5OjUMUXP1m+wBrVewdv/IHD0+pLRsa5f7SzfBUxKm1w7/dleBV4WsOgFT58tUyRhyJhiZQ+YO736uz320OvWQufj/naA5cv5gNJrLmbDfA5A5bk+Op8GcmeUbDtKsyBzpC4cqWGZk64CR3MsWaw1G+Za4tqiUNtyLrQyR09leKiJn4X4AZEl2GnSt3BQAAAAASUVORK5CYII=';
       let fav = document.querySelector("link[rel*='icon']");
       if (!fav) {
         fav = document.createElement('link');
